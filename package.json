@@ -1,0 +1,20 @@
+{
+  "name": "dusp",
+  "version": "1.0.0",
+  "description": "A modular synthesiser for node and the browser",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "test"
+  },
+  "keywords": [
+    "synthesiser",
+    "browser",
+    "node",
+    "audio"
+  ],
+  "author": "Joel Plowright",
+  "license": "ISC"
+}
