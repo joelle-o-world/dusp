@@ -1,6 +1,5 @@
 const argv = require("minimist")(process.argv.slice(2))
 
-var globalConfig = require("../config.js")
 var localConfig = {}
 
 Object.assign(localConfig, {
