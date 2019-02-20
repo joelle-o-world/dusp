@@ -21,11 +21,23 @@ console.log('connecting inlet to outlet')
 unit1.IN = unit2.OUT
 console.log(unit1, unit2)
 
-console.log('now, RenderStream')
+console.log('NOW, RenderStream')
 const RenderStream = require('../src/RenderStream')
 console.log('RenderStream constructor:', RenderStream)
 
-console.log('creating renderStream')
+console.log('CREATE RenderStream')
 unit1.addOutlet('out')
 let stream1 = new RenderStream(unit1.OUT)
 console.log(stream1)
+
+
+// TEST OSC
+console.log("\n\n~~~ TESTING Osc() ~~~")
+const Osc = require('../src/components/Osc')
+console.log('Osc (constructor):', Osc)
+
+let osc1 = new Osc()
+console.log("Osc (instance):", osc1)
+
+let stream2 = new RenderStream(osc1.OUT)
+console.log('osc streaming:', stream2)
