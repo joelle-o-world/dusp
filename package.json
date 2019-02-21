@@ -18,8 +18,11 @@
   "author": "Joel Plowright",
   "license": "ISC",
   "dependencies": {
+    "audio-buffer": "^4.0.4",
+    "audio-generator": "^2.1.2",
     "compute-gcd": "^1.2.0",
     "minimist": "^1.2.0",
-    "promise": "^8.0.2"
+    "promise": "^8.0.2",
+    "web-audio-stream": "^3.0.1"
   }
 }

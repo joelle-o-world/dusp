@@ -3,7 +3,7 @@ const argv = require("minimist")(process.argv.slice(2))
 var localConfig = {}
 
 Object.assign(localConfig, {
-  standardChunkSize: 64,
+  standardChunkSize: 256, // if < 256, Web Audio API will prang out
   sampleRate: 44100,
   channelFormat: "stereo",
 

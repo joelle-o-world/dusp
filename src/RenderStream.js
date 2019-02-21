@@ -1,11 +1,11 @@
 const {Readable} = require("stream")
-const WavWriter = require("wav").Writer
+const AudioBuffer = require('audio-buffer')
 
 const floatToIntScaler = Math.pow(2, 30)
 
 class RenderStream extends Readable {
   constructor(outlet, numberOfChannels=1, timeout) {
-    super()
+    super({objectMode:true})
     if(!outlet)
       throw "RenderStream requires an outlet argument"
     if(outlet.isUnitOrPatch)
@@ -24,21 +24,37 @@ class RenderStream extends Readable {
     this.tickClock = 0
 
     this.outlet.onTick = () => {
-      var buffer = new Buffer(4*this.outlet.chunkSize * this.numberOfChannels)
+      // create a buffer for this chunk
+      var buffer = new Float32Array(this.numberOfChannels * this.outlet.chunkSize)
+      /*new AudioBuffer(null, {
+        length:this.outlet.chunkSize,
+        sampleRate: this.outlet.sampleRate,
+        numberOfChannels: this.outlet.numberOfChannels
+      })*/
+
+      // loop through outlet SignalChunk
       for(var c=0; c<this.numberOfChannels; c++)
         for(var t=0; t<this.outlet.chunkSize; t++) {
+          // rescale samples to normalise (according to peak so far)
           var val = this.outlet.signalChunk.channelData[c][t] * this.normaliseFactor
+
+          // if signal is outside of ideal range adjust the normalisation scalar
           if(Math.abs(val) > 1) {
             var sf = Math.abs(1/val)
             val *= sf
             this.normaliseFactor *= sf
             console.warn("Digital clipping, autonormalised", this.normaliseFactor)
           }
+
+          // throw an error is sample is NaN
           if(isNaN(val))
             throw "can't record NaN"
-          buffer.writeInt32LE(val * floatToIntScaler, 4*(t*this.numberOfChannels+c) )
+
+          // write sample to the buffer
+          buffer [t*this.numberOfChannels+c] = (val)
         }
 
+      // send to stream, pause processing if internal buffer is full
       if(!this.push(buffer)) {
         this.circuit.stopTicking()
       }
@@ -55,17 +71,6 @@ class RenderStream extends Readable {
 
   _read() {
     this.circuit.startTicking()
-  }
-
-  pipeWav(destination) {
-    if(!this.wavStream)
-      this.wavStream = this.pipe(new WavWriter({
-        channels: this.numberOfChannels,
-        bitDepth: 32,
-        sampleRate: this.sampleRate,
-        endianness: "LE",
-      }))
-    return this.wavStream.pipe(destination)
   }
 
   stop() {
