@@ -1,0 +1,3 @@
+[submodule "src/parseDSP"]
+	path = src/parseDSP
+	url = https://github.com/joelyjoel/parseDSP.git
