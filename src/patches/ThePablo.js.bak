@@ -1,0 +1,30 @@
+const Patch = require("../Patch.js")
+const Repeater = require("../components/Repeater")
+const Multiply = require("../components/Multiply")
+const Sampler = require("../components/Sampler")
+
+class ThePablo extends Patch {
+  constructor(chooseString, frequency=50, loopDuration=0.1) {
+    super()
+
+    this.addUnits(
+      this.loopDRepeater = new Repeater(),
+      this.durationTimesFrequency = new Multiply(this.loopDRepeater),
+      this.sampler = new Sampler(chooseString),
+    )
+    this.sampler.stopAtEnd = false
+    this.sampler.loopBuffer = true
+    this.sampler.loop(1, this.loopDRepeater)
+    this.sampler.RATE = this.durationTimesFrequency
+    this.sampler.trigger()
+
+    this.aliasInlet(this.loopDRepeater, "loopDuration")
+    this.aliasInlet(this.durationTimesFrequency.B, "f")
+    this.aliasInlet(this.sampler.LOOPSTART, "t")
+    this.aliasOutlet(this.sampler.OUT)
+
+    this.F = frequency
+    this.LOOPDURATION = loopDuration
+  }
+}
+module.exports = ThePablo

@@ -48,7 +48,6 @@ Filter.prototype._tick = function() {
       this.x1[c] = this.in[c][t]
     }
   }
-
 }
 
 Filter.prototype.__defineGetter__("kind", function() {
@@ -58,6 +57,8 @@ Filter.prototype.__defineSetter__("kind", function(kind) {
   this.calculateCoefficients = Filter.coefficientFunctions[kind]
   if(!this.calculateCoefficients)
     throw "invalid filter type: " + kind
+  if(kind == 'HP')
+    console.warn("Please note: High Pass filter has a bug and doesn't work")
   this._kind = kind
   this.calculateCoefficients()
 })
