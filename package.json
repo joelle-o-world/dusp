@@ -21,6 +21,8 @@
     "audio-buffer": "^4.0.4",
     "audio-generator": "^2.1.2",
     "compute-gcd": "^1.2.0",
+    "compute-lcm": "^1.1.0",
+    "fft.js": "^4.0.3",
     "minimist": "^1.2.0",
     "promise": "^8.0.2",
     "web-audio-stream": "^3.0.1"
