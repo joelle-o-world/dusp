@@ -1,5 +1,5 @@
 const Patch = require("../Patch.js")
-const Osc = require("../components/Osc.js")
+const Osc = require("../components/Osc")
 const Multiply = require("../components/Multiply.js")
 const Sum = require("../components/Sum.js")
 

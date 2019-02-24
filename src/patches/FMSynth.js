@@ -5,7 +5,7 @@ const unDusp = require("../unDusp")
 const dusp = require("../dusp")
 
 const quick = require("../quick.js")
-const Osc = require("../patches/FMOsc.js")
+const Osc = require("../patches/FMOsc")
 const FrequencyGroup = require("./FrequencyGroup.js")
 const StereoDetune = require("./StereoDetune.js")
 const Mixer = require("./Mixer.js")

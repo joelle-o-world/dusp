@@ -1,7 +1,7 @@
 const Patch = require("../Patch.js")
-const StereoOsc = require("./StereoOsc.js")
+const StereoOsc = require("./StereoOsc")
 const Repeater = require("../components/Repeater.js")
-const Osc = require("../components/Osc.js")
+const Osc = require("../components/Osc")
 const Sum = require("../components/Sum.js")
 const Multiply = require("../components/Multiply.js")
 

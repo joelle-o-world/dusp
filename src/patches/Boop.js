@@ -1,6 +1,6 @@
 const Patch = require("../Patch.js")
 const Shape = require("../components/Shape")
-const Osc = require("../components/Osc.js")
+const Osc = require("../components/Osc")
 const Multiply = require("../components/Multiply.js")
 
 class Boop extends Patch {

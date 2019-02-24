@@ -1,6 +1,6 @@
 const Patch = require("../Patch.js")
-const MidiOsc = require("./MidiOsc.js")
-const Osc = require("../components/Osc.js")
+const MidiOsc = require("./MidiOsc")
+const Osc = require("../components/Osc")
 const Space = require("./Space.js")
 const ComplexOrbit = require("./ComplexOrbit.js")
 

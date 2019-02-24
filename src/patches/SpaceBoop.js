@@ -2,7 +2,7 @@ const Patch = require("../Patch.js")
 const config = require("../config.js")
 
 const MidiToFrequency = require("../components/MidiToFrequency.js")
-const Osc = require("../components/Osc.js")
+const Osc = require("../components/Osc")
 const Shape = require("../components/Shape.js")
 const Multiply = require("../components/Multiply.js")
 const Space = require("../patches/Space.js")

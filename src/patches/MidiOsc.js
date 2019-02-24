@@ -1,5 +1,5 @@
 const Patch = require("../Patch.js")
-const Osc = require("../components/Osc.js")
+const Osc = require("../components/Osc")
 const MidiToFrequency = require("../components/MidiToFrequency.js")
 
 function MidiOsc(p) {

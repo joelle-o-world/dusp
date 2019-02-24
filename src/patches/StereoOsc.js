@@ -1,5 +1,5 @@
 const Patch = require("../Patch.js")
-const Osc = require("../components/Osc.js")
+const Osc = require("../components/Osc")
 const Pan = require("../components/Pan.js")
 const Gain = require("../components/Gain.js")
 const MidiToFrequency = require("../components/MidiToFrequency.js")

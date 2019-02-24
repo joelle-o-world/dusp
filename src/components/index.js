@@ -1,12 +1,63 @@
-const components = require("./component_index.json")
-
-function assignAutoLoader(obj, name) {
-  obj.__defineGetter__(name, function() {
-    delete obj[name]
-    obj[name] = require("./" + components[name])
-    return obj[name]
-  })
+module.exports = {
+	AHD: require("./AHD.js"),
+	Abs: require("./Abs.js"),
+	AllPass: require("./AllPass.js"),
+	CircleBufferNode: require("./CircleBufferNode.js"),
+	CircleBufferReader: require("./CircleBufferReader.js"),
+	CircleBufferWriter: require("./CircleBufferWriter.js"),
+	Clip: require("./Clip.js"),
+	CombFilter: require("./CombFilter.js"),
+	ConcatChannels: require("./ConcatChannels.js"),
+	CrossFader: require("./CrossFader.js"),
+	DecibelToScaler: require("./DecibelToScaler.js"),
+	Delay: require("./Delay.js"),
+	Divide: require("./Divide.js"),
+	Filter: require("./Filter.js"),
+	FixedDelay: require("./FixedDelay.js"),
+	FixedMultiply: require("./FixedMultiply.js"),
+	Gain: require("./Gain.js"),
+	GreaterThan: require("./GreaterThan.js"),
+	HardClipAbove: require("./HardClipAbove.js"),
+	HardClipBelow: require("./HardClipBelow.js"),
+	LessThan: require("./LessThan.js"),
+	MidiToFrequency: require("./MidiToFrequency.js"),
+	Monitor: require("./Monitor.js"),
+	MonoDelay: require("./MonoDelay.js"),
+	Multiply: require("./Multiply.js"),
+	Noise: require("./Noise.js"),
+	MultiChannelOsc: require("./Osc/MultiChannelOsc.js"),
+	Osc: require("./Osc/Osc.js"),
+	Pan: require("./Pan.js"),
+	PickChannel: require("./PickChannel.js"),
+	PolarityInvert: require("./PolarityInvert.js"),
+	Pow: require("./Pow.js"),
+	Ramp: require("./Ramp.js"),
+	ReadBackDelay: require("./ReadBackDelay.js"),
+	Repeater: require("./Repeater.js"),
+	Rescale: require("./Rescale.js"),
+	Retriggerer: require("./Retriggerer.js"),
+	SampleRateRedux: require("./SampleRateRedux.js"),
+	SecondsToSamples: require("./SecondsToSamples.js"),
+	SemitoneToRatio: require("./SemitoneToRatio.js"),
+	Shape: require("./Shape/index.js"),
+	SignalCombiner: require("./SignalCombiner.js"),
+	Subtract: require("./Subtract.js"),
+	Sum: require("./Sum.js"),
+	Timer: require("./Timer.js"),
+	VectorMagnitude: require("./VectorMagnitude.js"),
+	Augment: require("./spectral/Augment.js"),
+	BinShift: require("./spectral/BinShift.js"),
+	FFT: require("./spectral/FFT.js"),
+	HardHighPass: require("./spectral/HardHighPass.js"),
+	HardLowPass: require("./spectral/HardLowPass.js"),
+	Hopper: require("./spectral/Hopper.js"),
+	IFFT: require("./spectral/IFFT.js"),
+	ReChunk: require("./spectral/ReChunk.js"),
+	SpectralGate: require("./spectral/SpectralGate.js"),
+	SpectralSum: require("./spectral/SpectralSum.js"),
+	SpectralUnit: require("./spectral/SpectralUnit.js"),
+	UnHopper: require("./spectral/UnHopper.js"),
+	Windower: require("./spectral/Windower.js"),
+	CircularMotion: require("./vector/CircularMotion.js"),
+	LinearMotion: require("./vector/LinearMotion.js")
 }
-
-for(var i in components)
-  assignAutoLoader(exports, i)

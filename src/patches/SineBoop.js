@@ -1,6 +1,6 @@
 const config = require("../config.js")
 const Patch = require("../Patch.js")
-const MidiOsc = require("../patches/MidiOsc.js")
+const MidiOsc = require("../patches/MidiOsc")
 const Ramp = require("../components/Ramp.js")
 const Multiply = require("../components/Multiply.js")
 const Shape = require("../components/Shape")

@@ -1,7 +1,7 @@
 const Patch = require("../Patch.js")
 
 const Mixer = require("./Mixer.js")
-const FMOsc = require("./FMOsc.js")
+const FMOsc = require("./FMOsc")
 const FrequencyGroup = require("./FrequencyGroup.js")
 const StereoDetune = require("./StereoDetune.js")
 
