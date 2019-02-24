@@ -2,7 +2,6 @@
   A spectrally implemented band pass filter with sqaure attenuation curves.
 */
 
-throw "HardBandPass won't work until spectral components have been reimplemented"
 
 const Patch = require("../Patch.js")
 

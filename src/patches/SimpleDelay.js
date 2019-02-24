@@ -10,12 +10,12 @@ function SimpleDelay(input, delay, feedback, dryWet) {
   Patch.call(this)
 
   this.addUnits(
-    this.inputRepeater = new Repeater()
-    this.feedbackInputSum = new Sum()
-    this.delayer = new Delay()
-    this.mixDryWet = new CrossFader()
-    this.feedbackScaler = new Multiply()
-    this.delayScaler = new SecondsToSamples()
+    this.inputRepeater = new Repeater(),
+    this.feedbackInputSum = new Sum(),
+    this.delayer = new Delay(),
+    this.mixDryWet = new CrossFader(),
+    this.feedbackScaler = new Multiply(),
+    this.delayScaler = new SecondsToSamples(),
   )
 
   this.feedbackInputSum.A = this.inputRepeater.OUT

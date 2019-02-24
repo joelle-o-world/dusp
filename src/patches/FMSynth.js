@@ -1,4 +1,3 @@
-throw "FMSynth will not work until unDusp has been reimplemented"
 
 const Synth = require("./Synth.js")
 const unDusp = require("../unDusp")
@@ -15,6 +14,7 @@ const Worm = require("./Worm.js")
 class FMSynth extends Synth {
   constructor(seed) {
     super()
+    console.warn("FMSynth will not work until unDusp has been reimplemented")
     this.resetOscsOnTrigger = seed.resetOscsOnTrigger || true
 
     // unDusp the seed

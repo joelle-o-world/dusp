@@ -3,7 +3,7 @@ const config = require("../config.js")
 
 const MidiToFrequency = require("../components/MidiToFrequency.js")
 const Osc = require("../components/Osc")
-const Shape = require("../components/Shape.js")
+const Shape = require("../components/Shape")
 const Multiply = require("../components/Multiply.js")
 const Space = require("../patches/Space.js")
 const Divide = require("../components/Divide.js")

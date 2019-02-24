@@ -18,6 +18,7 @@ async function compilePatchList() {
       mod = require(relPaths[i])
     } catch(e) {
       console.warn("\t", localPaths[i], "contains errors")
+      continue
     }
 
     if(mod && mod.prototype && mod.prototype.isPatch) {
@@ -39,7 +40,6 @@ async function compilePatchList() {
   }
   let indexScript = 'module.exports = {\n'+ lines.join(',\n')+'\n}'
 
-  console.log(indexScript)
 
   await fs.writeFile(
     path.resolve(patchDirectory, "index.js"),

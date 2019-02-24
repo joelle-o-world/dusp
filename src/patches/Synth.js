@@ -1,4 +1,4 @@
-const Patch = require("./Patch.js")
+const Patch = require("../Patch.js")
 
 class Synth extends Patch {
   constructor() {

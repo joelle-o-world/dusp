@@ -1,7 +1,7 @@
 const Patch = require("../Patch.js")
 const Repeater = require("../components/Repeater.js")
 
-const Osc = require("../components/MultiChannelOsc")
+const Osc = require("../components/Osc/MultiChannelOsc")
 const SemitoneToRatio = require("../components/SemitoneToRatio.js")
 const Multiply = require("../components/Multiply.js")
 
