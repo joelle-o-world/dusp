@@ -20,5 +20,7 @@ function connectToWAA(outlet, destination) {
 
   let renderStream = new RenderStream(outlet, outlet.numberOfChannels)
   renderStream.pipe(writable)
+  
+  return renderStream
 }
 module.exports = connectToWAA
