@@ -19,13 +19,13 @@ window.onload = function() {
 
 function play(str) {
   if(nowPlayingRenderStream)
-    nowPlayingRenderStream.end()
+    nowPlayingRenderStream.stop()
   let unit = unDusp(str)
   if(!unit)
     throw "Some problem with the input"
 
   let outlet = unit.defaultOutlet
-  connectToWAA(outlet, ctx.destination)
+  nowPlayingRenderStream = connectToWAA(outlet, ctx.destination)
 }
 
 },{"../src/connectToWAA":123,"../src/unDusp":194}],2:[function(require,module,exports){
