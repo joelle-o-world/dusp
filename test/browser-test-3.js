@@ -1,6 +1,6 @@
 const Osc = require("../src/components/Osc")
 const Sum = require('../src/components/Sum')
-const connectToWAA = require("../src/connectToWAA.js")
+const connectToWAA = require("../src/webaudioapi/connectToWAA.js")
 
 let osc1 = new Osc(400)
 let osc2 = new Osc(600)

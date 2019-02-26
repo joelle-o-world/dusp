@@ -5528,7 +5528,7 @@ function duspString(str, index) {
 },{"./config.js":57}],60:[function(require,module,exports){
 const Osc = require("../src/components/Osc")
 const Sum = require('../src/components/Sum')
-const connectToWAA = require("../src/connectToWAA.js")
+const connectToWAA = require("../src/webaudioapi/connectToWAA.js")
 
 let osc1 = new Osc(400)
 let osc2 = new Osc(600)
@@ -5542,7 +5542,7 @@ window.onclick = function() {
   window.onclick = null
 }
 
-},{"../src/components/Osc":53,"../src/components/Sum":56,"../src/connectToWAA.js":58}],61:[function(require,module,exports){
+},{"../src/components/Osc":53,"../src/components/Sum":56,"../src/webaudioapi/connectToWAA.js":58}],61:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength

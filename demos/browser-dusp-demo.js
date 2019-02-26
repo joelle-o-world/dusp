@@ -1,5 +1,5 @@
 const unDusp = require('../src/unDusp')
-const connectToWAA = require("../src/connectToWAA")
+const connectToWAA = require("../src/webaudioapi/connectToWAA")
 
 const ctx = new AudioContext()
 window.AUDIOCTX = ctx
