@@ -1,6 +1,6 @@
 {
   "name": "dusp",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "A modular synthesiser for node and the browser",
   "main": "src/index.js",
   "repository": {

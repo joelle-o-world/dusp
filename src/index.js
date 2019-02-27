@@ -4,6 +4,7 @@ module.exports = {
   unDusp: require('./unDusp'),
   dusp: require('./dusp'),
   renderChannelData: require("./renderChannelData"),
+  renderAudioBuffer: require("./webaudioapi/renderAudioBuffer"),
   channelDataToAudioBuffer: require('./webaudioapi/channelDataToAudioBuffer'),
   connectToWAA: require("./webaudioapi/connectToWAA"),
 
