@@ -5,7 +5,7 @@ const channelDataToAudioBuffer = require("../src/webaudioapi/channelDataToAudioB
 const ctx = new AudioContext()
 window.AUDIOCTX = ctx
 
-let nowPlayingRenderStream = null
+let nowPlaying = null
 
 console.log(unDusp)
 
@@ -18,8 +18,8 @@ window.onload = function() {
 }
 
 async function play(str) {
-  if(nowPlayingRenderStream)
-    nowPlayingRenderStream.stop()
+  if(nowPlaying)
+    nowPlaying.stop()
   let outlet = unDusp(str)
   if(!outlet)
     throw "Some problem with the input"
@@ -30,10 +30,12 @@ async function play(str) {
 
   let bufferSource = new AudioBufferSourceNode(ctx, {
     buffer: audioBuffer,
+    loop: true,
   })
   bufferSource.connect(ctx.destination)
   bufferSource.start()
 
+  nowPlaying = bufferSource
 
   console.log(channelData)
   console.log(audioBuffer)

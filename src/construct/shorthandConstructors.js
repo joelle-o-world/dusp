@@ -31,6 +31,11 @@ module.exports = {
     return new components.Filter(null, freq)
   },
 
+  HP: function(freq) {
+    console.log('woo')
+    return new components.Filter(null, freq, "HP")
+  },
+
   AP: function(delaytime, feedback) {
     return new components.AllPass(delaytime, feedback)
   },
