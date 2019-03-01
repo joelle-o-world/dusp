@@ -5,16 +5,15 @@ const Repeater = require("../components/Repeater.js")
 const quick = require("../quick.js")
 
 class Worm extends Patch {
-  constructor(f=1, filterInterval=1) {
+  constructor(f=1) {
     super()
 
     this.addUnits(
-      this.fRepeater = new Repeater(),
-      this.noise = new Noise(this.fRepeater),
-      this.filter = new Filter(this.noise, quick.multiply(this.fRepeater, filterInterval))
+      this.noise = new Noise(),
+      this.filter = new Filter(this.noise, f)
     )
 
-    this.aliasInlet(this.fRepeater.IN, "f")
+    this.aliasInlet(this.filter.F)
     this.aliasOutlet(this.filter.OUT)
 
     this.F = f
