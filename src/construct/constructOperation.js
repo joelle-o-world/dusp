@@ -68,11 +68,17 @@ function constructOperation(o, index, destinations) {
       a.scheduleTrigger(b)
       return a
 
-    case "!":
+    case "!": // regular retrigger
       if(!a.stop || !a.trigger)
         throw "invalid use of '!' operator"
       a.trigger()
       new components.Retriggerer(a, b)
+      return a
+
+    case "~!": // SporadicRetriggerer
+      if(!a.stop || !a.trigger)
+        throw "invalide use of '!~' operator"
+      new components.SporadicRetriggerer(a, b)
       return a
 
     default:

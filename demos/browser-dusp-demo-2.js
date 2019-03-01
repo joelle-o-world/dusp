@@ -39,4 +39,13 @@ async function play(str) {
 
   console.log(channelData)
   console.log(audioBuffer)
+
+  getPeak(audioBuffer)
+}
+
+async function getPeak(audiobuffer) {
+  let channelData = audiobuffer.getChannelData()
+  for(var c in channelData) {
+    console.log(channelData[c])
+  }
 }

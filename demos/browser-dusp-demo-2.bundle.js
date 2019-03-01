@@ -40,9 +40,18 @@ async function play(str) {
 
   console.log(channelData)
   console.log(audioBuffer)
+
+  getPeak(audioBuffer)
 }
 
-},{"../src/renderChannelData":169,"../src/unDusp":170,"../src/webaudioapi/channelDataToAudioBuffer":171}],2:[function(require,module,exports){
+async function getPeak(audiobuffer) {
+  let channelData = audiobuffer.getChannelData()
+  for(var c in channelData) {
+    console.log(channelData[c])
+  }
+}
+
+},{"../src/renderChannelData":170,"../src/unDusp":171,"../src/webaudioapi/channelDataToAudioBuffer":172}],2:[function(require,module,exports){
 "use strict";
 
 // rawAsap provides everything we need except exception management.
@@ -2410,7 +2419,7 @@ class CircleBuffer {
 }
 module.exports = CircleBuffer
 
-},{"./config.js":98}],24:[function(require,module,exports){
+},{"./config.js":99}],24:[function(require,module,exports){
 const gcd = require("compute-gcd")
 const Promise = require("promise")
 
@@ -2663,7 +2672,7 @@ Event.prototype.run = function() {
     return null
 }
 
-},{"./config":98}],26:[function(require,module,exports){
+},{"./config":99}],26:[function(require,module,exports){
 const Piglet = require("./Piglet.js")
 const SignalChunk = require("./SignalChunk.js")
 
@@ -2980,7 +2989,7 @@ Piglet.prototype.__defineGetter__("circuit", function() {
   return this.unit.circuit
 })
 
-},{"./SignalChunk.js":30,"./config.js":98}],30:[function(require,module,exports){
+},{"./SignalChunk.js":30,"./config.js":99}],30:[function(require,module,exports){
 function SignalChunk(numberOfChannels, chunkSize) {
   this.numberOfChannels = numberOfChannels
   this.chunkSize = chunkSize
@@ -3298,7 +3307,7 @@ Unit.prototype.stop = function() {
     inputUnits[i].stop()
 }
 
-},{"./Circuit":24,"./Inlet.js":26,"./Outlet.js":27,"./UnitOrPatch.js":32,"./config.js":98}],32:[function(require,module,exports){
+},{"./Circuit":24,"./Inlet.js":26,"./Outlet.js":27,"./UnitOrPatch.js":32,"./config.js":99}],32:[function(require,module,exports){
 const Event = require("./Event.js")
 
 function UnitOrPatch() {
@@ -3483,7 +3492,7 @@ AHD.random = function(duration) {
   return new AHD(a, h, d)
 }
 
-},{"../Unit.js":31,"../config.js":98}],34:[function(require,module,exports){
+},{"../Unit.js":31,"../config.js":99}],34:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 function Abs(input) {
@@ -3836,7 +3845,7 @@ class Delay extends Unit {
 }
 module.exports = Delay
 
-},{"../Unit.js":31,"../config.js":98}],45:[function(require,module,exports){
+},{"../Unit.js":31,"../config.js":99}],45:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 function Divide(a, b) {
@@ -4275,7 +4284,7 @@ Multiply.prototype._tick = function(clock) {
   }
 }
 
-},{"../Unit.js":31,"../dusp":108}],58:[function(require,module,exports){
+},{"../Unit.js":31,"../dusp":109}],58:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 function Noise(f) {
@@ -4369,7 +4378,7 @@ MultiChannelOsc.prototype.randomPhaseFlip = function() {
       this.phase[i] += config.sampleRate/2
 }
 
-},{"../../Unit.js":31,"../../config.js":98,"./waveTables.js":62}],60:[function(require,module,exports){
+},{"../../Unit.js":31,"../../config.js":99,"./waveTables.js":62}],60:[function(require,module,exports){
 
 const Unit = require("../../Unit.js")
 const waveTables = require("./waveTables.js")
@@ -4483,7 +4492,7 @@ module.exports = {
   "8bit": eightBitTable,
 }
 
-},{"../../config.js":98}],63:[function(require,module,exports){
+},{"../../config.js":99}],63:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 function Pan(input, pan) {
@@ -4681,7 +4690,7 @@ ReadBackDelay.prototype._tick = function() {
   this.tBuffer = t1
 }
 
-},{"../Unit.js":31,"../config.js":98}],69:[function(require,module,exports){
+},{"../Unit.js":31,"../config.js":99}],69:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 function Repeater(val, measuredIn) {
@@ -4850,7 +4859,7 @@ SecondsToSamples.prototype._tick = function() {
   }
 }
 
-},{"../Unit.js":31,"../config.js":98}],74:[function(require,module,exports){
+},{"../Unit.js":31,"../config.js":99}],74:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 function SemitoneToRatio(midi) {
@@ -5038,7 +5047,7 @@ Shape.prototype.randomDecay = function(maxDuration) {
   this.MAX = 1
 }
 
-},{"../../Unit.js":31,"../../config.js":98,"../Divide.js":45,"./shapeTables.js":76}],76:[function(require,module,exports){
+},{"../../Unit.js":31,"../../config.js":99,"../Divide.js":45,"./shapeTables.js":76}],76:[function(require,module,exports){
 const config = require("../../config.js")
 
 function makeTable(func, name) {
@@ -5078,7 +5087,7 @@ module.exports = {
   )
 }
 
-},{"../../config.js":98}],77:[function(require,module,exports){
+},{"../../config.js":99}],77:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 function SignalCombiner(a, b) {
@@ -5115,6 +5124,38 @@ SignalCombiner.prototype.collapseB = function() {
 
 },{"../Unit.js":31}],78:[function(require,module,exports){
 const Unit = require("../Unit.js")
+
+class SporadicRetriggerer extends Unit {
+  constructor(target, rate) {
+    super()
+    this.addInlet("rate", {mono:true, type:"frequency"})
+    if(target)
+      this.target = target
+    this.RATE = rate || 1
+  }
+
+  _tick() {
+    if(this._target && this._target.trigger)
+      if(Math.random() < this.rate[0] * this.tickInterval / this.sampleRate)
+        this._target.trigger()
+  }
+
+  get target() {
+    return this._target
+  }
+  set target(target) {
+    if(this._target)
+      this.unChain(target)
+    if(target) {
+      this._target = target
+      this.chainBefore(target)
+    }
+  }
+}
+module.exports = SporadicRetriggerer
+
+},{"../Unit.js":31}],79:[function(require,module,exports){
+const Unit = require("../Unit.js")
 const config = require("../config.js")
 
 function Subtract(A, B) {
@@ -5144,7 +5185,7 @@ Subtract.prototype._tick = function() {
   }
 }
 
-},{"../Unit.js":31,"../config.js":98}],79:[function(require,module,exports){
+},{"../Unit.js":31,"../config.js":99}],80:[function(require,module,exports){
 const SignalCombiner = require("./SignalCombiner.js")
 const config = require("../config.js")
 const dusp = require("../dusp")
@@ -5190,7 +5231,7 @@ Sum.prototype._tick = function() {
   }
 }
 
-},{"../config.js":98,"../dusp":108,"./SignalCombiner.js":77}],80:[function(require,module,exports){
+},{"../config.js":99,"../dusp":109,"./SignalCombiner.js":77}],81:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 /*class Timer extends Unit {
@@ -5238,7 +5279,7 @@ Timer.prototype.trigger = function() {
   this.t = 0
 }
 
-},{"../Unit.js":31}],81:[function(require,module,exports){
+},{"../Unit.js":31}],82:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 // Does a pythagorus across channels
@@ -5268,7 +5309,7 @@ VectorMagnitude.prototype._tick = function() {
   }
 }
 
-},{"../Unit.js":31}],82:[function(require,module,exports){
+},{"../Unit.js":31}],83:[function(require,module,exports){
 module.exports = {
 	AHD: require("./AHD.js"),
 	Abs: require("./Abs.js"),
@@ -5312,6 +5353,7 @@ module.exports = {
 	SemitoneToRatio: require("./SemitoneToRatio.js"),
 	Shape: require("./Shape/index.js"),
 	SignalCombiner: require("./SignalCombiner.js"),
+	SporadicRetriggerer: require("./SporadicRetrigger.js"),
 	Subtract: require("./Subtract.js"),
 	Sum: require("./Sum.js"),
 	Timer: require("./Timer.js"),
@@ -5332,7 +5374,7 @@ module.exports = {
 	CircularMotion: require("./vector/CircularMotion.js"),
 	LinearMotion: require("./vector/LinearMotion.js")
 }
-},{"./AHD.js":33,"./Abs.js":34,"./AllPass.js":35,"./CircleBufferNode.js":36,"./CircleBufferReader.js":37,"./CircleBufferWriter.js":38,"./Clip.js":39,"./CombFilter.js":40,"./ConcatChannels.js":41,"./CrossFader.js":42,"./DecibelToScaler.js":43,"./Delay.js":44,"./Divide.js":45,"./Filter.js":46,"./FixedDelay.js":47,"./FixedMultiply.js":48,"./Gain.js":49,"./GreaterThan.js":50,"./HardClipAbove.js":51,"./HardClipBelow.js":52,"./LessThan.js":53,"./MidiToFrequency.js":54,"./Monitor.js":55,"./MonoDelay.js":56,"./Multiply.js":57,"./Noise.js":58,"./Osc/MultiChannelOsc.js":59,"./Osc/Osc.js":60,"./Pan.js":63,"./PickChannel.js":64,"./PolarityInvert.js":65,"./Pow.js":66,"./Ramp.js":67,"./ReadBackDelay.js":68,"./Repeater.js":69,"./Rescale.js":70,"./Retriggerer.js":71,"./SampleRateRedux.js":72,"./SecondsToSamples.js":73,"./SemitoneToRatio.js":74,"./Shape/index.js":75,"./SignalCombiner.js":77,"./Subtract.js":78,"./Sum.js":79,"./Timer.js":80,"./VectorMagnitude.js":81,"./spectral/Augment.js":83,"./spectral/BinShift.js":84,"./spectral/FFT.js":85,"./spectral/HardHighPass.js":86,"./spectral/HardLowPass.js":87,"./spectral/Hopper.js":88,"./spectral/IFFT.js":89,"./spectral/ReChunk.js":90,"./spectral/SpectralGate.js":91,"./spectral/SpectralSum.js":92,"./spectral/SpectralUnit.js":93,"./spectral/UnHopper.js":94,"./spectral/Windower.js":95,"./vector/CircularMotion.js":96,"./vector/LinearMotion.js":97}],83:[function(require,module,exports){
+},{"./AHD.js":33,"./Abs.js":34,"./AllPass.js":35,"./CircleBufferNode.js":36,"./CircleBufferReader.js":37,"./CircleBufferWriter.js":38,"./Clip.js":39,"./CombFilter.js":40,"./ConcatChannels.js":41,"./CrossFader.js":42,"./DecibelToScaler.js":43,"./Delay.js":44,"./Divide.js":45,"./Filter.js":46,"./FixedDelay.js":47,"./FixedMultiply.js":48,"./Gain.js":49,"./GreaterThan.js":50,"./HardClipAbove.js":51,"./HardClipBelow.js":52,"./LessThan.js":53,"./MidiToFrequency.js":54,"./Monitor.js":55,"./MonoDelay.js":56,"./Multiply.js":57,"./Noise.js":58,"./Osc/MultiChannelOsc.js":59,"./Osc/Osc.js":60,"./Pan.js":63,"./PickChannel.js":64,"./PolarityInvert.js":65,"./Pow.js":66,"./Ramp.js":67,"./ReadBackDelay.js":68,"./Repeater.js":69,"./Rescale.js":70,"./Retriggerer.js":71,"./SampleRateRedux.js":72,"./SecondsToSamples.js":73,"./SemitoneToRatio.js":74,"./Shape/index.js":75,"./SignalCombiner.js":77,"./SporadicRetrigger.js":78,"./Subtract.js":79,"./Sum.js":80,"./Timer.js":81,"./VectorMagnitude.js":82,"./spectral/Augment.js":84,"./spectral/BinShift.js":85,"./spectral/FFT.js":86,"./spectral/HardHighPass.js":87,"./spectral/HardLowPass.js":88,"./spectral/Hopper.js":89,"./spectral/IFFT.js":90,"./spectral/ReChunk.js":91,"./spectral/SpectralGate.js":92,"./spectral/SpectralSum.js":93,"./spectral/SpectralUnit.js":94,"./spectral/UnHopper.js":95,"./spectral/Windower.js":96,"./vector/CircularMotion.js":97,"./vector/LinearMotion.js":98}],84:[function(require,module,exports){
 const SpectralUnit = require("./SpectralUnit.js")
 
 class Augment extends SpectralUnit {
@@ -5363,7 +5405,7 @@ class Augment extends SpectralUnit {
 }
 module.exports = Augment
 
-},{"./SpectralUnit.js":93}],84:[function(require,module,exports){
+},{"./SpectralUnit.js":94}],85:[function(require,module,exports){
 const SpectralUnit = require("./SpectralUnit.js")
 
 class BinShift extends SpectralUnit {
@@ -5393,7 +5435,7 @@ class BinShift extends SpectralUnit {
 }
 module.exports = BinShift
 
-},{"./SpectralUnit.js":93}],85:[function(require,module,exports){
+},{"./SpectralUnit.js":94}],86:[function(require,module,exports){
 const Unit = require("../../Unit.js")
 const FFTjs = require("fft.js")
 
@@ -5422,7 +5464,7 @@ class FFT extends Unit {
 }
 module.exports = FFT
 
-},{"../../Unit.js":31,"fft.js":8}],86:[function(require,module,exports){
+},{"../../Unit.js":31,"fft.js":8}],87:[function(require,module,exports){
 /*
   Spectrally implemented high pass filter.
 */
@@ -5457,7 +5499,7 @@ class HardHighPass extends SpectralUnit {
 }
 module.exports = HardHighPass
 
-},{"./SpectralUnit.js":93}],87:[function(require,module,exports){
+},{"./SpectralUnit.js":94}],88:[function(require,module,exports){
 /*
   Spectrally implemented low pass filter.
 */
@@ -5492,7 +5534,7 @@ class HardLowPass extends SpectralUnit {
 }
 module.exports = HardLowPass
 
-},{"./SpectralUnit.js":93}],88:[function(require,module,exports){
+},{"./SpectralUnit.js":94}],89:[function(require,module,exports){
 const Unit = require("../../Unit.js")
 const gcd = require("compute-gcd")
 
@@ -5533,7 +5575,7 @@ class Hopper extends Unit {
 }
 module.exports = Hopper
 
-},{"../../Unit.js":31,"compute-gcd":6}],89:[function(require,module,exports){
+},{"../../Unit.js":31,"compute-gcd":6}],90:[function(require,module,exports){
 const Unit = require("../../Unit.js")
 const FFTjs = require("fft.js")
 
@@ -5570,7 +5612,7 @@ class IFFT extends Unit {
 }
 module.exports = IFFT
 
-},{"../../Unit.js":31,"fft.js":8}],90:[function(require,module,exports){
+},{"../../Unit.js":31,"fft.js":8}],91:[function(require,module,exports){
 const Unit = require("../../Unit.js")
 const gcd = require("compute-gcd")
 const lcm = require("compute-lcm")
@@ -5624,7 +5666,7 @@ class ReChunk extends Unit {
 }
 module.exports = ReChunk
 
-},{"../../Unit.js":31,"compute-gcd":6,"compute-lcm":7}],91:[function(require,module,exports){
+},{"../../Unit.js":31,"compute-gcd":6,"compute-lcm":7}],92:[function(require,module,exports){
 const SpectralUnit = require("./SpectralUnit.js")
 
 class SpectralGate extends SpectralUnit {
@@ -5660,7 +5702,7 @@ class SpectralGate extends SpectralUnit {
 }
 module.exports = SpectralGate
 
-},{"./SpectralUnit.js":93}],92:[function(require,module,exports){
+},{"./SpectralUnit.js":94}],93:[function(require,module,exports){
 const SpectralUnit = require("./SpectralUnit.js")
 
 class SpectralSum extends SpectralUnit {
@@ -5688,7 +5730,7 @@ class SpectralSum extends SpectralUnit {
 }
 module.exports = SpectralSum
 
-},{"./SpectralUnit.js":93}],93:[function(require,module,exports){
+},{"./SpectralUnit.js":94}],94:[function(require,module,exports){
 /*
   A base class for unit which process spectral data.
 */
@@ -5724,7 +5766,7 @@ class SpectralUnit extends Unit {
 SpectralUnit.prototype.isSpectralUnit = true
 module.exports = SpectralUnit
 
-},{"../../Unit.js":31,"../../config":98}],94:[function(require,module,exports){
+},{"../../Unit.js":31,"../../config":99}],95:[function(require,module,exports){
 const Unit = require("../../Unit.js")
 
 class UnHopper extends Unit {
@@ -5772,7 +5814,7 @@ class UnHopper extends Unit {
 }
 module.exports = UnHopper
 
-},{"../../Unit.js":31}],95:[function(require,module,exports){
+},{"../../Unit.js":31}],96:[function(require,module,exports){
 const Unit = require("../../Unit.js")
 
 class Windower extends Unit {
@@ -5823,7 +5865,7 @@ function getEnvelope(size, type) {
 }
 Windower.getEnvelope = getEnvelope
 
-},{"../../Unit.js":31}],96:[function(require,module,exports){
+},{"../../Unit.js":31}],97:[function(require,module,exports){
 const Unit = require("../../Unit.js")
 const config = require('../../config.js')
 
@@ -5866,7 +5908,7 @@ CircularMotion.random = function(fMax, rMax, oMax) {
   return circ
 }
 
-},{"../../Unit.js":31,"../../config.js":98}],97:[function(require,module,exports){
+},{"../../Unit.js":31,"../../config.js":99}],98:[function(require,module,exports){
 const Unit = require("../../Unit.js")
 const config = require("../../config.js")
 
@@ -5926,7 +5968,7 @@ LinearMotion.prototype._tick = function() {
   }
 }
 
-},{"../../Unit.js":31,"../../config.js":98}],98:[function(require,module,exports){
+},{"../../Unit.js":31,"../../config.js":99}],99:[function(require,module,exports){
 (function (process){
 const argv = require("minimist")(process.argv.slice(2))
 
@@ -5952,7 +5994,7 @@ localConfig.sampleInterval = 1/module.exports.sampleRate
 module.exports = localConfig
 
 }).call(this,require('_process'))
-},{"_process":172,"minimist":9}],99:[function(require,module,exports){
+},{"_process":173,"minimist":9}],100:[function(require,module,exports){
 function constructExpression(o, index, destinations) {
   if(o.constructor == String)
     o = parseExpression(o, index)
@@ -6001,7 +6043,7 @@ const constructObjectProperty = require("./constructObjectProperty")
 const constructShorthand = require("./constructShorthand")
 const constructString = require("./constructString")
 
-},{"../parseDSP/getExpression.js":115,"./constructNumber":100,"./constructObject":101,"./constructObjectProperty":102,"./constructObjectReference":103,"./constructOperation":104,"./constructShorthand":105,"./constructString":106}],100:[function(require,module,exports){
+},{"../parseDSP/getExpression.js":116,"./constructNumber":101,"./constructObject":102,"./constructObjectProperty":103,"./constructObjectReference":104,"./constructOperation":105,"./constructShorthand":106,"./constructString":107}],101:[function(require,module,exports){
 function constructNumber(o) {
   if(o.constructor == String)
     o = parseNumber(o)
@@ -6015,7 +6057,7 @@ function constructNumber(o) {
 module.exports = constructNumber
 const parseNumber = require("../parseDSP/getNumber.js")
 
-},{"../parseDSP/getNumber.js":125}],101:[function(require,module,exports){
+},{"../parseDSP/getNumber.js":126}],102:[function(require,module,exports){
 
 
 function constructObject(o, index) {
@@ -6074,7 +6116,7 @@ const parseObject = require("../parseDSP/getObject.js")
 const components = require("../patchesAndComponents")
 const constructExpression = require("./constructExpression")
 
-},{"../parseDSP/getObject.js":126,"../patchesAndComponents":167,"./constructExpression":99}],102:[function(require,module,exports){
+},{"../parseDSP/getObject.js":127,"../patchesAndComponents":168,"./constructExpression":100}],103:[function(require,module,exports){
 function constructObjectProperty(o, index) {
   var obj = constructExpression(o.object, index)
   return obj[o.property]
@@ -6083,7 +6125,7 @@ function constructObjectProperty(o, index) {
 module.exports = constructObjectProperty
 const constructExpression = require("./constructExpression")
 
-},{"./constructExpression":99}],103:[function(require,module,exports){
+},{"./constructExpression":100}],104:[function(require,module,exports){
 function constructObjectReference(o, index) {
   if(o.constructor == String)
     o = parseObjectReference(o)
@@ -6097,7 +6139,7 @@ module.exports = constructObjectReference
 
 const parseObjectReference = require("../parseDSP/getObjectReference.js")
 
-},{"../parseDSP/getObjectReference.js":128}],104:[function(require,module,exports){
+},{"../parseDSP/getObjectReference.js":129}],105:[function(require,module,exports){
 function constructOperation(o, index, destinations) {
   if(!o.a || !o.b || !o.operator)
     throw "could not construct operation"
@@ -6168,11 +6210,17 @@ function constructOperation(o, index, destinations) {
       a.scheduleTrigger(b)
       return a
 
-    case "!":
+    case "!": // regular retrigger
       if(!a.stop || !a.trigger)
         throw "invalid use of '!' operator"
       a.trigger()
       new components.Retriggerer(a, b)
+      return a
+
+    case "~!": // SporadicRetriggerer
+      if(!a.stop || !a.trigger)
+        throw "invalide use of '!~' operator"
+      new components.SporadicRetriggerer(a, b)
       return a
 
     default:
@@ -6186,7 +6234,7 @@ const constructExpression = require("./constructExpression")
 const components = require("../components")
 const Repeater = require("../components/Repeater.js")
 
-},{"../components":82,"../components/Repeater.js":69,"../quick":168,"./constructExpression":99}],105:[function(require,module,exports){
+},{"../components":83,"../components/Repeater.js":69,"../quick":169,"./constructExpression":100}],106:[function(require,module,exports){
 function constructShorthand(o, index) {
   if(o.constructor == String)
     o = parseShorthand(o)
@@ -6211,7 +6259,7 @@ const parseShorthand = require("../parseDSP/getShorthand.js")
 const constructNumber = require("./constructNumber")
 const shorthandConstructors = require("./shorthandConstructors")
 
-},{"../parseDSP/getShorthand.js":131,"../patchesAndComponents":167,"./constructNumber":100,"./shorthandConstructors":107}],106:[function(require,module,exports){
+},{"../parseDSP/getShorthand.js":132,"../patchesAndComponents":168,"./constructNumber":101,"./shorthandConstructors":108}],107:[function(require,module,exports){
 function constructString(o, index) {
   if(o.constructor == String)
     o = parseString(o)
@@ -6227,7 +6275,7 @@ function constructString(o, index) {
 module.exports = constructString
 const parseString = require("../parseDSP/getString.js")
 
-},{"../parseDSP/getString.js":133}],107:[function(require,module,exports){
+},{"../parseDSP/getString.js":134}],108:[function(require,module,exports){
 const components = require("../components")
 
 module.exports = {
@@ -6275,7 +6323,7 @@ module.exports = {
   },
 }
 
-},{"../components":82}],108:[function(require,module,exports){
+},{"../components":83}],109:[function(require,module,exports){
 // reduce things to dusp
 const config = require("./config.js")
 
@@ -6397,7 +6445,7 @@ function duspString(str, index) {
   return "\"" + str + "\""
 }
 
-},{"./config.js":98}],109:[function(require,module,exports){
+},{"./config.js":99}],110:[function(require,module,exports){
 module.exports = {
   operators: [
     "->", // connect
@@ -6408,6 +6456,7 @@ module.exports = {
     "@",
     "+",
     "-",
+    "~!",
     "!",
     ",", // concat
     "->", // connect
@@ -6428,7 +6477,7 @@ const components = require("../patchesAndComponents")
 for(var constr in components)
   module.exports.shorthandConstructors.push(constr)
 
-},{"../patchesAndComponents":167}],110:[function(require,module,exports){
+},{"../patchesAndComponents":168}],111:[function(require,module,exports){
 const whitespaceRegex = /\s/
 function countWhitespace(str, i0) {
   i0 = i0 || 0
@@ -6441,7 +6490,7 @@ function countWhitespace(str, i0) {
 }
 module.exports = countWhitespace
 
-},{}],111:[function(require,module,exports){
+},{}],112:[function(require,module,exports){
 function findCoordinate(str, point) {
   var col = 0
   var row = 0
@@ -6457,7 +6506,7 @@ function findCoordinate(str, point) {
 }
 module.exports = findCoordinate
 
-},{}],112:[function(require,module,exports){
+},{}],113:[function(require,module,exports){
 function getArgument(str, i0) {
   var id = getObjectReference(str, i0)
   if(id) return id
@@ -6491,7 +6540,7 @@ const getAttribute = require("./getAttribute")
 const getWord = require("./getWord.js")
 const getExpression = require("./getExpression")
 
-},{"./getAttribute":113,"./getExpression":115,"./getObjectReference.js":128,"./getWord.js":134}],113:[function(require,module,exports){
+},{"./getAttribute":114,"./getExpression":116,"./getObjectReference.js":129,"./getWord.js":135}],114:[function(require,module,exports){
 const getWord = require("./getWord.js")
 const countWhitespace = require("./countWhitespace")
 
@@ -6525,7 +6574,7 @@ module.exports = getAttribute
 
 const getExpression = require("./getExpression.js")
 
-},{"./countWhitespace":110,"./getExpression.js":115,"./getWord.js":134}],114:[function(require,module,exports){
+},{"./countWhitespace":111,"./getExpression.js":116,"./getWord.js":135}],115:[function(require,module,exports){
 const skipWhitespace = require("./skipWhitespace")
 const getWord = require("./getWord")
 
@@ -6545,7 +6594,7 @@ function getDotProperty(str, i0) {
 }
 module.exports = getDotProperty
 
-},{"./getWord":134,"./skipWhitespace":136}],115:[function(require,module,exports){
+},{"./getWord":135,"./skipWhitespace":137}],116:[function(require,module,exports){
 function getExpression(str, i0) {
   i0 = i0 || 0
 
@@ -6658,9 +6707,9 @@ const getShorthand = require("./getShorthand")
 const getString = require("./getString")
 const getJSON = require("./getJSON")
 
-},{"./getJSON":123,"./getNumber.js":125,"./getObjectOrObjectProperty":127,"./getObjectReference.js":128,"./getOperatorOperand":130,"./getShorthand":131,"./getString":133,"./skipWhitespace":136}],116:[function(require,module,exports){
-arguments[4][111][0].apply(exports,arguments)
-},{"dup":111}],117:[function(require,module,exports){
+},{"./getJSON":124,"./getNumber.js":126,"./getObjectOrObjectProperty":128,"./getObjectReference.js":129,"./getOperatorOperand":131,"./getShorthand":132,"./getString":134,"./skipWhitespace":137}],117:[function(require,module,exports){
+arguments[4][112][0].apply(exports,arguments)
+},{"dup":112}],118:[function(require,module,exports){
 function getArray(str, i0=0) {
   if(str[i0] != "[")
     return null
@@ -6702,7 +6751,7 @@ module.exports = getArray
 const skipWhitespace = require("./skipWhitespace")
 const getJSON = require("./index.js")
 
-},{"./index.js":123,"./skipWhitespace":124}],118:[function(require,module,exports){
+},{"./index.js":124,"./skipWhitespace":125}],119:[function(require,module,exports){
 const numberRegex = /[0-9.\-]/
 
 function getNumber(str, startIndex=0) {
@@ -6735,7 +6784,7 @@ function getNumber(str, startIndex=0) {
 module.exports = getNumber
 const findCoordinate = require("./findCoordinate")
 
-},{"./findCoordinate":116}],119:[function(require,module,exports){
+},{"./findCoordinate":117}],120:[function(require,module,exports){
 function getObject(str, i0=0) {
   if(str[i0] != "{")
     return null
@@ -6776,7 +6825,7 @@ module.exports = getObject
 const getProperty = require("./getProperty")
 const skipWhitespace = require("./skipWhitespace.js")
 
-},{"./getProperty":120,"./skipWhitespace.js":124}],120:[function(require,module,exports){
+},{"./getProperty":121,"./skipWhitespace.js":125}],121:[function(require,module,exports){
 function getProperty(str, i0=0) {
   var name = getWord(str, i0) || getString(str, i0) || getNumber(str, i0)
   if(!name)
@@ -6816,7 +6865,7 @@ const getJSON = require("./index.js")
 const skipWhitespace = require("./skipWhitespace")
 const getNumber = require("./getNumber")
 
-},{"./getNumber":118,"./getString":121,"./getWord.js":122,"./index.js":123,"./skipWhitespace":124}],121:[function(require,module,exports){
+},{"./getNumber":119,"./getString":122,"./getWord.js":123,"./index.js":124,"./skipWhitespace":125}],122:[function(require,module,exports){
 function getString(str, i0=0) {
 
   if(str[i0] == "\"")
@@ -6842,7 +6891,7 @@ function getString(str, i0=0) {
 
 module.exports = getString
 
-},{}],122:[function(require,module,exports){
+},{}],123:[function(require,module,exports){
 
 const findCoordinate = require("./findCoordinate")
 const wordRegex = /[a-zA-Z_]/
@@ -6867,7 +6916,7 @@ function getWord(str, startIndex) {
 }
 module.exports = getWord
 
-},{"./findCoordinate":116}],123:[function(require,module,exports){
+},{"./findCoordinate":117}],124:[function(require,module,exports){
 function getJSON(str, i0=0) {
   var string = getString(str, i0)
   if(string)
@@ -6903,7 +6952,7 @@ const getNumber = require("./getNumber")
 const getArray = require("./getArray")
 const getObject = require("./getObject")
 
-},{"./getArray":117,"./getNumber":118,"./getObject":119,"./getString":121}],124:[function(require,module,exports){
+},{"./getArray":118,"./getNumber":119,"./getObject":120,"./getString":122}],125:[function(require,module,exports){
 const whitespaceRegex = /\s/
 function skipWhitespace(str, i0) {
   i0 = i0 || 0
@@ -6917,7 +6966,7 @@ function skipWhitespace(str, i0) {
 }
 module.exports = skipWhitespace
 
-},{}],125:[function(require,module,exports){
+},{}],126:[function(require,module,exports){
 const numberRegex = /[0-9.\-]/
 
 function getNumber(str, startIndex) {
@@ -6938,7 +6987,7 @@ function getNumber(str, startIndex) {
 }
 module.exports = getNumber
 
-},{}],126:[function(require,module,exports){
+},{}],127:[function(require,module,exports){
 function getObject(str, i0) {
   i0 = i0 || 0
   if(str[i0] != "[")
@@ -7011,7 +7060,7 @@ const getWord = require("./getWord")
 const getArgument = require("./getArgument")
 const countWhitespace = require("./countWhitespace")
 
-},{"./countWhitespace":110,"./getArgument":112,"./getWord":134,"./skipWhitespace.js":136}],127:[function(require,module,exports){
+},{"./countWhitespace":111,"./getArgument":113,"./getWord":135,"./skipWhitespace.js":137}],128:[function(require,module,exports){
 function getObjectOrObjectProperty(str, i0) {
   i0 = i0 || 0
   var object = getObject(str, i0)
@@ -7041,7 +7090,7 @@ const getDotProperty = require("./getDotProperty")
 const getObjectReference = require("./getObjectReference")
 const getShorthand = require("./getShorthand")
 
-},{"./getDotProperty":114,"./getObject":126,"./getObjectReference":128,"./getShorthand":131}],128:[function(require,module,exports){
+},{"./getDotProperty":115,"./getObject":127,"./getObjectReference":129,"./getShorthand":132}],129:[function(require,module,exports){
 const getWordWithDigits = require("./getWordWithDigits.js")
 
 function getObjectReference(str, startIndex) {
@@ -7062,7 +7111,7 @@ function getObjectReference(str, startIndex) {
 }
 module.exports = getObjectReference
 
-},{"./getWordWithDigits.js":135}],129:[function(require,module,exports){
+},{"./getWordWithDigits.js":136}],130:[function(require,module,exports){
 function getOperator(str, i0=0) {
   var winner = ""
   for(var i in operators) {
@@ -7070,9 +7119,10 @@ function getOperator(str, i0=0) {
     if(operator && operator.length > winner.length)
       winner = operator
   }
-  if(winner.length)
+  if(winner.length) {
+    console.log("Got operator:", winner)
     return winner
-  else
+  } else
     return null
 }
 
@@ -7080,7 +7130,7 @@ module.exports = getOperator
 const {operators} = require("./config")
 const getSpecific = require("./getSpecific")
 
-},{"./config":109,"./getSpecific":132}],130:[function(require,module,exports){
+},{"./config":110,"./getSpecific":133}],131:[function(require,module,exports){
 function getOperatorOperand(str, i0) {
   i0 = i0 || 0
 
@@ -7111,7 +7161,7 @@ const skipWhitespace = require("./skipWhitespace.js")
 const config = require("./config")
 const getOperator = require("./getOperator")
 
-},{"./config":109,"./getExpression.js":115,"./getOperator":129,"./skipWhitespace.js":136}],131:[function(require,module,exports){
+},{"./config":110,"./getExpression.js":116,"./getOperator":130,"./skipWhitespace.js":137}],132:[function(require,module,exports){
 function getShorthand(str, i0) {
   i0 = i0 || 0
   var constr = getWord(str, i0)
@@ -7151,7 +7201,7 @@ const getWord = require("./getWord")
 const getNumber = require("./getNumber")
 const config = require("./config")
 
-},{"./config":109,"./getNumber":125,"./getWord":134}],132:[function(require,module,exports){
+},{"./config":110,"./getNumber":126,"./getWord":135}],133:[function(require,module,exports){
 function getSpecific(searchStr, str, i0) {
   i0 = i0 || 0
   for(var i=0; i<searchStr.length; i++)
@@ -7162,7 +7212,7 @@ function getSpecific(searchStr, str, i0) {
 }
 module.exports = getSpecific
 
-},{}],133:[function(require,module,exports){
+},{}],134:[function(require,module,exports){
 function getString(str, i0) {
   i0 = i0 || 0
 
@@ -7189,9 +7239,9 @@ function getString(str, i0) {
 
 module.exports = getString
 
-},{}],134:[function(require,module,exports){
-arguments[4][122][0].apply(exports,arguments)
-},{"./findCoordinate":111,"dup":122}],135:[function(require,module,exports){
+},{}],135:[function(require,module,exports){
+arguments[4][123][0].apply(exports,arguments)
+},{"./findCoordinate":112,"dup":123}],136:[function(require,module,exports){
 
 const wordRegex = /[a-zA-Z0-9_]/
 
@@ -7209,9 +7259,9 @@ function getWordWithDigits(str, startIndex) {
 }
 module.exports = getWordWithDigits
 
-},{}],136:[function(require,module,exports){
-arguments[4][124][0].apply(exports,arguments)
-},{"dup":124}],137:[function(require,module,exports){
+},{}],137:[function(require,module,exports){
+arguments[4][125][0].apply(exports,arguments)
+},{"dup":125}],138:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const AllPass = require("../components/AllPass.js")
 
@@ -7245,7 +7295,7 @@ class APStack extends Patch {
 }
 module.exports = APStack
 
-},{"../Patch.js":28,"../components/AllPass.js":35}],138:[function(require,module,exports){
+},{"../Patch.js":28,"../components/AllPass.js":35}],139:[function(require,module,exports){
 const Patch = require("../Patch")
 const AttenuationMatrix = require("./AttenuationMatrix.js")
 const AllPass = require("../components/AllPass.js")
@@ -7271,7 +7321,7 @@ class APWeb extends Patch {
 }
 module.exports = APWeb
 
-},{"../Patch":28,"../components/AllPass.js":35,"./AttenuationMatrix.js":139}],139:[function(require,module,exports){
+},{"../Patch":28,"../components/AllPass.js":35,"./AttenuationMatrix.js":140}],140:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const Mixer = require("./Mixer.js")
 
@@ -7314,7 +7364,7 @@ class AttenuationMatrix extends Patch {
 }
 module.exports = AttenuationMatrix
 
-},{"../Patch.js":28,"./Mixer.js":151}],140:[function(require,module,exports){
+},{"../Patch.js":28,"./Mixer.js":152}],141:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const Filter = require("../components/Filter.js")
 
@@ -7337,7 +7387,7 @@ class BandFilter extends Patch {
 }
 module.exports = BandFilter
 
-},{"../Patch.js":28,"../components/Filter.js":46}],141:[function(require,module,exports){
+},{"../Patch.js":28,"../components/Filter.js":46}],142:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const Shape = require("../components/Shape")
 const Osc = require("../components/Osc")
@@ -7368,7 +7418,7 @@ class Boop extends Patch {
 }
 module.exports = Boop
 
-},{"../Patch.js":28,"../components/Multiply.js":57,"../components/Osc":61,"../components/Shape":75}],142:[function(require,module,exports){
+},{"../Patch.js":28,"../components/Multiply.js":57,"../components/Osc":61,"../components/Shape":75}],143:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const CircularMotion = require("../components/vector/CircularMotion.js")
 const Multiply = require("../components/Multiply.js")
@@ -7451,7 +7501,7 @@ ComplexOrbit.random = function(n, fMax, rMax, oMax) {
   return new ComplexOrbit( frequencyRatios, radiusRatios, centre)
 }
 
-},{"../Patch.js":28,"../components/Multiply.js":57,"../components/Repeater.js":69,"../components/vector/CircularMotion.js":96}],143:[function(require,module,exports){
+},{"../Patch.js":28,"../components/Multiply.js":57,"../components/Repeater.js":69,"../components/vector/CircularMotion.js":97}],144:[function(require,module,exports){
 const Patch = require("../Patch")
 const CircleBuffer = require("../CircleBuffer.js")
 const CircleBufferReader = require("../components/CircleBufferReader.js")
@@ -7489,7 +7539,7 @@ class DelayMixer extends Patch {
 }
 module.exports = DelayMixer
 
-},{"../CircleBuffer.js":23,"../Patch":28,"../components/CircleBufferReader.js":37,"../components/CircleBufferWriter.js":38,"../quick.js":168}],144:[function(require,module,exports){
+},{"../CircleBuffer.js":23,"../Patch":28,"../components/CircleBufferReader.js":37,"../components/CircleBufferWriter.js":38,"../quick.js":169}],145:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const Repeater = require("../components/Repeater.js")
 
@@ -7549,7 +7599,7 @@ FMOsc.prototype.resetPhase = function() {
   this.osc.resetPhase()
 }
 
-},{"../Patch.js":28,"../components/Multiply.js":57,"../components/Osc/MultiChannelOsc":59,"../components/Repeater.js":69,"../components/SemitoneToRatio.js":74}],145:[function(require,module,exports){
+},{"../Patch.js":28,"../components/Multiply.js":57,"../components/Osc/MultiChannelOsc":59,"../components/Repeater.js":69,"../components/SemitoneToRatio.js":74}],146:[function(require,module,exports){
 
 const Synth = require("./Synth.js")
 const unDusp = require("../unDusp")
@@ -7741,7 +7791,7 @@ class FMSynth extends Synth {
 }
 module.exports = FMSynth
 
-},{"../components/Shape":75,"../dusp":108,"../patches/FMOsc":144,"../quick.js":168,"../unDusp":170,"./FrequencyGroup.js":146,"./Mixer.js":151,"./StereoDetune.js":161,"./Synth.js":163,"./Worm.js":165}],146:[function(require,module,exports){
+},{"../components/Shape":75,"../dusp":109,"../patches/FMOsc":145,"../quick.js":169,"../unDusp":171,"./FrequencyGroup.js":147,"./Mixer.js":152,"./StereoDetune.js":162,"./Synth.js":164,"./Worm.js":166}],147:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const Repeater = require("../components/Repeater.js")
 const quick = require("../quick.js")
@@ -7785,7 +7835,7 @@ FrequencyGroup.prototype.addRandomHarmonics = function(n, maxNum, maxDenom) {
   return harmonicsAdded
 }
 
-},{"../Patch.js":28,"../components/Repeater.js":69,"../quick.js":168}],147:[function(require,module,exports){
+},{"../Patch.js":28,"../components/Repeater.js":69,"../quick.js":169}],148:[function(require,module,exports){
 /*
   A spectrally implemented band pass filter with sqaure attenuation curves.
 */
@@ -7821,7 +7871,7 @@ class HardBandPass extends Patch {
 }
 module.exports = HardBandPass
 
-},{"../Patch.js":28,"../components/spectral/HardHighPass.js":86,"../components/spectral/HardLowPass.js":87}],148:[function(require,module,exports){
+},{"../Patch.js":28,"../components/spectral/HardHighPass.js":87,"../components/spectral/HardLowPass.js":88}],149:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const Osc = require("../components/Osc")
 const Multiply = require("../components/Multiply.js")
@@ -7880,7 +7930,7 @@ LFO.prototype.__defineSetter__("waveform", function(waveform) {
   this.osc.waveform = waveform
 })
 
-},{"../Patch.js":28,"../components/Multiply.js":57,"../components/Osc":61,"../components/Sum.js":79}],149:[function(require,module,exports){
+},{"../Patch.js":28,"../components/Multiply.js":57,"../components/Osc":61,"../components/Sum.js":80}],150:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const StereoOsc = require("./StereoOsc")
 const Repeater = require("../components/Repeater.js")
@@ -7927,7 +7977,7 @@ ManyOsc.random = function(n, min, max) {
   return ManyOsc.ofFrequencies(1, freqs)
 }
 
-},{"../Patch.js":28,"../components/Multiply.js":57,"../components/Osc":61,"../components/Repeater.js":69,"../components/Sum.js":79,"./StereoOsc":162}],150:[function(require,module,exports){
+},{"../Patch.js":28,"../components/Multiply.js":57,"../components/Osc":61,"../components/Repeater.js":69,"../components/Sum.js":80,"./StereoOsc":163}],151:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const Osc = require("../components/Osc")
 const MidiToFrequency = require("../components/MidiToFrequency.js")
@@ -7949,7 +7999,7 @@ MidiOsc.prototype = Object.create(Patch.prototype)
 MidiOsc.prototype.constructor = MidiOsc
 module.exports = MidiOsc
 
-},{"../Patch.js":28,"../components/MidiToFrequency.js":54,"../components/Osc":61}],151:[function(require,module,exports){
+},{"../Patch.js":28,"../components/MidiToFrequency.js":54,"../components/Osc":61}],152:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const Repeater = require("../components/Repeater.js")
 const Sum = require("../components/Sum.js")
@@ -8070,7 +8120,7 @@ Mixer.prototype.__defineGetter__("numberOfInputs", function() {
   return this.inputs.length
 })
 
-},{"../Patch.js":28,"../components/Gain.js":49,"../components/Multiply.js":57,"../components/Repeater.js":69,"../components/Sum.js":79}],152:[function(require,module,exports){
+},{"../Patch.js":28,"../components/Gain.js":49,"../components/Multiply.js":57,"../components/Repeater.js":69,"../components/Sum.js":80}],153:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const CircleBuffer = require("../CircleBuffer.js")
 const CircleBufferReader = require("../components/CircleBufferReader.js")
@@ -8117,7 +8167,7 @@ class MultiTapDelay extends Patch {
 }
 module.exports = MultiTapDelay
 
-},{"../CircleBuffer.js":23,"../Patch.js":28,"../components/CircleBufferReader.js":37,"../components/CircleBufferWriter.js":38,"../quick.js":168}],153:[function(require,module,exports){
+},{"../CircleBuffer.js":23,"../Patch.js":28,"../components/CircleBufferReader.js":37,"../components/CircleBufferWriter.js":38,"../quick.js":169}],154:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const MidiOsc = require("./MidiOsc")
 const Osc = require("../components/Osc")
@@ -8155,7 +8205,7 @@ OrbittySine.prototype.__defineSetter__("waveform", function(waveform) {
   this.osc.waveform = waveform
 })
 
-},{"../Patch.js":28,"../components/Osc":61,"./ComplexOrbit.js":142,"./MidiOsc":150,"./Space.js":158}],154:[function(require,module,exports){
+},{"../Patch.js":28,"../components/Osc":61,"./ComplexOrbit.js":143,"./MidiOsc":151,"./Space.js":159}],155:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const Space = require("./Space.js")
 const Repeater = require("../components/Repeater.js")
@@ -8184,7 +8234,7 @@ ScaryPatch.prototype = Object.create(Patch.prototype)
 ScaryPatch.prototype.constructor = ScaryPatch
 module.exports = ScaryPatch
 
-},{"../Patch.js":28,"../components/Multiply.js":57,"../components/Repeater.js":69,"./Space.js":158}],155:[function(require,module,exports){
+},{"../Patch.js":28,"../components/Multiply.js":57,"../components/Repeater.js":69,"./Space.js":159}],156:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const CrossFader = require("../components/CrossFader.js")
 const Delay = require("../components/Delay.js")
@@ -8228,7 +8278,7 @@ SimpleDelay.prototype = Object.create(Patch.prototype)
 SimpleDelay.prototype.constructor = SimpleDelay
 module.exports = SimpleDelay
 
-},{"../Patch.js":28,"../components/CrossFader.js":42,"../components/Delay.js":44,"../components/Multiply.js":57,"../components/Repeater.js":69,"../components/SecondsToSamples.js":73,"../components/Sum.js":79}],156:[function(require,module,exports){
+},{"../Patch.js":28,"../components/CrossFader.js":42,"../components/Delay.js":44,"../components/Multiply.js":57,"../components/Repeater.js":69,"../components/SecondsToSamples.js":73,"../components/Sum.js":80}],157:[function(require,module,exports){
 const config = require("../config.js")
 const Patch = require("../Patch.js")
 const MidiOsc = require("../patches/MidiOsc")
@@ -8273,7 +8323,7 @@ SineBoop.prototype.trigger = function() {
   return this
 }
 
-},{"../Patch.js":28,"../components/Multiply.js":57,"../components/Ramp.js":67,"../components/Shape":75,"../config.js":98,"../patches/MidiOsc":150}],157:[function(require,module,exports){
+},{"../Patch.js":28,"../components/Multiply.js":57,"../components/Ramp.js":67,"../components/Shape":75,"../config.js":99,"../patches/MidiOsc":151}],158:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const OrbittySine = require("./OrbittySine.js")
 const Mixer = require("./Mixer.js")
@@ -8327,7 +8377,7 @@ SineCloud.prototype.__defineSetter__("waveform", function(waveform) {
     this.orbittySines[i].waveform = waveform
 })
 
-},{"../Patch.js":28,"../components/Multiply.js":57,"../components/Repeater.js":69,"./Mixer.js":151,"./OrbittySine.js":153}],158:[function(require,module,exports){
+},{"../Patch.js":28,"../components/Multiply.js":57,"../components/Repeater.js":69,"./Mixer.js":152,"./OrbittySine.js":154}],159:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const SpaceChannel = require("./SpaceChannel.js")
 const PickChannel = require("../components/PickChannel.js")
@@ -8393,7 +8443,7 @@ Space.prototype.addSpeaker = function(speakerPosition) {
   this.addUnit(chan)
 }
 
-},{"../Patch.js":28,"../components/ConcatChannels.js":41,"../components/PickChannel.js":64,"../components/Repeater.js":69,"../config.js":98,"./SpaceChannel.js":160}],159:[function(require,module,exports){
+},{"../Patch.js":28,"../components/ConcatChannels.js":41,"../components/PickChannel.js":64,"../components/Repeater.js":69,"../config.js":99,"./SpaceChannel.js":161}],160:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const config = require("../config.js")
 
@@ -8453,7 +8503,7 @@ SpaceBoop.prototype.__defineSetter__("decayForm", function(shape) {
   this.envelope.shape = shape
 })
 
-},{"../Patch.js":28,"../components/Divide.js":45,"../components/MidiToFrequency.js":54,"../components/Multiply.js":57,"../components/Osc":61,"../components/Shape":75,"../config.js":98,"../patches/Space.js":158}],160:[function(require,module,exports){
+},{"../Patch.js":28,"../components/Divide.js":45,"../components/MidiToFrequency.js":54,"../components/Multiply.js":57,"../components/Osc":61,"../components/Shape":75,"../config.js":99,"../patches/Space.js":159}],161:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const Subtract = require("../components/Subtract.js")
 const VectorMagnitude = require("../components/VectorMagnitude.js")
@@ -8502,7 +8552,7 @@ SpaceChannel.prototype = Object.create(Patch.prototype)
 SpaceChannel.prototype.constructor = SpaceChannel
 module.exports = SpaceChannel
 
-},{"../Patch.js":28,"../components/Gain.js":49,"../components/MonoDelay.js":56,"../components/Multiply.js":57,"../components/Subtract.js":78,"../components/VectorMagnitude.js":81,"../config.js":98}],161:[function(require,module,exports){
+},{"../Patch.js":28,"../components/Gain.js":49,"../components/MonoDelay.js":56,"../components/Multiply.js":57,"../components/Subtract.js":79,"../components/VectorMagnitude.js":82,"../config.js":99}],162:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const Multiply = require("../components/Multiply.js")
 const quick = require("../quick.js")
@@ -8533,7 +8583,7 @@ StereoDetune.random = function(input, maxAmmount) {
   return new StereoDetune(input, ammount)
 }
 
-},{"../Patch.js":28,"../components/Multiply.js":57,"../quick.js":168}],162:[function(require,module,exports){
+},{"../Patch.js":28,"../components/Multiply.js":57,"../quick.js":169}],163:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const Osc = require("../components/Osc")
 const Pan = require("../components/Pan.js")
@@ -8586,7 +8636,7 @@ StereoOsc.prototype.__defineSetter__("waveform", function(waveform) {
   this.osc.waveform = waveform
 })
 
-},{"../Patch.js":28,"../components/Gain.js":49,"../components/MidiToFrequency.js":54,"../components/Osc":61,"../components/Pan.js":63,"../components/Sum.js":79}],163:[function(require,module,exports){
+},{"../Patch.js":28,"../components/Gain.js":49,"../components/MidiToFrequency.js":54,"../components/Osc":61,"../components/Pan.js":63,"../components/Sum.js":80}],164:[function(require,module,exports){
 const Patch = require("../Patch.js")
 
 class Synth extends Patch {
@@ -8616,7 +8666,7 @@ class Synth extends Patch {
 }
 module.exports = Synth
 
-},{"../Patch.js":28}],164:[function(require,module,exports){
+},{"../Patch.js":28}],165:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const Mixer = require("./Mixer.js")
 
@@ -8653,7 +8703,7 @@ TriggerGroup.prototype.trigger = function(which) {
     console.log(this.label, "unknown trigger:", which)
 }
 
-},{"../Patch.js":28,"./Mixer.js":151}],165:[function(require,module,exports){
+},{"../Patch.js":28,"./Mixer.js":152}],166:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const Noise = require("../components/Noise")
 const Filter = require("../components/Filter.js")
@@ -8683,7 +8733,7 @@ class Worm extends Patch {
 }
 module.exports = Worm
 
-},{"../Patch.js":28,"../components/Filter.js":46,"../components/Noise":58,"../components/Repeater.js":69,"../quick.js":168}],166:[function(require,module,exports){
+},{"../Patch.js":28,"../components/Filter.js":46,"../components/Noise":58,"../components/Repeater.js":69,"../quick.js":169}],167:[function(require,module,exports){
 module.exports = {
 	APStack: require("./APStack.js"),
 	APWeb: require("./APWeb.js"),
@@ -8715,7 +8765,7 @@ module.exports = {
 	TriggerGroup: require("./TriggerGroup.js"),
 	Worm: require("./Worm.js")
 }
-},{"./APStack.js":137,"./APWeb.js":138,"./AttenuationMatrix.js":139,"./BandFilter.js":140,"./Boop.js":141,"./ComplexOrbit.js":142,"./DelayMixer.js":143,"./FMOsc.js":144,"./FMSynth.js":145,"./FrequencyGroup.js":146,"./HardBandPass.js":147,"./LFO.js":148,"./ManyOsc.js":149,"./MidiOsc.js":150,"./Mixer.js":151,"./MultiTapDelay.js":152,"./OrbittySine.js":153,"./ScaryPatch.js":154,"./SimpleDelay.js":155,"./SineBoop.js":156,"./SineCloud.js":157,"./Space.js":158,"./SpaceBoop.js":159,"./SpaceChannel.js":160,"./StereoDetune.js":161,"./StereoOsc.js":162,"./Synth.js":163,"./TriggerGroup.js":164,"./Worm.js":165}],167:[function(require,module,exports){
+},{"./APStack.js":138,"./APWeb.js":139,"./AttenuationMatrix.js":140,"./BandFilter.js":141,"./Boop.js":142,"./ComplexOrbit.js":143,"./DelayMixer.js":144,"./FMOsc.js":145,"./FMSynth.js":146,"./FrequencyGroup.js":147,"./HardBandPass.js":148,"./LFO.js":149,"./ManyOsc.js":150,"./MidiOsc.js":151,"./Mixer.js":152,"./MultiTapDelay.js":153,"./OrbittySine.js":154,"./ScaryPatch.js":155,"./SimpleDelay.js":156,"./SineBoop.js":157,"./SineCloud.js":158,"./Space.js":159,"./SpaceBoop.js":160,"./SpaceChannel.js":161,"./StereoDetune.js":162,"./StereoOsc.js":163,"./Synth.js":164,"./TriggerGroup.js":165,"./Worm.js":166}],168:[function(require,module,exports){
 const patches = require("./patches")
 const components = require("./components")
 
@@ -8725,7 +8775,7 @@ for(var name in patches)
 
 Object.assign(exports, components, patches)
 
-},{"./components":82,"./patches":166}],168:[function(require,module,exports){
+},{"./components":83,"./patches":167}],169:[function(require,module,exports){
 /* quick.js provides a set of operators for combining numbers or signals making
   efficiency savings where possible */
 
@@ -8837,7 +8887,7 @@ exports.clip = function(input, threshold) {
       return input
 }
 
-},{"./components/ConcatChannels.js":41,"./components/Divide.js":45,"./components/HardClipAbove.js":51,"./components/HardClipBelow.js":52,"./components/Multiply.js":57,"./components/PolarityInvert.js":65,"./components/Pow.js":66,"./components/SemitoneToRatio.js":74,"./components/Subtract.js":78,"./components/Sum.js":79}],169:[function(require,module,exports){
+},{"./components/ConcatChannels.js":41,"./components/Divide.js":45,"./components/HardClipAbove.js":51,"./components/HardClipBelow.js":52,"./components/Multiply.js":57,"./components/PolarityInvert.js":65,"./components/Pow.js":66,"./components/SemitoneToRatio.js":74,"./components/Subtract.js":79,"./components/Sum.js":80}],170:[function(require,module,exports){
 const AudioBuffer = require('audio-buffer')
 const Circuit = require('./Circuit')
 
@@ -8890,7 +8940,7 @@ async function renderChannelData(outlet,
 
 module.exports = renderChannelData
 
-},{"./Circuit":24,"audio-buffer":4}],170:[function(require,module,exports){
+},{"./Circuit":24,"audio-buffer":4}],171:[function(require,module,exports){
 const constructExpression = require("./construct/constructExpression.js")
 //const parseExpression = require("./parseDSP/getExpression.js")
 
@@ -8909,7 +8959,7 @@ function unDusp(o) {
 }
 module.exports = unDusp
 
-},{"./construct/constructExpression.js":99}],171:[function(require,module,exports){
+},{"./construct/constructExpression.js":100}],172:[function(require,module,exports){
 const AudioBuffer = require('audio-buffer')
 
 function channelDataToAudioBuffer(channelData) {
@@ -8927,7 +8977,7 @@ function channelDataToAudioBuffer(channelData) {
 }
 module.exports = channelDataToAudioBuffer
 
-},{"audio-buffer":4}],172:[function(require,module,exports){
+},{"audio-buffer":4}],173:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 

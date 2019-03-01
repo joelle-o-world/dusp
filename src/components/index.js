@@ -41,6 +41,7 @@ module.exports = {
 	SemitoneToRatio: require("./SemitoneToRatio.js"),
 	Shape: require("./Shape/index.js"),
 	SignalCombiner: require("./SignalCombiner.js"),
+	SporadicRetriggerer: require("./SporadicRetrigger.js"),
 	Subtract: require("./Subtract.js"),
 	Sum: require("./Sum.js"),
 	Timer: require("./Timer.js"),
