@@ -72,7 +72,9 @@ class DuspPlayer {
   }
 
   close() {
-    clearInterval(this.saveTimer)
+    this.stop()
+    if(this.saveTimer)
+      clearInterval(this.saveTimer)
     window.localStorage.removeItem(this.creationStamp)
     this.interface.main.parentNode.removeChild(this.interface.main)
   }
@@ -92,10 +94,17 @@ class DuspPlayer {
         if(e.metaKey) {
           this.close()
         }
+      } else {
+        this.save()
       }
-      this.save()
     })
     mainDIV.className = 'DuspPlayer'
+
+    let closeBTN = document.createElement('button')
+    closeBTN.onclick = () => this.close()
+    closeBTN.innerText = 'close'
+    closeBTN.className = 'close'
+    mainDIV.appendChild(closeBTN)
 
     let inputWrapperDIV = document.createElement('div')
     inputWrapperDIV.className = 'inputwrapper'

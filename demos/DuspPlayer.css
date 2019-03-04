@@ -8,8 +8,29 @@
   overflow: hidden;
   padding:0px;
   margin-bottom:15px;
-  background-color: #eeeedd;
+  background-color: #999;
   color:black;
+  transition: background-color 0.5s;
+}
+.DuspPlayer:hover {
+  background-color:#bbc;
+}
+.DuspPlayer:focus-within {
+  background-color:#eeeedd;
+}
+
+.DuspPlayer:hover > button.close {
+  visibility: visible;
+}
+.DuspPlayer > button.close {
+  position:absolute;
+  margin-left:-60px;
+  visibility: hidden;
+  transition: visibility 2s;
+  font-size:15px;
+  background:transparent;
+  border:none;
+  color:white;
 }
 
 .DuspPlayer > .inputwrapper {
