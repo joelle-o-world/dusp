@@ -6577,7 +6577,7 @@ module.exports = getDotProperty
 function getExpression(str, i0) {
   i0 = i0 || 0
 
-  var i1 = i0
+  var i1 = skipCommentsAndWhitespace(str, i0)
   /*if(str[i0] == "(") {
     var bracketed = true
     i1++
