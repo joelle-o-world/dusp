@@ -1,57 +1,20 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-const unDusp = require('../src/unDusp')
-const renderChannelData = require("../src/renderChannelData")
-const channelDataToAudioBuffer = require("../src/webaudioapi/channelDataToAudioBuffer")
+const DuspPlayer = require('../src/webaudioapi/DuspPlayer')
 
-const ctx = new AudioContext()
-window.AUDIOCTX = ctx
-
-let nowPlaying = null
-
-console.log(unDusp)
+function addPlayer(destination=document.getElementById('players')) {
+  let player = new DuspPlayer
+  let div = player.htmlInterface()
+  destination.appendChild(div)
+}
 
 window.onload = function() {
-  document.getElementById("user-input").onkeypress = function(e) {
-    if(e.keyCode == 13) {
-      play(this.value)
-    }
-  }
+  addPlayer()
 }
 
-async function play(str) {
-  if(nowPlaying)
-    nowPlaying.stop()
-  let outlet = unDusp(str)
-  if(!outlet)
-    throw "Some problem with the input"
 
-  let channelData = await renderChannelData(outlet, 10)
+window.addPlayer = addPlayer
 
-  let audioBuffer = channelDataToAudioBuffer(channelData)
-
-  let bufferSource = new AudioBufferSourceNode(ctx, {
-    buffer: audioBuffer,
-    loop: true,
-  })
-  bufferSource.connect(ctx.destination)
-  bufferSource.start()
-
-  nowPlaying = bufferSource
-
-  console.log(channelData)
-  console.log(audioBuffer)
-
-  getPeak(audioBuffer)
-}
-
-async function getPeak(audiobuffer) {
-  let channelData = audiobuffer.getChannelData()
-  for(var c in channelData) {
-    console.log(channelData[c])
-  }
-}
-
-},{"../src/renderChannelData":170,"../src/unDusp":171,"../src/webaudioapi/channelDataToAudioBuffer":172}],2:[function(require,module,exports){
+},{"../src/webaudioapi/DuspPlayer":172}],2:[function(require,module,exports){
 "use strict";
 
 // rawAsap provides everything we need except exception management.
@@ -5994,7 +5957,7 @@ localConfig.sampleInterval = 1/module.exports.sampleRate
 module.exports = localConfig
 
 }).call(this,require('_process'))
-},{"_process":173,"minimist":9}],100:[function(require,module,exports){
+},{"_process":175,"minimist":9}],100:[function(require,module,exports){
 function constructExpression(o, index, destinations) {
   if(o.constructor == String)
     o = parseExpression(o, index)
@@ -8965,6 +8928,224 @@ function unDusp(o) {
 module.exports = unDusp
 
 },{"./construct/constructExpression.js":100}],172:[function(require,module,exports){
+const unDusp = require("../unDusp")
+const renderAudioBuffer = require('./renderAudioBuffer')
+
+const openBracketReg = /[\[\(\{]/
+
+class DuspPlayer {
+  constructor() {
+    this.nowPlayingSource = null
+    this.ctx = new AudioContext
+  }
+
+  async play(loop=false) {
+    this.stop()
+
+    let duspStr = this.interface.dusp.value
+    let duration = parseDuration(this.interface.duration.value)
+
+    let outlet = unDusp(duspStr, duration)
+    if(!outlet)
+      throw "Error in the dusp"
+
+    let buffer = await renderAudioBuffer(outlet, duration)
+
+    let source = this.ctx.createBufferSource()
+    source.buffer = buffer
+    source.loop = loop
+    source.connect(this.ctx.destination)
+    source.start()
+    source.onended = () => this.stop()
+
+    console.log('playing', buffer, source)
+
+    this.nowPlayingSource = source
+    this.looping = loop
+
+    this.updateButtons()
+  }
+
+  stop() {
+    if(this.nowPlayingSource)
+      this.nowPlayingSource.stop()
+    this.nowPlayingSource = null
+    this.looping = null
+    this.updateButtons()
+  }
+
+  htmlInterface() {
+    if(!document)
+      throw "DuspPlayer cannot generate HTML interface outside of browser"
+    if(this.interface)
+      return this.interface
+
+    let mainDIV = document.createElement('div')
+    mainDIV.addEventListener('keydown', (e) => {
+      if(e.metaKey && e.keyCode == 13) {
+        this.play(e.shiftKey)
+      } else if(e.keyCode == 27)
+        this.stop()
+
+    })
+    mainDIV.className = 'DuspPlayer'
+
+    let inputWrapperDIV = document.createElement('div')
+    inputWrapperDIV.className = 'inputwrapper'
+    mainDIV.appendChild(inputWrapperDIV)
+
+    let duspINPUT = document.createElement('textarea')
+    duspINPUT.addEventListener('keydown', function(e) {
+      if(e.keyCode == 9) {
+        e.preventDefault()
+        var s = this.selectionStart;
+        this.value = this.value.substring(0,this.selectionStart) + "  " + this.value.substring(this.selectionEnd);
+        this.selectionEnd = s+2;
+      }
+
+      if(e.key == '(') {
+        e.preventDefault()
+        let s = this.selectionStart
+        let t = this.selectionEnd
+        this.value = this.value.substring(0, s) +
+          '(' + this.value.substring(s,t) +
+          ')' + this.value.substring(t)
+
+        this.setSelectionRange(s+1, t+1)
+      }
+
+      if(e.key == '[') {
+        e.preventDefault()
+        let s = this.selectionStart
+        let t = this.selectionEnd
+        this.value = this.value.substring(0, s) +
+          '[' + this.value.substring(s,t) +
+          ']' + this.value.substring(t)
+
+        this.setSelectionRange(s+1, t+1)
+      }
+      if(e.key == '\"') {
+        e.preventDefault()
+        let s = this.selectionStart
+        let t = this.selectionEnd
+        this.value = this.value.substring(0, s) +
+          '"' + this.value.substring(s,t) +
+          '"' + this.value.substring(t)
+
+        this.setSelectionRange(s+1, t+1)
+      }
+
+      if(e.keyCode == 8) {
+        // backspace
+
+      }
+
+      if(e.keyCode == 13 && !e.metaKey) {
+        e.preventDefault()
+        let s = this.selectionStart;
+        let t = this.selectionEnd
+
+        let before = this.value.substring(0,s)
+        let line = before.slice(before.lastIndexOf('\n'))
+        let nSpace = 0
+        for(let i=before.lastIndexOf('\n')+1; i<before.length; i++, nSpace++)
+          if(before[i] != ' ')
+            break
+
+        if(openBracketReg.test(before[before.length-1]))
+          nSpace += 2
+
+        let tabs = ' '.repeat(nSpace)
+        this.value = before + '\n' + tabs + this.value.substring(t)
+        this.selectionEnd = s+1+tabs.length
+      }
+    })
+    duspINPUT.value = 'O200'
+    inputWrapperDIV.appendChild(duspINPUT)
+
+    let controlDIV = document.createElement('div')
+    controlDIV.className = 'controls'
+    mainDIV.appendChild(controlDIV)
+
+    let durationLABEL = document.createElement('label')
+    durationLABEL.innerText = 'duration:'
+    controlDIV.appendChild(durationLABEL)
+
+    let durationINPUT = document.createElement('input')
+    durationINPUT.value = formatDuration(5)
+    durationINPUT.onclick = function() {
+      this.setSelectionRange(0, this.value.length)
+    }
+    durationINPUT.onblur = () => {
+      durationINPUT.value = formatDuration(parseDuration(durationINPUT.value))
+    }
+    controlDIV.appendChild(durationINPUT)
+
+
+    let playBTN = document.createElement('button')
+    playBTN.innerText = 'play'
+    playBTN.onclick = () => this.play(false)
+    controlDIV.appendChild(playBTN)
+
+    let stopBTN = document.createElement('button')
+    stopBTN.innerText = 'stop'
+    stopBTN.onclick = () => this.stop()
+    controlDIV.appendChild(stopBTN)
+
+    let loopBTN = document.createElement('button')
+    loopBTN.innerText = 'play looped'
+    loopBTN.onclick = () => this.play(true)
+    controlDIV.appendChild(loopBTN)
+
+    this.interface = {
+      main: mainDIV,
+      dusp: duspINPUT,
+      duration: durationINPUT,
+      play: playBTN,
+      loop: loopBTN,
+      stop: stopBTN,
+    }
+
+    this.updateButtons()
+
+    return this.interface.main
+  }
+
+  updateButtons() {
+    this.interface.play.className = 'inactive'
+    this.interface.loop.className = 'inactive'
+    this.interface.stop.className = 'inactive'
+    if(this.nowPlayingSource) {
+      if(this.looping)
+        this.interface.loop.className = 'active'
+      else
+        this.interface.play.className = 'active'
+    } else
+      this.interface.stop.className = 'active'
+  }
+}
+module.exports = DuspPlayer
+
+function parseDuration(str) {
+  let parts = str.split(':')
+  if(parts.length == 2) {
+    let minutes = parseInt(parts[0]) || 0
+    let seconds = parseFloat(parts[1]) || 0
+    return minutes*60 + seconds
+  } else if(parts.length == 1) {
+    return parseFloat(parts[0])
+  }
+}
+function formatDuration(seconds) {
+  let minutes = Math.floor(seconds/60).toString()
+  if(minutes.length == 1)
+    minutes = '0'+minutes
+  seconds -= minutes * 60
+  seconds = (Math.abs(seconds) < 10 ? '0' : '') + seconds.toFixed(3)
+  return minutes + ":" + seconds
+}
+
+},{"../unDusp":171,"./renderAudioBuffer":174}],173:[function(require,module,exports){
 const AudioBuffer = require('audio-buffer')
 
 function channelDataToAudioBuffer(channelData) {
@@ -8982,7 +9163,17 @@ function channelDataToAudioBuffer(channelData) {
 }
 module.exports = channelDataToAudioBuffer
 
-},{"audio-buffer":4}],173:[function(require,module,exports){
+},{"audio-buffer":4}],174:[function(require,module,exports){
+const renderChannelData = require('../renderChannelData')
+const channelDataToAudioBuffer = require('./channelDataToAudioBuffer')
+
+async function renderAudioBuffer(outlet, duration, options={}) {
+  let channelData = await renderChannelData(outlet, duration, options)
+  return channelDataToAudioBuffer(channelData)
+}
+module.exports = renderAudioBuffer
+
+},{"../renderChannelData":170,"./channelDataToAudioBuffer":173}],175:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 

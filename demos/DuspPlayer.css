@@ -1,0 +1,106 @@
+.DuspPlayer {
+  display:block;
+  border-top:1px solid black;
+  border-left:1px solid black;
+  border-bottom:1px solid #444;
+  border-right:none;
+  border-radius:10px;
+  overflow: hidden;
+  padding:0px;
+  margin-bottom:15px;
+  background-color: #eeeedd;
+  color:black;
+}
+
+.DuspPlayer > .inputwrapper {
+    color:inherit;
+    width:75%;
+    height:200px;
+    display:inline-block;
+    padding:0px;
+    margin:0px;
+}
+
+.DuspPlayer > .inputwrapper > textarea {
+  font-family: monaco;
+  font-size:90%;
+  padding:15px;
+  margin:0px;
+  box-sizing: border-box;
+  height:100%;
+  width:100%;
+  border:none;
+  background:none;
+  resize:none;
+  outline:none;
+  color:inherit;
+  caret-color: red;
+  text-shadow: 0px 0px 10px white;
+}
+
+.DuspPlayer > .controls {
+  display:inline-block;
+  width:25%;
+  height:100%;
+  background-color: #222;
+  vertical-align: top;
+  margin:0px;
+  padding-bottom:15px;
+  border-bottom-left-radius: 10px;
+  color:#ccc;
+  font-family:sans-serif;
+
+  border-left:1px solid #444;
+  margin-left: -1px;
+  border-bottom:1px solid #111;
+}
+
+.DuspPlayer > .controls > label {
+  font-size:10px;
+  padding-left: 10px;
+}
+
+.DuspPlayer > .controls > button, .DuspPlayer > .controls > input {
+  display:block;
+  background:none;
+  font-family: inherit;
+  width:100%;
+  padding:0px;
+  text-align:center;
+  border:none;
+  padding-top:7px;
+  padding-bottom: 7px;
+  outline:none;
+}
+
+.DuspPlayer > .controls > button {
+  color:#666;
+  font-size:15px;
+}
+.DuspPlayer > .controls > input {
+  background-color:#111;
+  font-size:20px;
+  color:#aaf;
+  border-bottom:1px solid #666;
+  border-top:1px solid #000;
+  color:inherit;
+}
+
+.DuspPlayer > .controls > button.active {
+  color:white;
+  text-shadow: 0px 0px 30px #ffb;
+}
+
+.DuspPlayer > .controls > button:hover {
+  background-color:#444;
+  color:white;
+}
+.DuspPlayer > .controls > button:active {
+  background-color:#070707;
+  color:yellow;
+  border-top:1px solid black;
+  border-bottom:1px solid #777;
+  margin-top:-1px;
+  margin-bottom:-1px;
+
+}

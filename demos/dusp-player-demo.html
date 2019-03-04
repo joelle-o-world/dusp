@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>DUSP Player Demo</title>
+    <script src='dusp-player-demo.bundle.js' type='text/javascript'> </script>
+    <link rel='stylesheet' type='text/css' href='DuspPlayer.css' />
+
+    <style>
+      body {
+        background-color:#151515;
+      }
+      .frame {
+        width:500px;
+        margin-right:auto;
+        margin-left:auto;
+      }
+
+      #addplayer {
+        width:100%;
+        text-align:center;
+        font-size:200%;
+        border-radius:5px;
+        background:none;
+        color:#666;
+        border:3px solid #666;
+        margin-top:20px;
+        transition: border-color 2s, color 2s;
+        outline: none;
+      }
+
+      #addplayer:hover {
+        border-color:#ff9;
+        color:#ff9;
+      }
+      #addplayer:active {
+        background-color:#fff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class='frame'>
+      <div id=players></div>
+      <button onclick='addPlayer()' id='addplayer'>+</button>
+    </div>
+  </body>
+</html>
