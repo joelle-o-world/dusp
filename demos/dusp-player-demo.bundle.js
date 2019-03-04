@@ -1,14 +1,28 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 const DuspPlayer = require('../src/webaudioapi/DuspPlayer')
 
-function addPlayer(destination=document.getElementById('players')) {
-  let player = new DuspPlayer
-  let div = player.htmlInterface()
+const allPlayers = []
+
+function addPlayer(saveStr) {
+  let destination=document.getElementById('players')
+  let player = new DuspPlayer(saveStr)
+  let div = player.interface.main
   destination.appendChild(div)
+  allPlayers.push(player)
 }
 
 window.onload = function() {
-  addPlayer()
+  for(let i=0; i<window.localStorage.length; i++) {
+    let key = window.localStorage.key(i)
+    if(key.slice(0, 5) == 'dusp-')
+      addPlayer(window.localStorage.getItem(key))
+  }
+
+  if(players.length == 0) {
+    addPlayer()
+  }
+
+  allPlayers[0].interface.dusp.focus()
 }
 
 
@@ -8934,9 +8948,17 @@ const renderAudioBuffer = require('./renderAudioBuffer')
 const openBracketReg = /[\[\(\{]/
 
 class DuspPlayer {
-  constructor() {
+  constructor(str) {
     this.nowPlayingSource = null
     this.ctx = new AudioContext
+    this.creationStamp = 'dusp-' + new Date().getTime()
+
+    this.htmlInterface()
+
+    if(str)
+      this.saveStr = str
+
+    this.save()
   }
 
   async play(loop=false) {
@@ -8974,6 +8996,31 @@ class DuspPlayer {
     this.updateButtons()
   }
 
+  get saveStr() {
+    return JSON.stringify({
+      duspStr: this.interface.dusp.value,
+      duration: parseDuration(this.interface.duration.value),
+      creationStamp: this.creationStamp,
+    })
+  }
+
+  set saveStr(str) {
+    let ob = JSON.parse(str)
+    this.interface.dusp.value = ob.duspStr
+    this.interface.duration.value = formatDuration(ob.duration)
+    this.creationStamp = ob.creationStamp
+  }
+
+  save() {
+    window.localStorage.setItem(this.creationStamp, this.saveStr)
+  }
+
+  close() {
+    clearInterval(this.saveTimer)
+    window.localStorage.removeItem(this.creationStamp)
+    this.interface.main.parentNode.removeChild(this.interface.main)
+  }
+
   htmlInterface() {
     if(!document)
       throw "DuspPlayer cannot generate HTML interface outside of browser"
@@ -8984,9 +9031,13 @@ class DuspPlayer {
     mainDIV.addEventListener('keydown', (e) => {
       if(e.metaKey && e.keyCode == 13) {
         this.play(e.shiftKey)
-      } else if(e.keyCode == 27)
+      } else if(e.keyCode == 27) {
         this.stop()
-
+        if(e.metaKey) {
+          this.close()
+        }
+      }
+      this.save()
     })
     mainDIV.className = 'DuspPlayer'
 

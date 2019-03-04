@@ -4,9 +4,17 @@ const renderAudioBuffer = require('./renderAudioBuffer')
 const openBracketReg = /[\[\(\{]/
 
 class DuspPlayer {
-  constructor() {
+  constructor(str) {
     this.nowPlayingSource = null
     this.ctx = new AudioContext
+    this.creationStamp = 'dusp-' + new Date().getTime()
+
+    this.htmlInterface()
+
+    if(str)
+      this.saveStr = str
+
+    this.save()
   }
 
   async play(loop=false) {
@@ -44,6 +52,31 @@ class DuspPlayer {
     this.updateButtons()
   }
 
+  get saveStr() {
+    return JSON.stringify({
+      duspStr: this.interface.dusp.value,
+      duration: parseDuration(this.interface.duration.value),
+      creationStamp: this.creationStamp,
+    })
+  }
+
+  set saveStr(str) {
+    let ob = JSON.parse(str)
+    this.interface.dusp.value = ob.duspStr
+    this.interface.duration.value = formatDuration(ob.duration)
+    this.creationStamp = ob.creationStamp
+  }
+
+  save() {
+    window.localStorage.setItem(this.creationStamp, this.saveStr)
+  }
+
+  close() {
+    clearInterval(this.saveTimer)
+    window.localStorage.removeItem(this.creationStamp)
+    this.interface.main.parentNode.removeChild(this.interface.main)
+  }
+
   htmlInterface() {
     if(!document)
       throw "DuspPlayer cannot generate HTML interface outside of browser"
@@ -54,9 +87,13 @@ class DuspPlayer {
     mainDIV.addEventListener('keydown', (e) => {
       if(e.metaKey && e.keyCode == 13) {
         this.play(e.shiftKey)
-      } else if(e.keyCode == 27)
+      } else if(e.keyCode == 27) {
         this.stop()
-
+        if(e.metaKey) {
+          this.close()
+        }
+      }
+      this.save()
     })
     mainDIV.className = 'DuspPlayer'
 
