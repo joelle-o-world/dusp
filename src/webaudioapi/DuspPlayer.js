@@ -34,7 +34,10 @@ class DuspPlayer {
     source.loop = loop
     source.connect(this.ctx.destination)
     source.start()
-    source.onended = () => this.stop()
+    source.onended = () => {
+      if(this.nowPlayingSource == source)
+        this.stop()
+    }
 
     console.log('playing', buffer, source)
 

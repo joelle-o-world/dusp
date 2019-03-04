@@ -4757,7 +4757,7 @@ class Retriggerer extends Unit {
       if(this.t >= this.sampleRate) {
         if(this._target && this._target.trigger)
           this._target.trigger()
-        this.t -= this.sampleRate
+        this.t %= this.sampleRate
       }
     }
   }
@@ -9049,7 +9049,10 @@ class DuspPlayer {
     source.loop = loop
     source.connect(this.ctx.destination)
     source.start()
-    source.onended = () => this.stop()
+    source.onended = () => {
+      if(this.nowPlayingSource == source)
+        this.stop()
+    }
 
     console.log('playing', buffer, source)
 
