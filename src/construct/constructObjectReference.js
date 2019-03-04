@@ -2,8 +2,9 @@ function constructObjectReference(o, index) {
   if(o.constructor == String)
     o = parseObjectReference(o)
 
-  if(index[o.id])
-    return index[o.id]
+  let hashTag = '#'+o.id
+  if(index[hashTag])
+    return index[hashTag]
   else
     throw "Error: Referencing an object which has not been declared: #"+o.id
 }

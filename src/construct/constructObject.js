@@ -19,11 +19,12 @@ function constructObject(o, index) {
   if(o.id)
     obj.label = o.id
 
-  if(index[obj.label]) {
-    if(index[obj.label] != obj)
+  let idTag = '#'+obj.label
+  if(index[idTag]) {
+    if(index[idTag] != obj)
       throw "Duplicate objects for id:", obj.label
   } else
-    index[obj.label] = obj
+    index[idTag] = obj
 
   for(var i in o.attributes) {
     var arg = o.attributes[i]
