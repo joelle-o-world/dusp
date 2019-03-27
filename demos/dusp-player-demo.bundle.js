@@ -9148,7 +9148,9 @@ class DuspPlayer {
         this.setSelectionRange(s+1, t+1)
       }
 
-      if(e.key == '[') {
+      if(e.key == '[' && (
+        this.selectionStart!=this.selectionEnd || this.value[this.selectionEnd] == '\n'
+      )) {
         e.preventDefault()
         let s = this.selectionStart
         let t = this.selectionEnd

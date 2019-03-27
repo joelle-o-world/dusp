@@ -21,12 +21,15 @@
 
 .DuspPlayer:hover > button.close {
   visibility: visible;
+  opacity: 1;
 }
 .DuspPlayer > button.close {
   position:absolute;
   margin-left:-60px;
   visibility: hidden;
-  transition: visibility 2s;
+  transition: visibility 2s, opacity 1s;
+
+  opacity: 0;
   font-size:15px;
   background:transparent;
   border:none;
