@@ -34,14 +34,21 @@ async function renderChannelData(outlet,
     // the output signal chunk
     let chunk = outlet.signalChunk
 
-    // increase numberOfChannels to accomodate output signal chunk
+    // if necessary, increase numberOfChannels to accomodate signal
     while(chunk.channelData.length > channelData.length)
       channelData.push(new TypedArray(lengthInSamples))
 
     // record signal chunk to channelData
     for(let channel in chunk.channelData)
-      for(let t=0; t<chunkSize; t++)
-        channelData[channel][t+t0] = chunk.channelData[channel][t] || 0
+      for(let t=0; t<chunkSize; t++) {
+        let val = chunk.channelData[channel][t]
+        if(isNaN(val)) {
+          let culprit = circuit.findNaNCulprit()
+          console.log('NaN culprit:', culprit.label)
+          throw 'cannot record NaN value'
+        }
+        channelData[channel][t+t0] = val || 0
+      }
   }
 
   channelData.sampleRate = sampleRate
