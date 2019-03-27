@@ -10,6 +10,7 @@ module.exports = {
 	FMSynth: require("./FMSynth.js"),
 	FrequencyGroup: require("./FrequencyGroup.js"),
 	HardBandPass: require("./HardBandPass.js"),
+	Karplus: require("./Karplus.js"),
 	LFO: require("./LFO.js"),
 	ManyOsc: require("./ManyOsc.js"),
 	MidiOsc: require("./MidiOsc.js"),

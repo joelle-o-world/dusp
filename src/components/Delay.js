@@ -4,17 +4,17 @@ const config = require("../config.js")
 const zeroChunk = new Float32Array(config.standardChunkSize).fill(0)
 
 class Delay extends Unit {
-  constructor(input, delay, maxDelay) {
+  constructor(input = 0, delay = 4410, maxDelay = Unit.sampleRate * 5) {
     super()
     this.addInlet("in")
     this.addInlet("delay", {measuredIn:"samples"})
     this.addOutlet("out")
 
-    this.maxDelay = maxDelay || Unit.sampleRate * 5
+    this.maxDelay = maxDelay
     this.buffers = [new Float32Array(this.maxDelay)]
 
-    this.IN = input || 0
-    this.DELAY = delay || 4410
+    this.IN = input
+    this.DELAY = delay
   }
 
   _tick(clock) {
@@ -36,6 +36,7 @@ class Delay extends Unit {
         var tWrite = (tBuffer + delayChunk[t])%this.buffers[c].length
         this.buffers[c][Math.floor(tWrite)] += this.in[c][t] * (1-tWrite%1)
         this.buffers[c][Math.ceil(tWrite)] += this.in[c][t] * (tWrite%1)
+
       }
     }
   }
