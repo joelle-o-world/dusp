@@ -16,7 +16,7 @@ class Retriggerer extends Unit {
       if(this.t >= this.sampleRate) {
         if(this._target && this._target.trigger)
           this._target.trigger()
-        this.t -= this.sampleRate
+        this.t %= this.sampleRate
       }
     }
   }
