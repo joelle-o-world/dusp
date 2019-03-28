@@ -11,22 +11,24 @@ const ConcatChannels = require("./components/ConcatChannels.js")
 const Pow = require("./components/Pow.js")
 const HardClipAbove = require("./components/HardClipAbove.js")
 const HardClipBelow = require("./components/HardClipBelow.js")
+const Mixer = require('./patches/Mixer')
 
-exports.add = function(a,b) {
+exports.add = function quickSum(a,b) {
   if(a.constructor == Number && b.constructor == Number)
     return a + b
   else
     return new Sum(a, b)
 }
+exports.sum = exports.add
 
-exports.subtract = function(a,b) {
+exports.subtract = function quickSubtract(a,b) {
   if(a.constructor == Number && b.constructor == Number)
     return a - b
   else
     return new Subtract(a, b)
 }
 
-exports.mult = function(a, b) {
+exports.mult = function quickMultiply(a, b) {
   if(a == undefined || a == null || a == 1)
     return b
   if(b == undefined || b == null || b == 1)
@@ -107,4 +109,8 @@ exports.clip = function(input, threshold) {
       return threshold
     else
       return input
+}
+
+exports.mix = function(...inputs) {
+  return new Mixer(...inputs)
 }
