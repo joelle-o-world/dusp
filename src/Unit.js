@@ -40,12 +40,14 @@ Unit.prototype.sampleRate = config.sampleRate
 Unit.prototype.samplePeriod = 1/config.sampleRate
 
 Unit.prototype.giveUniqueLabel = function() {
+  // generate and store a unique label for this unit
   if(!this.label)
     this.label = this.constructor.name + this.constructor.timesUsed
   return this.label
 }
 
 Unit.prototype.addInlet = function(name, options) {
+  // add an inlet to the unit
   options = options || {}
   options.name = name
   options.unit = this
@@ -71,6 +73,7 @@ Unit.prototype.addInlet = function(name, options) {
   return inlet
 }
 Unit.prototype.addOutlet = function(name, options) {
+  // add an outlet to this unit
   options = options || {}
   options.name = name
   options.unit = this
@@ -86,6 +89,7 @@ Unit.prototype.addOutlet = function(name, options) {
 }
 
 Unit.prototype.chainAfter = function(unit) {
+  // chain this unit so that it executes after a given unit
   if(!unit.isUnit)
     throw "chainAfter expects a Unit"
   this.addInlet(
@@ -96,9 +100,10 @@ Unit.prototype.chainAfter = function(unit) {
     {noData: true}
   )
 }
-Unit.prototype.chain = Unit.prototype.chainAfter
+Unit.prototype.chain = Unit.prototype.chainAfter // ALIAS
 
 Unit.prototype.chainBefore = function(unit) {
+  // chain this unit so it excutes before a given unit
   if(!unit.isUnit)
     throw "chainBefore expects a Unit"
   return unit.chainAfter(this)
@@ -109,9 +114,13 @@ Unit.prototype.unChain = function(objectToUnchain) {
 }
 
 Unit.prototype.tick = function(clock0) {
+  // CALLED ONLY BY THE CIRCUIT. Process one chunk of signal.
   this.clock = clock0
+
+  // call unit specific tick function
   if(this._tick)
     this._tick(clock0)
+
   this.clock = clock0 + this.tickInterval
   for(var i in this.outlets) // used for renderStream
     if(this.outlets[i].onTick)
@@ -119,6 +128,7 @@ Unit.prototype.tick = function(clock0) {
 }
 
 Unit.prototype.__defineGetter__("inputUnits", function() {
+  // return a list of all units which send signals to this unit
   var list = []
   for(var i in this.inlets) {
     if(!this.inlets[i].connected)
@@ -130,7 +140,9 @@ Unit.prototype.__defineGetter__("inputUnits", function() {
   }
   return list
 })
+
 Unit.prototype.__defineGetter__("outputUnits", function() {
+  // return a list of all units that this unit sends signals to
   var list = []
   for(var i in this.outlets) {
     for(var j in this.outlets[i].connections) {
@@ -141,13 +153,17 @@ Unit.prototype.__defineGetter__("outputUnits", function() {
   }
   return list
 })
+
 Unit.prototype.__defineGetter__("numberOfOutgoingConnections", function() {
+  // count the number of outgoing connections
+
   var n = 0
   for(var name in this.outlets)
     n += this.outlets[name].connections
   return n
 })
 Unit.prototype.__defineGetter__("neighbours", function() {
+  // union of this unit's inputs and outputs
   var inputs = this.inputUnits
   var outputs = this.outputUnits
     .filter(item => (inputs.indexOf(item) == -1))
@@ -155,20 +171,25 @@ Unit.prototype.__defineGetter__("neighbours", function() {
 })
 
 Unit.prototype.randomInlet = function() {
+  // choose one of this unit's inlets at random
   return this.inletsOrdered[Math.floor(Math.random()*this.inletsOrdered.length)]
 }
 Unit.prototype.randomOutlet = function() {
+  // choose one of this unit's outlets at random
   return this.outletsOrdered[Math.floor(Math.random()*this.outletsOrdered.length)]
 }
 
 Unit.prototype.__defineGetter__("printInputUnits", function() {
-  return this.inputUnits.map((unit)=>{return unit.label}).join(", ")
+  // get a str list of the input units to this unit
+  return this.inputUnits.map(unit => unit.label).join(", ")
 })
 Unit.prototype.__defineGetter__("printOutputUnits", function() {
-  return this.outputUnits.map((unit) =>{return unit.label}).join(", ")
+  // get a str list of the output units to this unit
+  return this.outputUnits.map(unit => unit.label).join(", ")
 })
 
 Unit.prototype.computeProcessIndex = function(history) {
+  // calculate the process index of this unit
   history = (history || []).concat([this])
 
   var inputUnits = this.inputUnits.filter((unit) => {
@@ -198,7 +219,7 @@ Unit.prototype.computeProcessIndex = function(history) {
   return this.processIndex
 }
 
-Unit.prototype.computeStepsToNecessity = function(history) {
+/*Unit.prototype.computeStepsToNecessity = function(history) {
   console.log("NO IDEA IF THIS WORKS!")
   if(this.stepsToNecessity === 1)
     return 1
@@ -237,15 +258,18 @@ Unit.prototype.computeStepsToNecessity = function(history) {
 }
 Unit.prototype.markAsNecessary = function() {
   this.stepsToNecessity = 1
-}
+}*/
 
 Unit.prototype.__defineGetter__("defaultInlet", function() {
+  // get the default (first-defined) inlet
   return this.inletsOrdered[0]
 })
 Unit.prototype.__defineGetter__("defaultOutlet", function() {
+  // get the default (first-defined) outlet
   return this.outletsOrdered[0]
 })
 Unit.prototype.__defineGetter__("topInlet", function() {
+  // follow default inlets up the graph and return the top-most inlet
   var inlet = this.defaultInlet
   if(inlet.connected)
     return inlet.outlet.unit.topInlet
@@ -254,6 +278,7 @@ Unit.prototype.__defineGetter__("topInlet", function() {
 
 
 Unit.prototype.addEvent = function(newEvent) {
+  // schedule an event to be called on this unit
   if(this.circuit)
     this.circuit.addEvent(newEvent)
   else {
@@ -269,6 +294,7 @@ Unit.prototype.addEvent = function(newEvent) {
 
 
 Unit.prototype.addPromise = function(promise) {
+  // add a promise which must be fulfilled before this unit can process further
   if(this.circuit)
     this.circuit.addPromise(promise)
   else
@@ -276,6 +302,7 @@ Unit.prototype.addPromise = function(promise) {
 }
 
 Unit.prototype.getOrBuildCircuit = function() {
+  // return this unit's circuit, or create one
   if(this.circuit)
     return this.circuit
   else
@@ -283,11 +310,13 @@ Unit.prototype.getOrBuildCircuit = function() {
 }
 
 Unit.prototype.trigger = function() {
+  // default 'trigger' behaviour implementation: trigger all input units
   var inputUnits = this.inputUnits
   for(var i in inputUnits)
     inputUnits[i].trigger()
 }
 Unit.prototype.stop = function() {
+  // default 'stop' behaviour implementation: stop all input units
   var inputUnits = this.inputUnits
   for(var i in inputUnits)
     inputUnits[i].stop()
