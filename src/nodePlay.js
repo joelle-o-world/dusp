@@ -1,8 +1,9 @@
 const Speaker = require('speaker')
 const RenderStream = require('./RenderStream')
 const {Transform} = require('stream')
+const dusp = require('./dusp')
 
-function streamToNodeSpeaker(outlet, numberOfChannels, timeout) {
+function streamToNodeSpeaker(outlet, numberOfChannels=1, timeout) {
   let stream = new RenderStream(outlet, numberOfChannels, timeout)
   let speaker = new Speaker({
     channels:numberOfChannels,
@@ -18,6 +19,8 @@ function streamToNodeSpeaker(outlet, numberOfChannels, timeout) {
       callback(null, new Buffer(chunk.buffer))
     },
   })
+
+  console.log('playing circuit:', dusp(outlet))
 
   stream.pipe(interface).pipe(speaker)
 }
