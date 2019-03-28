@@ -18,6 +18,7 @@ async function renderChannelData(outlet,
 
   // find or construct the circuit
   const circuit = outlet.unit.circuit || new Circuit(outlet.unit)
+  circuit.centralUnits = [outlet.unit]
 
   // get values
   const sampleRate = outlet.sampleRate

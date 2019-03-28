@@ -15,11 +15,17 @@ Inlet.prototype.isInlet = true
 
 Inlet.prototype.disconnect = function() {
   if(this.outlet) {
+    let outlet = this.outlet
     this.outlet.connections.splice(this.outlet.connections.indexOf(this), 1)
     this.outlet = null
     this.signalChunk = new SignalChunk(this.numberOfChannels, this.chunkSize)
     this.exposeDataToUnit()
     this.connected = false
+
+    // emit unit events
+    this.unit.emit('disconnection', outlet.unit)
+    outlet.unit.emit('disconnection', this.unit)
+
   }
 }
 

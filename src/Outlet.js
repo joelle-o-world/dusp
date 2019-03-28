@@ -12,10 +12,6 @@ module.exports = Outlet
 
 Outlet.prototype.isOutlet = true
 
-/*Outlet.prototype.render = async function(T) {
-  return render(this, T)
-}*/
-
 Outlet.prototype.disconnect = function() {
   for(var i in this.connections)
     this.connections[i].disconnect()

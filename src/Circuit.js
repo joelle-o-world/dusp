@@ -6,10 +6,11 @@
 
 const gcd = require("compute-gcd")
 const Promise = require("promise")
+const explore = require('./explore')
 
-function Circuit() {
+function Circuit(...units) {
   this.units = [] // NOTE: units will be executed in the order of this array
-  //this.vital = [] // a list of units which are needed
+  this.centralUnits = null
   this.tickIntervals = []
   this.clock = 0
   this.events = []
@@ -17,8 +18,8 @@ function Circuit() {
 
   this.keepTicking = false
 
-  for(var i in arguments)
-    this.add(arguments[i])
+  for(var unit of units)
+    this.add(unit)
 }
 module.exports = Circuit
 
@@ -134,6 +135,8 @@ Circuit.prototype.add = function(unit) {
 
 Circuit.prototype.remove = function(...toRemove) {
   // remove a set of units from the circuit
+  for(let u of toRemove)
+    console.log('removing', u.label, 'from circuit')
 
   // Throw an error if any of the units are connected to any units which aren't
   // to be removed.
@@ -160,6 +163,25 @@ Circuit.prototype.remove = function(...toRemove) {
 
   // remove events which belong to the outgoing units
   this.events = this.events.filter(e => !toRemove.includes(e.unit))
+}
+
+Circuit.prototype.removeRecursively = function(...units) {
+  let toRemove = explore.all(...units)
+  this.remove(...toRemove)
+}
+
+Circuit.prototype.checkConnected = function(unit) {
+  // check if there is a connection between a given unit and any central unit
+  if(!this.centralUnits)
+    return true
+
+  return explore.checkConnection(unit, ...this.centralUnits)
+}
+
+Circuit.prototype.removeRecursivelyIfDisconnected = function(unit) {
+  if(!this.checkConnected(unit)) {
+    this.removeRecursively(unit)
+  }
 }
 
 Circuit.prototype.addEvent = function(eventToAdd) {

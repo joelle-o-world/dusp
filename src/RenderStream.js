@@ -17,6 +17,7 @@ class RenderStream extends Readable {
     this.numberOfChannels = numberOfChannels
     this.outlet = outlet
     this.circuit = outlet.unit.getOrBuildCircuit()
+    this.circuit.centralUnits = [outlet.unit]
     this.sampleRate = outlet.sampleRate
 
     this.normaliseFactor = 1

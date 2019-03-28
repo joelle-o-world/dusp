@@ -26,6 +26,12 @@ function Unit() {
 
   this.constructor.timesUsed = (this.constructor.timesUsed || 0) + 1
   this.giveUniqueLabel()
+
+  this.on('disconnection', from => {
+    console.log(this.label, 'has been disconnected from', from.label)
+    if(this.circuit)
+      this.circuit.removeRecursivelyIfDisconnected(this)
+  })
 }
 Unit.prototype = Object.create(UnitOrPatch.prototype)
 Unit.prototype.constructor = Unit
@@ -253,7 +259,6 @@ Unit.prototype.addEvent = function(newEvent) {
   }
 }
 
-
 Unit.prototype.addPromise = function(promise) {
   // add a promise which must be fulfilled before this unit can process further
   if(this.circuit)
@@ -281,4 +286,10 @@ Unit.prototype.stop = function() {
   var inputUnits = this.inputUnits
   for(var i in inputUnits)
     inputUnits[i].stop()
+}
+
+Unit.prototype.remove = function() {
+  // remove self from circuit
+  if(this.circuit)
+    this.circuit.remove(this)
 }

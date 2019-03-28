@@ -1,7 +1,11 @@
 const Event = require("./Event.js")
+const EventEmitter = require('events')
 
 function UnitOrPatch() {
+  EventEmitter.call(this)
 }
+UnitOrPatch.prototype = Object.create(EventEmitter.prototype)
+UnitOrPatch.prototype.constructor = UnitOrPatch
 module.exports = UnitOrPatch
 
 UnitOrPatch.prototype.isUnitOrPatch = true
@@ -77,6 +81,7 @@ UnitOrPatch.prototype.render = function(t) {
 UnitOrPatch.prototype.finish = function() {
   // _finish should be for unit specific implementations, onFinish could be used as an addition
   this.finished = true
+  this.emit('finish')
   if(this._finish)
     this._finish()
   if(this.onFinish)
