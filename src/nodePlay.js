@@ -17,7 +17,7 @@ function streamToNodeSpeaker(outlet, numberOfChannels=1, timeout) {
     writableObjectMode: true,
     transform(chunk, encoding, callback) {
     //  console.log(chunk.buffer.buffer)
-      callback(null, new Buffer(chunk.buffer))
+      callback(null, Buffer.from(chunk.buffer))
     },
   })
 
@@ -50,5 +50,5 @@ function playChannelData(channelData) {
     float: true,
   })
 
-  speaker.write(new Buffer(interleaved.buffer))
+  speaker.write(Buffer.from(interleaved.buffer))
 }
