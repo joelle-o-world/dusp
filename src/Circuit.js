@@ -8,7 +8,7 @@ const gcd = require("compute-gcd")
 const Promise = require("promise")
 
 function Circuit() {
-  this.units = []
+  this.units = [] // NOTE: units will be executed in the order of this array
   //this.vital = [] // a list of units which are needed
   this.tickIntervals = []
   this.clock = 0
@@ -132,6 +132,36 @@ Circuit.prototype.add = function(unit) {
   return true
 }
 
+Circuit.prototype.remove = function(...toRemove) {
+  // remove a set of units from the circuit
+
+  // Throw an error if any of the units are connected to any units which aren't
+  // to be removed.
+  for(let unit of toRemove)
+    for(let neighbour of unit.neighbours)
+      if(!toRemove.includes(neighbour))
+        throw 'cannot remove ' + unit.label +
+          ' from circuit because it is connected to ' + neighbour.label
+
+  // set the circuit and process index of the outgoing units to null
+  for(let unit of toRemove) {
+    unit.circuit = null
+    unit.processIndex = undefined
+  }
+
+  // remove units from circuit's unit list
+  this.units = this.units.filter(unit => !toRemove.includes(unit))
+
+  // recalculate all process index values
+  this.recomputeProcessIndexs() // TODO: implement this function
+
+  // sort unit list and recalculate gcd tick interval
+  this.computeOrders()
+
+  // remove events which belong to the outgoing units
+  this.events = this.events.filter(e => !toRemove.includes(e.unit))
+}
+
 Circuit.prototype.addEvent = function(eventToAdd) {
   // insert an event into this circuit's event register
   eventToAdd.circuit = this
@@ -150,6 +180,17 @@ Circuit.prototype.addPromise = function(promise) {
   this.promises.push(promise)
 }
 
+Circuit.prototype.recomputeProcessIndexs = function() {
+  // set process index of all units to `undefined`
+  for(let unit of this.units)
+    unit.processIndex = undefined
+
+  // call compute process index for all units
+  for(let unit of this.units)
+  // I PREDICT A POSSIBLE BUG HERE: it doesn't take account of the starting point/rendering unit
+    if(unit.processIndex == undefined)
+      unit.computeProcessIndex()
+}
 Circuit.prototype.computeOrders = function() {
   // sort units by process index
   this.units = this.units.sort((a, b) => {

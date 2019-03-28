@@ -190,20 +190,22 @@ Unit.prototype.__defineGetter__("printOutputUnits", function() {
 
 Unit.prototype.computeProcessIndex = function(history) {
   // calculate the process index of this unit
-  history = (history || []).concat([this])
 
-  var inputUnits = this.inputUnits.filter((unit) => {
-    return (history.indexOf(unit) == -1)
-  })
+  // add this to the end of history trace
+  history = [...(history || []), this]
 
+  // get input units that haven't been checked already
+  let inputUnits = this.inputUnits.filter(unit => !history.includes(unit))
+
+  // calculate process index as the maximum of the process indexs of the input units plus 1
   var max = -1
   for(var i in inputUnits) {
+    // calculate process index recursively for unknown units
     if(inputUnits[i].processIndex == undefined)
       inputUnits[i].computeProcessIndex(history)
     if(inputUnits[i].processIndex > max)
       max = inputUnits[i].processIndex
   }
-
   this.processIndex = max + 1
 
   var outputUnits = this.outputUnits.filter((unit) => {
@@ -218,47 +220,6 @@ Unit.prototype.computeProcessIndex = function(history) {
 
   return this.processIndex
 }
-
-/*Unit.prototype.computeStepsToNecessity = function(history) {
-  console.log("NO IDEA IF THIS WORKS!")
-  if(this.stepsToNecessity === 1)
-    return 1
-
-  history = (history || []).concat([this])
-  var neighbours = this.neighbours.filter(unit => (history.indexOf(unit) == -1))
-
-  if(this.stepsToNecessity == undefined) {
-    var winner = Infinity
-    for(var i in neighbours) {
-      if(neighbours[i].stepsToNecessity == undefined)
-        neighbours[i].computeStepsToNecessity(history)
-      if(neighbours[i].stepsToNecessity && neighbours[i].stepsToNecessity < winner)
-        winner = neighbours[i].stepsToNecessity
-    }
-    if(winner != Infinity)
-      return this.stepsToNecessity = winner + 1
-    else
-      return this.stepsToNecessity = null
-
-  } else {
-
-    var oldScore = this.stepsToNecessity
-    this.stepsToNecessity = undefined
-    var winner = Infinity
-    for(var i in neighbours) {
-      neighbours[i].computeStepsToNecessity(history)
-      if(neighbours[i].stepsToNecessity !== null && neighbours[i].stepsToNecessity < winner)
-        winner = neighbours[i].stepsToNecessity
-    }
-    if(winner != Infinity)
-      return this.stepsToNecessity = winner + 1
-    else
-      return this.stepsToNecessity = null
-  }
-}
-Unit.prototype.markAsNecessary = function() {
-  this.stepsToNecessity = 1
-}*/
 
 Unit.prototype.__defineGetter__("defaultInlet", function() {
   // get the default (first-defined) inlet

@@ -5,6 +5,8 @@ const dusp = require('./dusp')
 const renderChannelData = require('./renderChannelData')
 
 function streamToNodeSpeaker(outlet, numberOfChannels=1, timeout) {
+  // create a render stream on an outlet and send it to the speakers
+
   let stream = new RenderStream(outlet, numberOfChannels, timeout)
   let speaker = new Speaker({
     channels:numberOfChannels,
@@ -28,12 +30,15 @@ function streamToNodeSpeaker(outlet, numberOfChannels=1, timeout) {
 module.exports = streamToNodeSpeaker
 
 async function streamToNodeSpeakerBuffered(outlet, duration=1) {
+  // render a buffer from an outlet and stream the buffer to the speakers
   let data = await renderChannelData(outlet, duration)
   playChannelData(data)
 }
 module.exports.buffered = streamToNodeSpeakerBuffered
 
 function playChannelData(channelData) {
+  // stream uninterleaved channel data to the speakers
+
   // interleave the data
   let interleavedLength = channelData[0].length * channelData.length
   let interleaved = new Float32Array(interleavedLength)
