@@ -1,0 +1,15 @@
+const Karplus = require('../src/patches/Karplus')
+const unDusp = require('../src/unDusp')
+const dusp = require('../src/dusp')
+const renderChannelData = require("../src/renderChannelData")
+const play = require('../src/nodePlay')
+const quick = require('../src/quick')
+const Mixer = require('../src/')
+const Pan = require('../src/components/Pan')
+
+const HandPosition = require('../../fretboard/src/HandPosition')
+const move = require('../../fretboard/src/allHandMoves.js')
+
+let karp1 = new Karplus(440)
+karp1.pluck()
+play(karp1)
