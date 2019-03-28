@@ -18,21 +18,28 @@ class Delay extends Unit {
   }
 
   _tick(clock) {
+    // loop through channels
     for(var c=0; c<this.in.length || c<this.delay.length; c++) {
+      // create output channel if doesn't exist
       this.out[c] = this.out[c] || new Float32Array(this.OUT.chunkSize)
+
+      // choose input channel to write
       this.in[c] = this.in[c%this.in.length]
+
+      // create buffer channel if doesn't exist
       this.buffers[c] = this.buffers[c] || new Float32Array(this.maxDelay)
+
       var delayChunk = this.delay[c%this.delay.length]
       for(var t=0; t<this.in[c].length; t++) {
         var tBuffer = (clock + t)%this.buffers[c].length
         this.out[c][t] = this.buffers[c][tBuffer]
         this.buffers[c][tBuffer] = 0
-        /*if(this.delay[c][t] >= this.buffers[c].length)
+        if(this.delay[c][t] >= this.buffers[c].length)
           console.log(
             this.label+":", "delay time exceded buffer size by",
             delayChunk[t]-this.buffers[c].length+1,
             "samples (channel: " + c + ")"
-          )*/
+          )
         var tWrite = (tBuffer + delayChunk[t])%this.buffers[c].length
         this.buffers[c][Math.floor(tWrite)] += this.in[c][t] * (1-tWrite%1)
         this.buffers[c][Math.ceil(tWrite)] += this.in[c][t] * (tWrite%1)
