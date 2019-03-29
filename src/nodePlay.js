@@ -31,7 +31,7 @@ module.exports = streamToNodeSpeaker
 
 async function streamToNodeSpeakerBuffered(outlet, duration=1) {
   // render a buffer from an outlet and stream the buffer to the speakers
-  let data = await renderChannelData(outlet, duration)
+  let data = await renderChannelData(outlet, duration, {normalise:true})
   playChannelData(data)
 }
 module.exports.buffered = streamToNodeSpeakerBuffered
