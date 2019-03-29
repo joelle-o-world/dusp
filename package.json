@@ -30,6 +30,7 @@
     "minimist": "^1.2.0",
     "promise": "^8.0.2",
     "speaker": "^0.4.1",
+    "vis": "^4.21.0",
     "web-audio-stream": "^3.0.1"
   }
 }
