@@ -294,6 +294,165 @@ rawAsap.makeRequestCallFromTimer = makeRequestCallFromTimer;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],3:[function(require,module,exports){
+/**
+ * AudioBuffer class
+ *
+ * @module audio-buffer/buffer
+ */
+'use strict'
+
+var getContext = require('audio-context')
+
+module.exports = AudioBuffer
+
+
+/**
+ * @constructor
+ */
+function AudioBuffer (context, options) {
+	if (!(this instanceof AudioBuffer)) return new AudioBuffer(context, options);
+
+	//if no options passed
+	if (!options) {
+		options = context
+		context = options && options.context
+	}
+
+	if (!options) options = {}
+
+	if (context === undefined) context = getContext()
+
+	//detect params
+	if (options.numberOfChannels == null) {
+		options.numberOfChannels = 1
+	}
+	if (options.sampleRate == null) {
+		options.sampleRate = context && context.sampleRate || this.sampleRate
+	}
+	if (options.length == null) {
+		if (options.duration != null) {
+			options.length = options.duration * options.sampleRate
+		}
+		else {
+			options.length = 1
+		}
+	}
+
+	//if existing context
+	if (context && context.createBuffer) {
+		//create WAA buffer
+		return context.createBuffer(options.numberOfChannels, Math.ceil(options.length), options.sampleRate)
+	}
+
+	//exposed properties
+	this.length = Math.ceil(options.length)
+	this.numberOfChannels = options.numberOfChannels
+	this.sampleRate = options.sampleRate
+	this.duration = this.length / this.sampleRate
+
+	//data is stored as a planar sequence
+	this._data = new Float32Array(this.length * this.numberOfChannels)
+
+	//channels data is cached as subarrays
+	this._channelData = []
+	for (var c = 0; c < this.numberOfChannels; c++) {
+		this._channelData.push(this._data.subarray(c * this.length, (c+1) * this.length ))
+	}
+}
+
+
+/**
+ * Default params
+ */
+AudioBuffer.prototype.numberOfChannels = 1;
+AudioBuffer.prototype.sampleRate = 44100;
+
+
+/**
+ * Return data associated with the channel.
+ *
+ * @return {Array} Array containing the data
+ */
+AudioBuffer.prototype.getChannelData = function (channel) {
+	if (channel >= this.numberOfChannels || channel < 0 || channel == null) throw Error('Cannot getChannelData: channel number (' + channel + ') exceeds number of channels (' + this.numberOfChannels + ')');
+
+	return this._channelData[channel]
+};
+
+
+/**
+ * Place data to the destination buffer, starting from the position
+ */
+AudioBuffer.prototype.copyFromChannel = function (destination, channelNumber, startInChannel) {
+	if (startInChannel == null) startInChannel = 0;
+	var data = this._channelData[channelNumber]
+	for (var i = startInChannel, j = 0; i < this.length && j < destination.length; i++, j++) {
+		destination[j] = data[i];
+	}
+}
+
+
+/**
+ * Place data from the source to the channel, starting (in self) from the position
+ */
+AudioBuffer.prototype.copyToChannel = function (source, channelNumber, startInChannel) {
+	var data = this._channelData[channelNumber]
+
+	if (!startInChannel) startInChannel = 0;
+
+	for (var i = startInChannel, j = 0; i < this.length && j < source.length; i++, j++) {
+		data[i] = source[j];
+	}
+};
+
+
+},{"audio-context":4}],4:[function(require,module,exports){
+'use strict'
+
+var cache = {}
+
+module.exports = function getContext (options) {
+	if (typeof window === 'undefined') return null
+	
+	var OfflineContext = window.OfflineAudioContext || window.webkitOfflineAudioContext
+	var Context = window.AudioContext || window.webkitAudioContext
+	
+	if (!Context) return null
+
+	if (typeof options === 'number') {
+		options = {sampleRate: options}
+	}
+
+	var sampleRate = options && options.sampleRate
+
+
+	if (options && options.offline) {
+		if (!OfflineContext) return null
+
+		return new OfflineContext(options.channels || 2, options.length, sampleRate || 44100)
+	}
+
+
+	//cache by sampleRate, rather strong guess
+	var ctx = cache[sampleRate]
+
+	if (ctx) return ctx
+
+	//several versions of firefox have issues with the
+	//constructor argument
+	//see: https://bugzilla.mozilla.org/show_bug.cgi?id=1361475
+	try {
+		ctx = new Context(options)
+	}
+	catch (err) {
+		ctx = new Context()
+	}
+	cache[ctx.sampleRate] = cache[sampleRate] = ctx
+
+	return ctx
+}
+
+},{}],5:[function(require,module,exports){
 'use strict';
 
 // MODULES //
@@ -507,7 +666,7 @@ function compute() {
 
 module.exports = compute;
 
-},{"validate.io-array":15,"validate.io-function":16,"validate.io-integer-array":17}],4:[function(require,module,exports){
+},{"validate.io-array":17,"validate.io-function":18,"validate.io-integer-array":19}],6:[function(require,module,exports){
 'use strict';
 
 // MODULES //
@@ -620,7 +779,7 @@ function lcm() {
 
 module.exports = lcm;
 
-},{"compute-gcd":3,"validate.io-array":15,"validate.io-function":16,"validate.io-integer-array":17}],5:[function(require,module,exports){
+},{"compute-gcd":5,"validate.io-array":17,"validate.io-function":18,"validate.io-integer-array":19}],7:[function(require,module,exports){
 'use strict';
 
 function FFT(size) {
@@ -1129,7 +1288,7 @@ FFT.prototype._singleRealTransform4 = function _singleRealTransform4(outOff,
   out[outOff + 7] = FDi;
 };
 
-},{}],6:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 module.exports = function (args, opts) {
     if (!opts) opts = {};
     
@@ -1367,12 +1526,12 @@ function isNumber (x) {
 }
 
 
-},{}],7:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 'use strict';
 
 module.exports = require('./lib')
 
-},{"./lib":12}],8:[function(require,module,exports){
+},{"./lib":14}],10:[function(require,module,exports){
 'use strict';
 
 var asap = require('asap/raw');
@@ -1587,7 +1746,7 @@ function doResolve(fn, promise) {
   }
 }
 
-},{"asap/raw":2}],9:[function(require,module,exports){
+},{"asap/raw":2}],11:[function(require,module,exports){
 'use strict';
 
 var Promise = require('./core.js');
@@ -1602,7 +1761,7 @@ Promise.prototype.done = function (onFulfilled, onRejected) {
   });
 };
 
-},{"./core.js":8}],10:[function(require,module,exports){
+},{"./core.js":10}],12:[function(require,module,exports){
 'use strict';
 
 //This file contains the ES6 extensions to the core Promises/A+ API
@@ -1711,7 +1870,7 @@ Promise.prototype['catch'] = function (onRejected) {
   return this.then(null, onRejected);
 };
 
-},{"./core.js":8}],11:[function(require,module,exports){
+},{"./core.js":10}],13:[function(require,module,exports){
 'use strict';
 
 var Promise = require('./core.js');
@@ -1729,7 +1888,7 @@ Promise.prototype.finally = function (f) {
   });
 };
 
-},{"./core.js":8}],12:[function(require,module,exports){
+},{"./core.js":10}],14:[function(require,module,exports){
 'use strict';
 
 module.exports = require('./core.js');
@@ -1739,7 +1898,7 @@ require('./es6-extensions.js');
 require('./node-extensions.js');
 require('./synchronous.js');
 
-},{"./core.js":8,"./done.js":9,"./es6-extensions.js":10,"./finally.js":11,"./node-extensions.js":13,"./synchronous.js":14}],13:[function(require,module,exports){
+},{"./core.js":10,"./done.js":11,"./es6-extensions.js":12,"./finally.js":13,"./node-extensions.js":15,"./synchronous.js":16}],15:[function(require,module,exports){
 'use strict';
 
 // This file contains then/promise specific extensions that are only useful
@@ -1871,7 +2030,7 @@ Promise.prototype.nodeify = function (callback, ctx) {
   });
 };
 
-},{"./core.js":8,"asap":1}],14:[function(require,module,exports){
+},{"./core.js":10,"asap":1}],16:[function(require,module,exports){
 'use strict';
 
 var Promise = require('./core.js');
@@ -1935,7 +2094,7 @@ Promise.disableSynchronous = function() {
   Promise.prototype.getState = undefined;
 };
 
-},{"./core.js":8}],15:[function(require,module,exports){
+},{"./core.js":10}],17:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1953,7 +2112,7 @@ function isArray( value ) {
 
 module.exports = Array.isArray || isArray;
 
-},{}],16:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 /**
 *
 *	VALIDATE: function
@@ -2000,7 +2159,7 @@ function isFunction( value ) {
 
 module.exports = isFunction;
 
-},{}],17:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 /**
 *
 *	VALIDATE: integer-array
@@ -2068,7 +2227,7 @@ function isIntegerArray( value ) {
 
 module.exports = isIntegerArray;
 
-},{"validate.io-array":15,"validate.io-integer":18}],18:[function(require,module,exports){
+},{"validate.io-array":17,"validate.io-integer":20}],20:[function(require,module,exports){
 /**
 *
 *	VALIDATE: integer
@@ -2122,7 +2281,7 @@ function isInteger( value ) {
 
 module.exports = isInteger;
 
-},{"validate.io-number":19}],19:[function(require,module,exports){
+},{"validate.io-number":21}],21:[function(require,module,exports){
 /**
 *
 *	VALIDATE: number
@@ -2169,7 +2328,7 @@ function isNumber( value ) {
 
 module.exports = isNumber;
 
-},{}],20:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 /**
  * vis.js
  * https://github.com/almende/vis
@@ -62106,7 +62265,7 @@ exports["default"] = FloydWarshall;
 /***/ })
 /******/ ]);
 });
-},{}],21:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 const config = require("./config.js")
 
 class CircleBuffer {
@@ -62144,7 +62303,7 @@ class CircleBuffer {
 }
 module.exports = CircleBuffer
 
-},{"./config.js":97}],22:[function(require,module,exports){
+},{"./config.js":99}],24:[function(require,module,exports){
 /*
   Circuit
   The Circuit class is responsibible for executing a Unit objects in the correct
@@ -62411,7 +62570,7 @@ Circuit.prototype.findUnit = function(label) {
   return null
 }
 
-},{"./explore":109,"compute-gcd":3,"promise":7}],23:[function(require,module,exports){
+},{"./explore":111,"compute-gcd":5,"promise":9}],25:[function(require,module,exports){
 const config = require("./config")
 
 function Event(time, f, unit, circuit) {
@@ -62443,7 +62602,7 @@ Event.prototype.run = function() {
     return null
 }
 
-},{"./config":97}],24:[function(require,module,exports){
+},{"./config":99}],26:[function(require,module,exports){
 const Piglet = require("./Piglet.js")
 const SignalChunk = require("./SignalChunk.js")
 
@@ -62550,7 +62709,7 @@ Inlet.prototype.__defineGetter__("printValue", function() {
   else return this.constant
 })
 
-},{"./Piglet.js":27,"./SignalChunk.js":28}],25:[function(require,module,exports){
+},{"./Piglet.js":29,"./SignalChunk.js":30}],27:[function(require,module,exports){
 const Piglet = require("./Piglet.js")
 //const render = require("./render.js")
 
@@ -62570,7 +62729,7 @@ Outlet.prototype.disconnect = function() {
     this.connections[i].disconnect()
 }
 
-},{"./Piglet.js":27}],26:[function(require,module,exports){
+},{"./Piglet.js":29}],28:[function(require,module,exports){
 // A class for the quick construction and connection of complex dsp structures
 // A Patch is an object for overseeing the construction of a circuit or part of a circuit
 const UnitOrPatch = require("./UnitOrPatch.js")
@@ -62691,7 +62850,7 @@ Patch.prototype.trigger = function() {
   return this
 }
 
-},{"./Event.js":23,"./UnitOrPatch.js":30}],27:[function(require,module,exports){
+},{"./Event.js":25,"./UnitOrPatch.js":32}],29:[function(require,module,exports){
 // Class from which Outlet and Inlet inherit from so that they can share code
 const config = require("./config.js")
 const SignalChunk = require("./SignalChunk.js")
@@ -62762,7 +62921,7 @@ Piglet.prototype.__defineGetter__("circuit", function() {
   return this.unit.circuit
 })
 
-},{"./SignalChunk.js":28,"./config.js":97}],28:[function(require,module,exports){
+},{"./SignalChunk.js":30,"./config.js":99}],30:[function(require,module,exports){
 function SignalChunk(numberOfChannels, chunkSize) {
   this.numberOfChannels = numberOfChannels
   this.chunkSize = chunkSize
@@ -62784,7 +62943,7 @@ SignalChunk.prototype.duplicateChannelData = function() {
   return data
 }
 
-},{}],29:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 const UnitOrPatch = require("./UnitOrPatch.js")
 const config = require("./config.js")
 const Outlet = require("./Outlet.js")
@@ -63081,7 +63240,7 @@ Unit.prototype.remove = function() {
     this.circuit.remove(this)
 }
 
-},{"./Circuit":22,"./Inlet.js":24,"./Outlet.js":25,"./UnitOrPatch.js":30,"./config.js":97}],30:[function(require,module,exports){
+},{"./Circuit":24,"./Inlet.js":26,"./Outlet.js":27,"./UnitOrPatch.js":32,"./config.js":99}],32:[function(require,module,exports){
 const Event = require("./Event.js")
 const EventEmitter = require('events')
 
@@ -63178,7 +63337,7 @@ UnitOrPatch.prototype.scheduleFinish = function(t) {
   })
 }
 
-},{"./Event.js":23,"events":177}],31:[function(require,module,exports){
+},{"./Event.js":25,"events":182}],33:[function(require,module,exports){
 const Unit = require("../Unit.js")
 const config = require("../config.js")
 
@@ -63271,7 +63430,7 @@ AHD.random = function(duration) {
   return new AHD(a, h, d)
 }
 
-},{"../Unit.js":29,"../config.js":97}],32:[function(require,module,exports){
+},{"../Unit.js":31,"../config.js":99}],34:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 function Abs(input) {
@@ -63297,7 +63456,7 @@ Abs.prototype._tick = function() {
   }
 }
 
-},{"../Unit.js":29}],33:[function(require,module,exports){
+},{"../Unit.js":31}],35:[function(require,module,exports){
 const CombFilter = require("./CombFilter.js")
 
 class AllPass extends CombFilter {
@@ -63350,7 +63509,7 @@ AllPass.manyRandomInSeries = function(n, maxDelayTime, maxFeedbackGain) {
   }
 }
 
-},{"./CombFilter.js":38}],34:[function(require,module,exports){
+},{"./CombFilter.js":40}],36:[function(require,module,exports){
 /*
   A base class for CircleBufferReader and CircleBufferWriter.
 */
@@ -63384,7 +63543,7 @@ class CircleBufferNode extends Unit {
 }
 module.exports = CircleBufferNode
 
-},{"../Unit.js":29}],35:[function(require,module,exports){
+},{"../Unit.js":31}],37:[function(require,module,exports){
 const CircleBufferNode = require("./CircleBufferNode.js")
 
 class CircleBufferReader extends CircleBufferNode {
@@ -63413,7 +63572,7 @@ class CircleBufferReader extends CircleBufferNode {
 }
 module.exports = CircleBufferReader
 
-},{"./CircleBufferNode.js":34}],36:[function(require,module,exports){
+},{"./CircleBufferNode.js":36}],38:[function(require,module,exports){
 const CircleBufferNode = require("./CircleBufferNode.js")
 
 class CircleBufferWriter extends CircleBufferNode {
@@ -63442,7 +63601,7 @@ class CircleBufferWriter extends CircleBufferNode {
 }
 module.exports = CircleBufferWriter
 
-},{"./CircleBufferNode.js":34}],37:[function(require,module,exports){
+},{"./CircleBufferNode.js":36}],39:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 class Clip extends Unit {
@@ -63467,7 +63626,7 @@ class Clip extends Unit {
 }
 module.exports = Clip
 
-},{"../Unit.js":29}],38:[function(require,module,exports){
+},{"../Unit.js":31}],40:[function(require,module,exports){
 const FixedDelay = require("./FixedDelay.js")
 
 class CombFilter extends FixedDelay {
@@ -63495,7 +63654,7 @@ class CombFilter extends FixedDelay {
 }
 module.exports = CombFilter
 
-},{"./FixedDelay.js":45}],39:[function(require,module,exports){
+},{"./FixedDelay.js":47}],41:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 function ConcatChannels(A, B) {
@@ -63527,7 +63686,7 @@ ConcatChannels.prototype._tick = function() {
   }
 }
 
-},{"../Unit.js":29}],40:[function(require,module,exports){
+},{"../Unit.js":31}],42:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 function CrossFader(a, b, dial) {
@@ -63558,7 +63717,7 @@ CrossFader.prototype._tick = function() {
   }
 }
 
-},{"../Unit.js":29}],41:[function(require,module,exports){
+},{"../Unit.js":31}],43:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 function DecibelToScaler(input) {
@@ -63579,7 +63738,7 @@ DecibelToScaler.prototype._tick = function() {
   }
 }
 
-},{"../Unit.js":29}],42:[function(require,module,exports){
+},{"../Unit.js":31}],44:[function(require,module,exports){
 const Unit = require("../Unit.js")
 const config = require("../config.js")
 
@@ -63632,7 +63791,7 @@ class Delay extends Unit {
 }
 module.exports = Delay
 
-},{"../Unit.js":29,"../config.js":97}],43:[function(require,module,exports){
+},{"../Unit.js":31,"../config.js":99}],45:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 function Divide(a, b) {
@@ -63661,7 +63820,7 @@ Divide.prototype._tick = function(clock) {
   }
 }
 
-},{"../Unit.js":29}],44:[function(require,module,exports){
+},{"../Unit.js":31}],46:[function(require,module,exports){
 // A butterworth filter
 
 const Unit = require("../Unit.js")
@@ -63767,7 +63926,7 @@ Filter.coefficientFunctions = {
   },
 }
 
-},{"../Unit.js":29}],45:[function(require,module,exports){
+},{"../Unit.js":31}],47:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 class FixedDelay extends Unit {
@@ -63807,7 +63966,7 @@ class FixedDelay extends Unit {
 }
 module.exports = FixedDelay
 
-},{"../Unit.js":29}],46:[function(require,module,exports){
+},{"../Unit.js":31}],48:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 function FixedMultiply(sf, input) {
@@ -63831,7 +63990,7 @@ FixedMultiply.prototype._tick = function() {
     this.out[t] = this.in[t] * this.sf
 }
 
-},{"../Unit.js":29}],47:[function(require,module,exports){
+},{"../Unit.js":31}],49:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 function Gain(gain) {
@@ -63861,7 +64020,7 @@ function dB(db) { // decibel to scale factor (for amplitude calculations)
   return Math.pow(10, db/20);
 }
 
-},{"../Unit.js":29}],48:[function(require,module,exports){
+},{"../Unit.js":31}],50:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 function GreaterThan(input, val) {
@@ -63884,7 +64043,7 @@ GreaterThan.prototype._tick = function() {
   }
 }
 
-},{"../Unit.js":29}],49:[function(require,module,exports){
+},{"../Unit.js":31}],51:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 class HardClipAbove extends Unit {
@@ -63912,7 +64071,7 @@ class HardClipAbove extends Unit {
 }
 module.exports = HardClipAbove
 
-},{"../Unit.js":29}],50:[function(require,module,exports){
+},{"../Unit.js":31}],52:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 class HardClipBelow extends Unit {
@@ -63940,7 +64099,7 @@ class HardClipBelow extends Unit {
 }
 module.exports = HardClipBelow
 
-},{"../Unit.js":29}],51:[function(require,module,exports){
+},{"../Unit.js":31}],53:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 function LessThan(input, val) {
@@ -63963,7 +64122,7 @@ LessThan.prototype._tick = function() {
   }
 }
 
-},{"../Unit.js":29}],52:[function(require,module,exports){
+},{"../Unit.js":31}],54:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 function MidiToFrequency(midi) {
@@ -63986,7 +64145,7 @@ MidiToFrequency.prototype._tick = function() {
   }
 }
 
-},{"../Unit.js":29}],53:[function(require,module,exports){
+},{"../Unit.js":31}],55:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 function Monitor(input) {
@@ -64003,7 +64162,7 @@ Monitor.prototype._tick = function() {
   console.log(this.in)
 }
 
-},{"../Unit.js":29}],54:[function(require,module,exports){
+},{"../Unit.js":31}],56:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 function MonoDelay(input, delay) {
@@ -64035,7 +64194,7 @@ MonoDelay.prototype._tick = function(clock) {
   }
 }
 
-},{"../Unit.js":29}],55:[function(require,module,exports){
+},{"../Unit.js":31}],57:[function(require,module,exports){
 const Unit = require("../Unit.js")
 const dusp = require("../dusp")
 
@@ -64071,7 +64230,7 @@ Multiply.prototype._tick = function(clock) {
   }
 }
 
-},{"../Unit.js":29,"../dusp":108}],56:[function(require,module,exports){
+},{"../Unit.js":31,"../dusp":110}],58:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 function Noise(f) {
@@ -64101,7 +64260,7 @@ Noise.prototype._tick = function() {
   }
 }
 
-},{"../Unit.js":29}],57:[function(require,module,exports){
+},{"../Unit.js":31}],59:[function(require,module,exports){
 const Unit = require("../../Unit.js")
 const config = require("../../config.js")
 const waveTables = require("./waveTables.js")
@@ -64165,7 +64324,7 @@ MultiChannelOsc.prototype.randomPhaseFlip = function() {
       this.phase[i] += config.sampleRate/2
 }
 
-},{"../../Unit.js":29,"../../config.js":97,"./waveTables.js":60}],58:[function(require,module,exports){
+},{"../../Unit.js":31,"../../config.js":99,"./waveTables.js":62}],60:[function(require,module,exports){
 
 const Unit = require("../../Unit.js")
 const waveTables = require("./waveTables.js")
@@ -64233,11 +64392,11 @@ Osc.prototype.randomPhaseFlip = function() {
     this.phase += Unit.sampleRate/2
 }
 
-},{"../../Unit.js":29,"./waveTables.js":60}],59:[function(require,module,exports){
+},{"../../Unit.js":31,"./waveTables.js":62}],61:[function(require,module,exports){
 module.exports = require("./Osc")
 //module.exports.MultiChannelOsc = require("./MultiChannelOsc")
 
-},{"./Osc":58}],60:[function(require,module,exports){
+},{"./Osc":60}],62:[function(require,module,exports){
 const config = require("../../config.js")
 
 const PHI = 2 * Math.PI
@@ -64279,7 +64438,7 @@ module.exports = {
   "8bit": eightBitTable,
 }
 
-},{"../../config.js":97}],61:[function(require,module,exports){
+},{"../../config.js":99}],63:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 function Pan(input, pan) {
@@ -64309,7 +64468,7 @@ function dB(db) { // decibel to scale factor (for amplitude calculations)
   return Math.pow(10, db/20);
 }
 
-},{"../Unit.js":29}],62:[function(require,module,exports){
+},{"../Unit.js":31}],64:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 function PickChannel(input, c) {
@@ -64332,7 +64491,7 @@ PickChannel.prototype._tick = function() {
   }
 }
 
-},{"../Unit.js":29}],63:[function(require,module,exports){
+},{"../Unit.js":31}],65:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 class PolarityInvert extends Unit {
@@ -64356,7 +64515,7 @@ class PolarityInvert extends Unit {
 }
 module.exports = PolarityInvert
 
-},{"../Unit.js":29}],64:[function(require,module,exports){
+},{"../Unit.js":31}],66:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 class Pow extends Unit {
@@ -64390,7 +64549,7 @@ class Pow extends Unit {
 }
 module.exports = Pow
 
-},{"../Unit.js":29}],65:[function(require,module,exports){
+},{"../Unit.js":31}],67:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 function Ramp(duration, y0, y1) {
@@ -64432,7 +64591,7 @@ Ramp.prototype._tick = function() {
   }
 }
 
-},{"../Unit.js":29}],66:[function(require,module,exports){
+},{"../Unit.js":31}],68:[function(require,module,exports){
 const Unit = require("../Unit.js")
 const config = require("../config.js")
 
@@ -64477,7 +64636,7 @@ ReadBackDelay.prototype._tick = function() {
   this.tBuffer = t1
 }
 
-},{"../Unit.js":29,"../config.js":97}],67:[function(require,module,exports){
+},{"../Unit.js":31,"../config.js":99}],69:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 function Repeater(val, measuredIn) {
@@ -64509,7 +64668,7 @@ Repeater.prototype._tick = function() {
   }
 }
 
-},{"../Unit.js":29}],68:[function(require,module,exports){
+},{"../Unit.js":31}],70:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 function Rescale(inLower, inUpper, outLower, outUpper) {
@@ -64548,7 +64707,7 @@ Rescale.prototype._tick = function() {
   }
 }
 
-},{"../Unit.js":29}],69:[function(require,module,exports){
+},{"../Unit.js":31}],71:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 class Retriggerer extends Unit {
@@ -64586,7 +64745,7 @@ class Retriggerer extends Unit {
 }
 module.exports = Retriggerer
 
-},{"../Unit.js":29}],70:[function(require,module,exports){
+},{"../Unit.js":31}],72:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 function SampleRateRedux(input, ammount) {
@@ -64624,7 +64783,7 @@ SampleRateRedux.prototype._tick = function() {
   }
 }
 
-},{"../Unit.js":29}],71:[function(require,module,exports){
+},{"../Unit.js":31}],73:[function(require,module,exports){
 const Unit = require("../Unit.js")
 const config = require('../config.js')
 
@@ -64646,7 +64805,7 @@ SecondsToSamples.prototype._tick = function() {
   }
 }
 
-},{"../Unit.js":29,"../config.js":97}],72:[function(require,module,exports){
+},{"../Unit.js":31,"../config.js":99}],74:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 function SemitoneToRatio(midi) {
@@ -64670,7 +64829,7 @@ SemitoneToRatio.prototype._tick = function() {
   }
 }
 
-},{"../Unit.js":29}],73:[function(require,module,exports){
+},{"../Unit.js":31}],75:[function(require,module,exports){
 const Unit = require("../../Unit.js")
 const config = require("../../config.js")
 const Divide = require("../Divide.js")
@@ -64834,7 +64993,7 @@ Shape.prototype.randomDecay = function(maxDuration) {
   this.MAX = 1
 }
 
-},{"../../Unit.js":29,"../../config.js":97,"../Divide.js":43,"./shapeTables.js":74}],74:[function(require,module,exports){
+},{"../../Unit.js":31,"../../config.js":99,"../Divide.js":45,"./shapeTables.js":76}],76:[function(require,module,exports){
 const config = require("../../config.js")
 
 function makeTable(func, name) {
@@ -64874,7 +65033,7 @@ module.exports = {
   )
 }
 
-},{"../../config.js":97}],75:[function(require,module,exports){
+},{"../../config.js":99}],77:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 function SignalCombiner(a, b) {
@@ -64909,7 +65068,7 @@ SignalCombiner.prototype.collapseB = function() {
   this.B.disconnect()
 }
 
-},{"../Unit.js":29}],76:[function(require,module,exports){
+},{"../Unit.js":31}],78:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 class SporadicRetriggerer extends Unit {
@@ -64941,7 +65100,7 @@ class SporadicRetriggerer extends Unit {
 }
 module.exports = SporadicRetriggerer
 
-},{"../Unit.js":29}],77:[function(require,module,exports){
+},{"../Unit.js":31}],79:[function(require,module,exports){
 const Unit = require("../Unit.js")
 const config = require("../config.js")
 
@@ -64972,7 +65131,7 @@ Subtract.prototype._tick = function() {
   }
 }
 
-},{"../Unit.js":29,"../config.js":97}],78:[function(require,module,exports){
+},{"../Unit.js":31,"../config.js":99}],80:[function(require,module,exports){
 const SignalCombiner = require("./SignalCombiner.js")
 const config = require("../config.js")
 const dusp = require("../dusp")
@@ -65018,7 +65177,7 @@ Sum.prototype._tick = function() {
   }
 }
 
-},{"../config.js":97,"../dusp":108,"./SignalCombiner.js":75}],79:[function(require,module,exports){
+},{"../config.js":99,"../dusp":110,"./SignalCombiner.js":77}],81:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 /*class Timer extends Unit {
@@ -65066,7 +65225,7 @@ Timer.prototype.trigger = function() {
   this.t = 0
 }
 
-},{"../Unit.js":29}],80:[function(require,module,exports){
+},{"../Unit.js":31}],82:[function(require,module,exports){
 const Unit = require("../Unit.js")
 
 // Does a pythagorus across channels
@@ -65096,7 +65255,7 @@ VectorMagnitude.prototype._tick = function() {
   }
 }
 
-},{"../Unit.js":29}],81:[function(require,module,exports){
+},{"../Unit.js":31}],83:[function(require,module,exports){
 module.exports = {
 	AHD: require("./AHD.js"),
 	Abs: require("./Abs.js"),
@@ -65161,7 +65320,7 @@ module.exports = {
 	CircularMotion: require("./vector/CircularMotion.js"),
 	LinearMotion: require("./vector/LinearMotion.js")
 }
-},{"./AHD.js":31,"./Abs.js":32,"./AllPass.js":33,"./CircleBufferNode.js":34,"./CircleBufferReader.js":35,"./CircleBufferWriter.js":36,"./Clip.js":37,"./CombFilter.js":38,"./ConcatChannels.js":39,"./CrossFader.js":40,"./DecibelToScaler.js":41,"./Delay.js":42,"./Divide.js":43,"./Filter.js":44,"./FixedDelay.js":45,"./FixedMultiply.js":46,"./Gain.js":47,"./GreaterThan.js":48,"./HardClipAbove.js":49,"./HardClipBelow.js":50,"./LessThan.js":51,"./MidiToFrequency.js":52,"./Monitor.js":53,"./MonoDelay.js":54,"./Multiply.js":55,"./Noise.js":56,"./Osc/MultiChannelOsc.js":57,"./Osc/Osc.js":58,"./Pan.js":61,"./PickChannel.js":62,"./PolarityInvert.js":63,"./Pow.js":64,"./Ramp.js":65,"./ReadBackDelay.js":66,"./Repeater.js":67,"./Rescale.js":68,"./Retriggerer.js":69,"./SampleRateRedux.js":70,"./SecondsToSamples.js":71,"./SemitoneToRatio.js":72,"./Shape/index.js":73,"./SignalCombiner.js":75,"./SporadicRetrigger.js":76,"./Subtract.js":77,"./Sum.js":78,"./Timer.js":79,"./VectorMagnitude.js":80,"./spectral/Augment.js":82,"./spectral/BinShift.js":83,"./spectral/FFT.js":84,"./spectral/HardHighPass.js":85,"./spectral/HardLowPass.js":86,"./spectral/Hopper.js":87,"./spectral/IFFT.js":88,"./spectral/ReChunk.js":89,"./spectral/SpectralGate.js":90,"./spectral/SpectralSum.js":91,"./spectral/SpectralUnit.js":92,"./spectral/UnHopper.js":93,"./spectral/Windower.js":94,"./vector/CircularMotion.js":95,"./vector/LinearMotion.js":96}],82:[function(require,module,exports){
+},{"./AHD.js":33,"./Abs.js":34,"./AllPass.js":35,"./CircleBufferNode.js":36,"./CircleBufferReader.js":37,"./CircleBufferWriter.js":38,"./Clip.js":39,"./CombFilter.js":40,"./ConcatChannels.js":41,"./CrossFader.js":42,"./DecibelToScaler.js":43,"./Delay.js":44,"./Divide.js":45,"./Filter.js":46,"./FixedDelay.js":47,"./FixedMultiply.js":48,"./Gain.js":49,"./GreaterThan.js":50,"./HardClipAbove.js":51,"./HardClipBelow.js":52,"./LessThan.js":53,"./MidiToFrequency.js":54,"./Monitor.js":55,"./MonoDelay.js":56,"./Multiply.js":57,"./Noise.js":58,"./Osc/MultiChannelOsc.js":59,"./Osc/Osc.js":60,"./Pan.js":63,"./PickChannel.js":64,"./PolarityInvert.js":65,"./Pow.js":66,"./Ramp.js":67,"./ReadBackDelay.js":68,"./Repeater.js":69,"./Rescale.js":70,"./Retriggerer.js":71,"./SampleRateRedux.js":72,"./SecondsToSamples.js":73,"./SemitoneToRatio.js":74,"./Shape/index.js":75,"./SignalCombiner.js":77,"./SporadicRetrigger.js":78,"./Subtract.js":79,"./Sum.js":80,"./Timer.js":81,"./VectorMagnitude.js":82,"./spectral/Augment.js":84,"./spectral/BinShift.js":85,"./spectral/FFT.js":86,"./spectral/HardHighPass.js":87,"./spectral/HardLowPass.js":88,"./spectral/Hopper.js":89,"./spectral/IFFT.js":90,"./spectral/ReChunk.js":91,"./spectral/SpectralGate.js":92,"./spectral/SpectralSum.js":93,"./spectral/SpectralUnit.js":94,"./spectral/UnHopper.js":95,"./spectral/Windower.js":96,"./vector/CircularMotion.js":97,"./vector/LinearMotion.js":98}],84:[function(require,module,exports){
 const SpectralUnit = require("./SpectralUnit.js")
 
 class Augment extends SpectralUnit {
@@ -65192,7 +65351,7 @@ class Augment extends SpectralUnit {
 }
 module.exports = Augment
 
-},{"./SpectralUnit.js":92}],83:[function(require,module,exports){
+},{"./SpectralUnit.js":94}],85:[function(require,module,exports){
 const SpectralUnit = require("./SpectralUnit.js")
 
 class BinShift extends SpectralUnit {
@@ -65222,7 +65381,7 @@ class BinShift extends SpectralUnit {
 }
 module.exports = BinShift
 
-},{"./SpectralUnit.js":92}],84:[function(require,module,exports){
+},{"./SpectralUnit.js":94}],86:[function(require,module,exports){
 const Unit = require("../../Unit.js")
 const FFTjs = require("fft.js")
 
@@ -65251,7 +65410,7 @@ class FFT extends Unit {
 }
 module.exports = FFT
 
-},{"../../Unit.js":29,"fft.js":5}],85:[function(require,module,exports){
+},{"../../Unit.js":31,"fft.js":7}],87:[function(require,module,exports){
 /*
   Spectrally implemented high pass filter.
 */
@@ -65286,7 +65445,7 @@ class HardHighPass extends SpectralUnit {
 }
 module.exports = HardHighPass
 
-},{"./SpectralUnit.js":92}],86:[function(require,module,exports){
+},{"./SpectralUnit.js":94}],88:[function(require,module,exports){
 /*
   Spectrally implemented low pass filter.
 */
@@ -65321,7 +65480,7 @@ class HardLowPass extends SpectralUnit {
 }
 module.exports = HardLowPass
 
-},{"./SpectralUnit.js":92}],87:[function(require,module,exports){
+},{"./SpectralUnit.js":94}],89:[function(require,module,exports){
 const Unit = require("../../Unit.js")
 const gcd = require("compute-gcd")
 
@@ -65362,7 +65521,7 @@ class Hopper extends Unit {
 }
 module.exports = Hopper
 
-},{"../../Unit.js":29,"compute-gcd":3}],88:[function(require,module,exports){
+},{"../../Unit.js":31,"compute-gcd":5}],90:[function(require,module,exports){
 const Unit = require("../../Unit.js")
 const FFTjs = require("fft.js")
 
@@ -65399,7 +65558,7 @@ class IFFT extends Unit {
 }
 module.exports = IFFT
 
-},{"../../Unit.js":29,"fft.js":5}],89:[function(require,module,exports){
+},{"../../Unit.js":31,"fft.js":7}],91:[function(require,module,exports){
 const Unit = require("../../Unit.js")
 const gcd = require("compute-gcd")
 const lcm = require("compute-lcm")
@@ -65453,7 +65612,7 @@ class ReChunk extends Unit {
 }
 module.exports = ReChunk
 
-},{"../../Unit.js":29,"compute-gcd":3,"compute-lcm":4}],90:[function(require,module,exports){
+},{"../../Unit.js":31,"compute-gcd":5,"compute-lcm":6}],92:[function(require,module,exports){
 const SpectralUnit = require("./SpectralUnit.js")
 
 class SpectralGate extends SpectralUnit {
@@ -65489,7 +65648,7 @@ class SpectralGate extends SpectralUnit {
 }
 module.exports = SpectralGate
 
-},{"./SpectralUnit.js":92}],91:[function(require,module,exports){
+},{"./SpectralUnit.js":94}],93:[function(require,module,exports){
 const SpectralUnit = require("./SpectralUnit.js")
 
 class SpectralSum extends SpectralUnit {
@@ -65517,7 +65676,7 @@ class SpectralSum extends SpectralUnit {
 }
 module.exports = SpectralSum
 
-},{"./SpectralUnit.js":92}],92:[function(require,module,exports){
+},{"./SpectralUnit.js":94}],94:[function(require,module,exports){
 /*
   A base class for unit which process spectral data.
 */
@@ -65553,7 +65712,7 @@ class SpectralUnit extends Unit {
 SpectralUnit.prototype.isSpectralUnit = true
 module.exports = SpectralUnit
 
-},{"../../Unit.js":29,"../../config":97}],93:[function(require,module,exports){
+},{"../../Unit.js":31,"../../config":99}],95:[function(require,module,exports){
 const Unit = require("../../Unit.js")
 
 class UnHopper extends Unit {
@@ -65601,7 +65760,7 @@ class UnHopper extends Unit {
 }
 module.exports = UnHopper
 
-},{"../../Unit.js":29}],94:[function(require,module,exports){
+},{"../../Unit.js":31}],96:[function(require,module,exports){
 const Unit = require("../../Unit.js")
 
 class Windower extends Unit {
@@ -65652,7 +65811,7 @@ function getEnvelope(size, type) {
 }
 Windower.getEnvelope = getEnvelope
 
-},{"../../Unit.js":29}],95:[function(require,module,exports){
+},{"../../Unit.js":31}],97:[function(require,module,exports){
 const Unit = require("../../Unit.js")
 const config = require('../../config.js')
 
@@ -65695,7 +65854,7 @@ CircularMotion.random = function(fMax, rMax, oMax) {
   return circ
 }
 
-},{"../../Unit.js":29,"../../config.js":97}],96:[function(require,module,exports){
+},{"../../Unit.js":31,"../../config.js":99}],98:[function(require,module,exports){
 const Unit = require("../../Unit.js")
 const config = require("../../config.js")
 
@@ -65755,7 +65914,7 @@ LinearMotion.prototype._tick = function() {
   }
 }
 
-},{"../../Unit.js":29,"../../config.js":97}],97:[function(require,module,exports){
+},{"../../Unit.js":31,"../../config.js":99}],99:[function(require,module,exports){
 (function (process){
 const argv = require("minimist")(process.argv.slice(2))
 
@@ -65781,7 +65940,7 @@ localConfig.sampleInterval = 1/module.exports.sampleRate
 module.exports = localConfig
 
 }).call(this,require('_process'))
-},{"_process":178,"minimist":6}],98:[function(require,module,exports){
+},{"_process":183,"minimist":8}],100:[function(require,module,exports){
 function constructExpression(o, index, destinations) {
   if(o.constructor == String)
     o = parseExpression(o, index)
@@ -65830,7 +65989,7 @@ const constructObjectProperty = require("./constructObjectProperty")
 const constructShorthand = require("./constructShorthand")
 const constructString = require("./constructString")
 
-},{"../parseDSP/getExpression.js":116,"./constructNumber":99,"./constructObject":100,"./constructObjectProperty":101,"./constructObjectReference":102,"./constructOperation":103,"./constructShorthand":104,"./constructString":105}],99:[function(require,module,exports){
+},{"../parseDSP/getExpression.js":118,"./constructNumber":101,"./constructObject":102,"./constructObjectProperty":103,"./constructObjectReference":104,"./constructOperation":105,"./constructShorthand":106,"./constructString":107}],101:[function(require,module,exports){
 function constructNumber(o) {
   if(o.constructor == String)
     o = parseNumber(o)
@@ -65844,7 +66003,7 @@ function constructNumber(o) {
 module.exports = constructNumber
 const parseNumber = require("../parseDSP/getNumber.js")
 
-},{"../parseDSP/getNumber.js":126}],100:[function(require,module,exports){
+},{"../parseDSP/getNumber.js":128}],102:[function(require,module,exports){
 
 
 function constructObject(o, index) {
@@ -65904,7 +66063,7 @@ const parseObject = require("../parseDSP/getObject.js")
 const components = require("../patchesAndComponents")
 const constructExpression = require("./constructExpression")
 
-},{"../parseDSP/getObject.js":127,"../patchesAndComponents":173,"./constructExpression":98}],101:[function(require,module,exports){
+},{"../parseDSP/getObject.js":129,"../patchesAndComponents":175,"./constructExpression":100}],103:[function(require,module,exports){
 function constructObjectProperty(o, index) {
   var obj = constructExpression(o.object, index)
   return obj[o.property]
@@ -65913,7 +66072,7 @@ function constructObjectProperty(o, index) {
 module.exports = constructObjectProperty
 const constructExpression = require("./constructExpression")
 
-},{"./constructExpression":98}],102:[function(require,module,exports){
+},{"./constructExpression":100}],104:[function(require,module,exports){
 function constructObjectReference(o, index) {
   if(o.constructor == String)
     o = parseObjectReference(o)
@@ -65928,7 +66087,7 @@ module.exports = constructObjectReference
 
 const parseObjectReference = require("../parseDSP/getObjectReference.js")
 
-},{"../parseDSP/getObjectReference.js":129}],103:[function(require,module,exports){
+},{"../parseDSP/getObjectReference.js":131}],105:[function(require,module,exports){
 function constructOperation(o, index, destinations) {
   if(!o.a || !o.b || !o.operator)
     throw "could not construct operation"
@@ -66023,7 +66182,7 @@ const constructExpression = require("./constructExpression")
 const components = require("../components")
 const Repeater = require("../components/Repeater.js")
 
-},{"../components":81,"../components/Repeater.js":67,"../quick":174,"./constructExpression":98}],104:[function(require,module,exports){
+},{"../components":83,"../components/Repeater.js":69,"../quick":176,"./constructExpression":100}],106:[function(require,module,exports){
 function constructShorthand(o, index) {
   if(o.constructor == String)
     o = parseShorthand(o)
@@ -66048,7 +66207,7 @@ const parseShorthand = require("../parseDSP/getShorthand.js")
 const constructNumber = require("./constructNumber")
 const shorthandConstructors = require("./shorthandConstructors")
 
-},{"../parseDSP/getShorthand.js":132,"../patchesAndComponents":173,"./constructNumber":99,"./shorthandConstructors":106}],105:[function(require,module,exports){
+},{"../parseDSP/getShorthand.js":134,"../patchesAndComponents":175,"./constructNumber":101,"./shorthandConstructors":108}],107:[function(require,module,exports){
 function constructString(o, index) {
   if(o.constructor == String)
     o = parseString(o)
@@ -66064,7 +66223,7 @@ function constructString(o, index) {
 module.exports = constructString
 const parseString = require("../parseDSP/getString.js")
 
-},{"../parseDSP/getString.js":134}],106:[function(require,module,exports){
+},{"../parseDSP/getString.js":136}],108:[function(require,module,exports){
 const components = require("../components")
 
 module.exports = {
@@ -66112,20 +66271,106 @@ module.exports = {
   },
 }
 
-},{"../components":81}],107:[function(require,module,exports){
+},{"../components":83}],109:[function(require,module,exports){
 const explore = require('./explore')
 const vis = require('vis')
 
 
-function generateDOTGraph(...units) {
+function generateDOTGraph(mainOutlet) {
   // generate a dot graph describing the relationship between units
 
-  let lines = []
-  for(let unit of explore(...units)) {
+  if(!mainOutlet.isOutlet)
+    mainOutlet = mainOutlet.defaultOutlet
+  let mainUnit = mainOutlet.unit
+
+  let nConstants = 0
+
+  let lines = ['\"OUT\" [color=brown, fontcolor=black, shape=star];']
+  for(let unit of explore(mainUnit)) {
+    let att = {shape:'circle', label:unit.constructor.name} // atributes
+    let type = unit.constructor.name
+    let color = '#'
+    for(let i=0; i<3; i++)
+      color += type.charCodeAt(i%type.length).toString(16)[0].repeat(2)
+    att.color = '\"' + color + '\"'
+    console.log(color)
+    switch(unit.constructor.name) {
+      case 'Sum':
+        att.label = '\"+\"'
+        att.shape = 'circle'
+        att.color = '"#003300"'
+        att.fontcolor = 'white'
+        break;
+      case 'Subtract':
+        att.label = '\"-\"'
+        att.shape = 'circle'
+        att.color = '"#003300"'
+        att.fontcolor = 'white'
+        break;
+      case 'Multiply':
+        att.label = '"*"'
+        att.shape = 'circle'
+        att.color = '"#009900"'
+        att.fontcolor = 'white'
+        break;
+      case 'Divide':
+        att.label = '"÷"'
+        att.shape = 'circle'
+        att.color = '"#009900"'
+        att.fontcolor = 'white'
+        break;
+      case 'Repeater':
+        att.label = '""'
+        att.color = 'green'
+        break;
+      case 'Shape':
+        att.shape = 'triangle'
+        att.color = '"#ffcc00"'
+        att.fontcolor = '"#ffcc00"'
+        att.label = unit.shape
+        break;
+
+      case 'MultiChannelOsc':
+      case 'Osc':
+        att.shape = 'circle'
+        att.color = '"#000066"'
+        att.fontcolor = 'white'
+        att.label = unit.waveform
+        break;
+
+      case 'Noise':
+        att.shape = 'box'
+        delete att.color
+        break;
+
+      case 'Retriggerer':
+        att.shape = 'square'
+        att.color = 'red'
+        break
+    }
+    let attList = []
+    for(let i in att) {
+      attList.push(i + '=' + att[i])
+    }
+    let attStr = '['+attList.join(', ')+']'
+    lines.push('\"'+unit.label+'\" '+attStr+';')
+
+    if(unit == mainUnit)
+      lines.push('\"'+unit.label+'\" -> \"OUT\"')
     for(let inlet of unit.inletsOrdered) {
       if(inlet.outlet) {
-        let line = '\"'+inlet.outlet.unit.label + '\" -> \"'+unit.label+'\";'
+        let line = '\"'+inlet.outlet.unit.label + '\" -> \"'+unit.label+'\" [label="'+inlet.name+'", fontcolor='+(att.color || 'black')+'];'
         lines.push(line)
+      } else {
+        // create constant
+        let constant = parseFloat(inlet.constant).toPrecision(3)
+
+        let nodeName = '\"constant'+nConstants+'\"'
+        lines.push(nodeName+' [label=\"'+constant+'\", fontcolor=grey, color="#ccccff", shape=circle];')
+        nConstants++
+        let arrow = '->'
+
+        lines.push(nodeName+' '+arrow+' \"'+unit.label+'\" [label="'+inlet.name+'", fontcolor="#ccccff", fontsize=10];')
       }
     }
   }
@@ -66143,7 +66388,6 @@ module.exports = generateDOTGraph
 
 function renderGraph(container, ...units) {
   let DOTstring = generateDOTGraph(...units)
-
   var parsedData = vis.network.convertDot(DOTstring);
 
   var data = {
@@ -66160,17 +66404,17 @@ function renderGraph(container, ...units) {
       background:'white',
     }
   }
-
-  console.log(data, options)
+  options.layout = {improvedLayout: false}
 
   // create a network
   var network = new vis.Network(container, data, options);
+  console.log(network)
 
   return network
 }
 module.exports.render = renderGraph
 
-},{"./explore":109,"vis":20}],108:[function(require,module,exports){
+},{"./explore":111,"vis":22}],110:[function(require,module,exports){
 // reduce things to dusp
 const config = require("./config.js")
 
@@ -66292,11 +66536,15 @@ function duspString(str, index) {
   return "\"" + str + "\""
 }
 
-},{"./config.js":97}],109:[function(require,module,exports){
+},{"./config.js":99}],111:[function(require,module,exports){
 function* exploreConnections(...list) {
   // explore a circuit, yielding every new object found
   for(let i=0; i<list.length; i++) {
     let unit = list[i]
+    if(unit.isPatch) {
+      list.push(...unit.units)
+      continue
+    }
     yield unit
 
     list.push(...unit.neighbours.filter(u => !list.includes(u)))
@@ -66324,7 +66572,7 @@ function checkConnection(unit, ...set) {
 }
 module.exports.checkConnection = checkConnection
 
-},{}],110:[function(require,module,exports){
+},{}],112:[function(require,module,exports){
 module.exports = {
   operators: [
     "->", // connect
@@ -66356,7 +66604,7 @@ const components = require("../patchesAndComponents")
 for(var constr in components)
   module.exports.shorthandConstructors.push(constr)
 
-},{"../patchesAndComponents":173}],111:[function(require,module,exports){
+},{"../patchesAndComponents":175}],113:[function(require,module,exports){
 const whitespaceRegex = /\s/
 function countWhitespace(str, i0) {
   i0 = i0 || 0
@@ -66369,7 +66617,7 @@ function countWhitespace(str, i0) {
 }
 module.exports = countWhitespace
 
-},{}],112:[function(require,module,exports){
+},{}],114:[function(require,module,exports){
 function findCoordinate(str, point) {
   var col = 0
   var row = 0
@@ -66385,7 +66633,7 @@ function findCoordinate(str, point) {
 }
 module.exports = findCoordinate
 
-},{}],113:[function(require,module,exports){
+},{}],115:[function(require,module,exports){
 function getArgument(str, i0) {
   var id = getObjectReference(str, i0)
   if(id) return id
@@ -66419,7 +66667,7 @@ const getAttribute = require("./getAttribute")
 const getWord = require("./getWord.js")
 const getExpression = require("./getExpression")
 
-},{"./getAttribute":114,"./getExpression":116,"./getObjectReference.js":129,"./getWord.js":136}],114:[function(require,module,exports){
+},{"./getAttribute":116,"./getExpression":118,"./getObjectReference.js":131,"./getWord.js":138}],116:[function(require,module,exports){
 const getWord = require("./getWord.js")
 const countWhitespace = require("./countWhitespace")
 
@@ -66453,7 +66701,7 @@ module.exports = getAttribute
 
 const getExpression = require("./getExpression.js")
 
-},{"./countWhitespace":111,"./getExpression.js":116,"./getWord.js":136}],115:[function(require,module,exports){
+},{"./countWhitespace":113,"./getExpression.js":118,"./getWord.js":138}],117:[function(require,module,exports){
 const skipCommentsAndWhitespace = require("./skipCommentsAndWhitespace")
 const getWord = require("./getWord")
 
@@ -66473,7 +66721,7 @@ function getDotProperty(str, i0) {
 }
 module.exports = getDotProperty
 
-},{"./getWord":136,"./skipCommentsAndWhitespace":138}],116:[function(require,module,exports){
+},{"./getWord":138,"./skipCommentsAndWhitespace":140}],118:[function(require,module,exports){
 function getExpression(str, i0) {
   i0 = i0 || 0
 
@@ -66591,9 +66839,9 @@ const getString = require("./getString")
 const getJSON = require("./getJSON")
 const getVariable = require('./getVariable')
 
-},{"./getJSON":124,"./getNumber.js":126,"./getObjectOrObjectProperty":128,"./getObjectReference.js":129,"./getOperatorOperand":131,"./getShorthand":132,"./getString":134,"./getVariable":135,"./skipCommentsAndWhitespace":138}],117:[function(require,module,exports){
-arguments[4][112][0].apply(exports,arguments)
-},{"dup":112}],118:[function(require,module,exports){
+},{"./getJSON":126,"./getNumber.js":128,"./getObjectOrObjectProperty":130,"./getObjectReference.js":131,"./getOperatorOperand":133,"./getShorthand":134,"./getString":136,"./getVariable":137,"./skipCommentsAndWhitespace":140}],119:[function(require,module,exports){
+arguments[4][114][0].apply(exports,arguments)
+},{"dup":114}],120:[function(require,module,exports){
 function getArray(str, i0=0) {
   if(str[i0] != "[")
     return null
@@ -66635,7 +66883,7 @@ module.exports = getArray
 const skipWhitespace = require("./skipWhitespace")
 const getJSON = require("./index.js")
 
-},{"./index.js":124,"./skipWhitespace":125}],119:[function(require,module,exports){
+},{"./index.js":126,"./skipWhitespace":127}],121:[function(require,module,exports){
 const numberRegex = /[0-9.\-]/
 
 function getNumber(str, startIndex=0) {
@@ -66668,7 +66916,7 @@ function getNumber(str, startIndex=0) {
 module.exports = getNumber
 const findCoordinate = require("./findCoordinate")
 
-},{"./findCoordinate":117}],120:[function(require,module,exports){
+},{"./findCoordinate":119}],122:[function(require,module,exports){
 function getObject(str, i0=0) {
   if(str[i0] != "{")
     return null
@@ -66709,7 +66957,7 @@ module.exports = getObject
 const getProperty = require("./getProperty")
 const skipWhitespace = require("./skipWhitespace.js")
 
-},{"./getProperty":121,"./skipWhitespace.js":125}],121:[function(require,module,exports){
+},{"./getProperty":123,"./skipWhitespace.js":127}],123:[function(require,module,exports){
 function getProperty(str, i0=0) {
   var name = getWord(str, i0) || getString(str, i0) || getNumber(str, i0)
   if(!name)
@@ -66749,7 +66997,7 @@ const getJSON = require("./index.js")
 const skipWhitespace = require("./skipWhitespace")
 const getNumber = require("./getNumber")
 
-},{"./getNumber":119,"./getString":122,"./getWord.js":123,"./index.js":124,"./skipWhitespace":125}],122:[function(require,module,exports){
+},{"./getNumber":121,"./getString":124,"./getWord.js":125,"./index.js":126,"./skipWhitespace":127}],124:[function(require,module,exports){
 function getString(str, i0=0) {
 
   if(str[i0] == "\"")
@@ -66775,7 +67023,7 @@ function getString(str, i0=0) {
 
 module.exports = getString
 
-},{}],123:[function(require,module,exports){
+},{}],125:[function(require,module,exports){
 
 const findCoordinate = require("./findCoordinate")
 const wordRegex = /[a-zA-Z_]/
@@ -66800,7 +67048,7 @@ function getWord(str, startIndex) {
 }
 module.exports = getWord
 
-},{"./findCoordinate":117}],124:[function(require,module,exports){
+},{"./findCoordinate":119}],126:[function(require,module,exports){
 function getJSON(str, i0=0) {
   var string = getString(str, i0)
   if(string)
@@ -66836,7 +67084,7 @@ const getNumber = require("./getNumber")
 const getArray = require("./getArray")
 const getObject = require("./getObject")
 
-},{"./getArray":118,"./getNumber":119,"./getObject":120,"./getString":122}],125:[function(require,module,exports){
+},{"./getArray":120,"./getNumber":121,"./getObject":122,"./getString":124}],127:[function(require,module,exports){
 const whitespaceRegex = /\s/
 function skipWhitespace(str, i0) {
   i0 = i0 || 0
@@ -66850,7 +67098,7 @@ function skipWhitespace(str, i0) {
 }
 module.exports = skipWhitespace
 
-},{}],126:[function(require,module,exports){
+},{}],128:[function(require,module,exports){
 const numberRegex = /[0-9.\-]/
 
 function getNumber(str, startIndex) {
@@ -66871,7 +67119,7 @@ function getNumber(str, startIndex) {
 }
 module.exports = getNumber
 
-},{}],127:[function(require,module,exports){
+},{}],129:[function(require,module,exports){
 function getObject(str, i0) {
   i0 = i0 || 0
   if(str[i0] != "[")
@@ -66944,7 +67192,7 @@ const getWord = require("./getWord")
 const getArgument = require("./getArgument")
 const countWhitespace = require("./countWhitespace")
 
-},{"./countWhitespace":111,"./getArgument":113,"./getWord":136,"./skipCommentsAndWhitespace.js":138}],128:[function(require,module,exports){
+},{"./countWhitespace":113,"./getArgument":115,"./getWord":138,"./skipCommentsAndWhitespace.js":140}],130:[function(require,module,exports){
 function getObjectOrObjectProperty(str, i0) {
   i0 = i0 || 0
   var object = getObject(str, i0)
@@ -66974,7 +67222,7 @@ const getDotProperty = require("./getDotProperty")
 const getObjectReference = require("./getObjectReference")
 const getShorthand = require("./getShorthand")
 
-},{"./getDotProperty":115,"./getObject":127,"./getObjectReference":129,"./getShorthand":132}],129:[function(require,module,exports){
+},{"./getDotProperty":117,"./getObject":129,"./getObjectReference":131,"./getShorthand":134}],131:[function(require,module,exports){
 const getWordWithDigits = require("./getWordWithDigits.js")
 
 function getObjectReference(str, startIndex) {
@@ -66995,7 +67243,7 @@ function getObjectReference(str, startIndex) {
 }
 module.exports = getObjectReference
 
-},{"./getWordWithDigits.js":137}],130:[function(require,module,exports){
+},{"./getWordWithDigits.js":139}],132:[function(require,module,exports){
 function getOperator(str, i0=0) {
   var winner = ""
   for(var i in operators) {
@@ -67014,7 +67262,7 @@ module.exports = getOperator
 const {operators} = require("./config")
 const getSpecific = require("./getSpecific")
 
-},{"./config":110,"./getSpecific":133}],131:[function(require,module,exports){
+},{"./config":112,"./getSpecific":135}],133:[function(require,module,exports){
 function getOperatorOperand(str, i0) {
   i0 = i0 || 0
 
@@ -67045,7 +67293,7 @@ const skipCommentsAndWhitespace = require("./skipCommentsAndWhitespace.js")
 const config = require("./config")
 const getOperator = require("./getOperator")
 
-},{"./config":110,"./getExpression.js":116,"./getOperator":130,"./skipCommentsAndWhitespace.js":138}],132:[function(require,module,exports){
+},{"./config":112,"./getExpression.js":118,"./getOperator":132,"./skipCommentsAndWhitespace.js":140}],134:[function(require,module,exports){
 function getShorthand(str, i0) {
   i0 = i0 || 0
   var constr = getWord(str, i0)
@@ -67085,7 +67333,7 @@ const getWord = require("./getWord")
 const getNumber = require("./getNumber")
 const config = require("./config")
 
-},{"./config":110,"./getNumber":126,"./getWord":136}],133:[function(require,module,exports){
+},{"./config":112,"./getNumber":128,"./getWord":138}],135:[function(require,module,exports){
 function getSpecific(searchStr, str, i0) {
   i0 = i0 || 0
   for(var i=0; i<searchStr.length; i++)
@@ -67096,7 +67344,7 @@ function getSpecific(searchStr, str, i0) {
 }
 module.exports = getSpecific
 
-},{}],134:[function(require,module,exports){
+},{}],136:[function(require,module,exports){
 function getString(str, i0) {
   i0 = i0 || 0
 
@@ -67123,7 +67371,7 @@ function getString(str, i0) {
 
 module.exports = getString
 
-},{}],135:[function(require,module,exports){
+},{}],137:[function(require,module,exports){
 // variables begin with a $ sign just like in php
 
 const getWordWithDigits = require("./getWordWithDigits.js")
@@ -67146,9 +67394,9 @@ function getVariable(str, startIndex) {
 }
 module.exports = getVariable
 
-},{"./getWordWithDigits.js":137}],136:[function(require,module,exports){
-arguments[4][123][0].apply(exports,arguments)
-},{"./findCoordinate":112,"dup":123}],137:[function(require,module,exports){
+},{"./getWordWithDigits.js":139}],138:[function(require,module,exports){
+arguments[4][125][0].apply(exports,arguments)
+},{"./findCoordinate":114,"dup":125}],139:[function(require,module,exports){
 
 const wordRegex = /[a-zA-Z0-9_]/
 
@@ -67166,7 +67414,7 @@ function getWordWithDigits(str, startIndex) {
 }
 module.exports = getWordWithDigits
 
-},{}],138:[function(require,module,exports){
+},{}],140:[function(require,module,exports){
 const skipWhitespace = require('./skipWhitespace')
 const skipLineComment = require('./skipLineComment')
 const skipMultilineComment = require('./skipMultilineComment')
@@ -67186,7 +67434,7 @@ function skipCommentsAndWhitespace(str, i0) {
 }
 module.exports = skipCommentsAndWhitespace
 
-},{"./skipLineComment":139,"./skipMultilineComment":140,"./skipWhitespace":141}],139:[function(require,module,exports){
+},{"./skipLineComment":141,"./skipMultilineComment":142,"./skipWhitespace":143}],141:[function(require,module,exports){
 function skipLineComment(str, i0) {
   if(str[i0] == '/' && str[i0+1] == '/') {
     let iEnd = str.indexOf('\n', i0+2)
@@ -67199,7 +67447,7 @@ function skipLineComment(str, i0) {
 }
 module.exports = skipLineComment
 
-},{}],140:[function(require,module,exports){
+},{}],142:[function(require,module,exports){
 function skipMultilineComment(str, i0) {
   if(str.slice(i0, i0+2) == '/*') {
     let iEnd = str.indexOf('*/', i0+2)
@@ -67213,9 +67461,9 @@ function skipMultilineComment(str, i0) {
 }
 module.exports = skipMultilineComment
 
-},{}],141:[function(require,module,exports){
-arguments[4][125][0].apply(exports,arguments)
-},{"dup":125}],142:[function(require,module,exports){
+},{}],143:[function(require,module,exports){
+arguments[4][127][0].apply(exports,arguments)
+},{"dup":127}],144:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const AllPass = require("../components/AllPass.js")
 
@@ -67249,7 +67497,7 @@ class APStack extends Patch {
 }
 module.exports = APStack
 
-},{"../Patch.js":26,"../components/AllPass.js":33}],143:[function(require,module,exports){
+},{"../Patch.js":28,"../components/AllPass.js":35}],145:[function(require,module,exports){
 const Patch = require("../Patch")
 const AttenuationMatrix = require("./AttenuationMatrix.js")
 const AllPass = require("../components/AllPass.js")
@@ -67275,7 +67523,7 @@ class APWeb extends Patch {
 }
 module.exports = APWeb
 
-},{"../Patch":26,"../components/AllPass.js":33,"./AttenuationMatrix.js":144}],144:[function(require,module,exports){
+},{"../Patch":28,"../components/AllPass.js":35,"./AttenuationMatrix.js":146}],146:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const Mixer = require("./Mixer.js")
 
@@ -67318,7 +67566,7 @@ class AttenuationMatrix extends Patch {
 }
 module.exports = AttenuationMatrix
 
-},{"../Patch.js":26,"./Mixer.js":157}],145:[function(require,module,exports){
+},{"../Patch.js":28,"./Mixer.js":159}],147:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const Filter = require("../components/Filter.js")
 
@@ -67341,7 +67589,7 @@ class BandFilter extends Patch {
 }
 module.exports = BandFilter
 
-},{"../Patch.js":26,"../components/Filter.js":44}],146:[function(require,module,exports){
+},{"../Patch.js":28,"../components/Filter.js":46}],148:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const Shape = require("../components/Shape")
 const Osc = require("../components/Osc")
@@ -67372,7 +67620,7 @@ class Boop extends Patch {
 }
 module.exports = Boop
 
-},{"../Patch.js":26,"../components/Multiply.js":55,"../components/Osc":59,"../components/Shape":73}],147:[function(require,module,exports){
+},{"../Patch.js":28,"../components/Multiply.js":57,"../components/Osc":61,"../components/Shape":75}],149:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const CircularMotion = require("../components/vector/CircularMotion.js")
 const Multiply = require("../components/Multiply.js")
@@ -67455,7 +67703,7 @@ ComplexOrbit.random = function(n, fMax, rMax, oMax) {
   return new ComplexOrbit( frequencyRatios, radiusRatios, centre)
 }
 
-},{"../Patch.js":26,"../components/Multiply.js":55,"../components/Repeater.js":67,"../components/vector/CircularMotion.js":95}],148:[function(require,module,exports){
+},{"../Patch.js":28,"../components/Multiply.js":57,"../components/Repeater.js":69,"../components/vector/CircularMotion.js":97}],150:[function(require,module,exports){
 const Patch = require("../Patch")
 const CircleBuffer = require("../CircleBuffer.js")
 const CircleBufferReader = require("../components/CircleBufferReader.js")
@@ -67493,7 +67741,7 @@ class DelayMixer extends Patch {
 }
 module.exports = DelayMixer
 
-},{"../CircleBuffer.js":21,"../Patch":26,"../components/CircleBufferReader.js":35,"../components/CircleBufferWriter.js":36,"../quick.js":174}],149:[function(require,module,exports){
+},{"../CircleBuffer.js":23,"../Patch":28,"../components/CircleBufferReader.js":37,"../components/CircleBufferWriter.js":38,"../quick.js":176}],151:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const Repeater = require("../components/Repeater.js")
 
@@ -67553,7 +67801,7 @@ FMOsc.prototype.resetPhase = function() {
   this.osc.resetPhase()
 }
 
-},{"../Patch.js":26,"../components/Multiply.js":55,"../components/Osc/MultiChannelOsc":57,"../components/Repeater.js":67,"../components/SemitoneToRatio.js":72}],150:[function(require,module,exports){
+},{"../Patch.js":28,"../components/Multiply.js":57,"../components/Osc/MultiChannelOsc":59,"../components/Repeater.js":69,"../components/SemitoneToRatio.js":74}],152:[function(require,module,exports){
 
 const Synth = require("./Synth.js")
 const unDusp = require("../unDusp")
@@ -67745,7 +67993,7 @@ class FMSynth extends Synth {
 }
 module.exports = FMSynth
 
-},{"../components/Shape":73,"../dusp":108,"../patches/FMOsc":149,"../quick.js":174,"../unDusp":175,"./FrequencyGroup.js":151,"./Mixer.js":157,"./StereoDetune.js":167,"./Synth.js":169,"./Worm.js":171}],151:[function(require,module,exports){
+},{"../components/Shape":75,"../dusp":110,"../patches/FMOsc":151,"../quick.js":176,"../unDusp":178,"./FrequencyGroup.js":153,"./Mixer.js":159,"./StereoDetune.js":169,"./Synth.js":171,"./Worm.js":173}],153:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const Repeater = require("../components/Repeater.js")
 const quick = require("../quick.js")
@@ -67789,7 +68037,7 @@ FrequencyGroup.prototype.addRandomHarmonics = function(n, maxNum, maxDenom) {
   return harmonicsAdded
 }
 
-},{"../Patch.js":26,"../components/Repeater.js":67,"../quick.js":174}],152:[function(require,module,exports){
+},{"../Patch.js":28,"../components/Repeater.js":69,"../quick.js":176}],154:[function(require,module,exports){
 /*
   A spectrally implemented band pass filter with sqaure attenuation curves.
 */
@@ -67825,7 +68073,7 @@ class HardBandPass extends Patch {
 }
 module.exports = HardBandPass
 
-},{"../Patch.js":26,"../components/spectral/HardHighPass.js":85,"../components/spectral/HardLowPass.js":86}],153:[function(require,module,exports){
+},{"../Patch.js":28,"../components/spectral/HardHighPass.js":87,"../components/spectral/HardLowPass.js":88}],155:[function(require,module,exports){
 /*
   A Karplus-Strong string synthesis patch.
 */
@@ -67908,7 +68156,7 @@ class Karplus extends Patch {
 }
 module.exports = Karplus
 
-},{"../Patch":26,"../components/Delay":42,"../components/Divide":43,"../components/Filter":44,"../components/Multiply":55,"../components/Noise":56,"../components/Repeater":67,"../components/Shape":73,"../components/Sum":78,"../config":97,"../quick":174}],154:[function(require,module,exports){
+},{"../Patch":28,"../components/Delay":44,"../components/Divide":45,"../components/Filter":46,"../components/Multiply":57,"../components/Noise":58,"../components/Repeater":69,"../components/Shape":75,"../components/Sum":80,"../config":99,"../quick":176}],156:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const Osc = require("../components/Osc")
 const Multiply = require("../components/Multiply.js")
@@ -67967,7 +68215,7 @@ LFO.prototype.__defineSetter__("waveform", function(waveform) {
   this.osc.waveform = waveform
 })
 
-},{"../Patch.js":26,"../components/Multiply.js":55,"../components/Osc":59,"../components/Sum.js":78}],155:[function(require,module,exports){
+},{"../Patch.js":28,"../components/Multiply.js":57,"../components/Osc":61,"../components/Sum.js":80}],157:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const StereoOsc = require("./StereoOsc")
 const Repeater = require("../components/Repeater.js")
@@ -68014,7 +68262,7 @@ ManyOsc.random = function(n, min, max) {
   return ManyOsc.ofFrequencies(1, freqs)
 }
 
-},{"../Patch.js":26,"../components/Multiply.js":55,"../components/Osc":59,"../components/Repeater.js":67,"../components/Sum.js":78,"./StereoOsc":168}],156:[function(require,module,exports){
+},{"../Patch.js":28,"../components/Multiply.js":57,"../components/Osc":61,"../components/Repeater.js":69,"../components/Sum.js":80,"./StereoOsc":170}],158:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const Osc = require("../components/Osc")
 const MidiToFrequency = require("../components/MidiToFrequency.js")
@@ -68036,7 +68284,7 @@ MidiOsc.prototype = Object.create(Patch.prototype)
 MidiOsc.prototype.constructor = MidiOsc
 module.exports = MidiOsc
 
-},{"../Patch.js":26,"../components/MidiToFrequency.js":52,"../components/Osc":59}],157:[function(require,module,exports){
+},{"../Patch.js":28,"../components/MidiToFrequency.js":54,"../components/Osc":61}],159:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const Repeater = require("../components/Repeater.js")
 const Sum = require("../components/Sum.js")
@@ -68157,7 +68405,7 @@ Mixer.prototype.__defineGetter__("numberOfInputs", function() {
   return this.inputs.length
 })
 
-},{"../Patch.js":26,"../components/Gain.js":47,"../components/Multiply.js":55,"../components/Repeater.js":67,"../components/Sum.js":78}],158:[function(require,module,exports){
+},{"../Patch.js":28,"../components/Gain.js":49,"../components/Multiply.js":57,"../components/Repeater.js":69,"../components/Sum.js":80}],160:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const CircleBuffer = require("../CircleBuffer.js")
 const CircleBufferReader = require("../components/CircleBufferReader.js")
@@ -68204,7 +68452,7 @@ class MultiTapDelay extends Patch {
 }
 module.exports = MultiTapDelay
 
-},{"../CircleBuffer.js":21,"../Patch.js":26,"../components/CircleBufferReader.js":35,"../components/CircleBufferWriter.js":36,"../quick.js":174}],159:[function(require,module,exports){
+},{"../CircleBuffer.js":23,"../Patch.js":28,"../components/CircleBufferReader.js":37,"../components/CircleBufferWriter.js":38,"../quick.js":176}],161:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const MidiOsc = require("./MidiOsc")
 const Osc = require("../components/Osc")
@@ -68242,7 +68490,7 @@ OrbittySine.prototype.__defineSetter__("waveform", function(waveform) {
   this.osc.waveform = waveform
 })
 
-},{"../Patch.js":26,"../components/Osc":59,"./ComplexOrbit.js":147,"./MidiOsc":156,"./Space.js":164}],160:[function(require,module,exports){
+},{"../Patch.js":28,"../components/Osc":61,"./ComplexOrbit.js":149,"./MidiOsc":158,"./Space.js":166}],162:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const Space = require("./Space.js")
 const Repeater = require("../components/Repeater.js")
@@ -68271,7 +68519,7 @@ ScaryPatch.prototype = Object.create(Patch.prototype)
 ScaryPatch.prototype.constructor = ScaryPatch
 module.exports = ScaryPatch
 
-},{"../Patch.js":26,"../components/Multiply.js":55,"../components/Repeater.js":67,"./Space.js":164}],161:[function(require,module,exports){
+},{"../Patch.js":28,"../components/Multiply.js":57,"../components/Repeater.js":69,"./Space.js":166}],163:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const CrossFader = require("../components/CrossFader.js")
 const Delay = require("../components/Delay.js")
@@ -68315,7 +68563,7 @@ SimpleDelay.prototype = Object.create(Patch.prototype)
 SimpleDelay.prototype.constructor = SimpleDelay
 module.exports = SimpleDelay
 
-},{"../Patch.js":26,"../components/CrossFader.js":40,"../components/Delay.js":42,"../components/Multiply.js":55,"../components/Repeater.js":67,"../components/SecondsToSamples.js":71,"../components/Sum.js":78}],162:[function(require,module,exports){
+},{"../Patch.js":28,"../components/CrossFader.js":42,"../components/Delay.js":44,"../components/Multiply.js":57,"../components/Repeater.js":69,"../components/SecondsToSamples.js":73,"../components/Sum.js":80}],164:[function(require,module,exports){
 const config = require("../config.js")
 const Patch = require("../Patch.js")
 const MidiOsc = require("../patches/MidiOsc")
@@ -68360,7 +68608,7 @@ SineBoop.prototype.trigger = function() {
   return this
 }
 
-},{"../Patch.js":26,"../components/Multiply.js":55,"../components/Ramp.js":65,"../components/Shape":73,"../config.js":97,"../patches/MidiOsc":156}],163:[function(require,module,exports){
+},{"../Patch.js":28,"../components/Multiply.js":57,"../components/Ramp.js":67,"../components/Shape":75,"../config.js":99,"../patches/MidiOsc":158}],165:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const OrbittySine = require("./OrbittySine.js")
 const Mixer = require("./Mixer.js")
@@ -68414,7 +68662,7 @@ SineCloud.prototype.__defineSetter__("waveform", function(waveform) {
     this.orbittySines[i].waveform = waveform
 })
 
-},{"../Patch.js":26,"../components/Multiply.js":55,"../components/Repeater.js":67,"./Mixer.js":157,"./OrbittySine.js":159}],164:[function(require,module,exports){
+},{"../Patch.js":28,"../components/Multiply.js":57,"../components/Repeater.js":69,"./Mixer.js":159,"./OrbittySine.js":161}],166:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const SpaceChannel = require("./SpaceChannel.js")
 const PickChannel = require("../components/PickChannel.js")
@@ -68480,7 +68728,7 @@ Space.prototype.addSpeaker = function(speakerPosition) {
   this.addUnit(chan)
 }
 
-},{"../Patch.js":26,"../components/ConcatChannels.js":39,"../components/PickChannel.js":62,"../components/Repeater.js":67,"../config.js":97,"./SpaceChannel.js":166}],165:[function(require,module,exports){
+},{"../Patch.js":28,"../components/ConcatChannels.js":41,"../components/PickChannel.js":64,"../components/Repeater.js":69,"../config.js":99,"./SpaceChannel.js":168}],167:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const config = require("../config.js")
 
@@ -68540,7 +68788,7 @@ SpaceBoop.prototype.__defineSetter__("decayForm", function(shape) {
   this.envelope.shape = shape
 })
 
-},{"../Patch.js":26,"../components/Divide.js":43,"../components/MidiToFrequency.js":52,"../components/Multiply.js":55,"../components/Osc":59,"../components/Shape":73,"../config.js":97,"../patches/Space.js":164}],166:[function(require,module,exports){
+},{"../Patch.js":28,"../components/Divide.js":45,"../components/MidiToFrequency.js":54,"../components/Multiply.js":57,"../components/Osc":61,"../components/Shape":75,"../config.js":99,"../patches/Space.js":166}],168:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const Subtract = require("../components/Subtract.js")
 const VectorMagnitude = require("../components/VectorMagnitude.js")
@@ -68589,7 +68837,7 @@ SpaceChannel.prototype = Object.create(Patch.prototype)
 SpaceChannel.prototype.constructor = SpaceChannel
 module.exports = SpaceChannel
 
-},{"../Patch.js":26,"../components/Gain.js":47,"../components/MonoDelay.js":54,"../components/Multiply.js":55,"../components/Subtract.js":77,"../components/VectorMagnitude.js":80,"../config.js":97}],167:[function(require,module,exports){
+},{"../Patch.js":28,"../components/Gain.js":49,"../components/MonoDelay.js":56,"../components/Multiply.js":57,"../components/Subtract.js":79,"../components/VectorMagnitude.js":82,"../config.js":99}],169:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const Multiply = require("../components/Multiply.js")
 const quick = require("../quick.js")
@@ -68620,7 +68868,7 @@ StereoDetune.random = function(input, maxAmmount) {
   return new StereoDetune(input, ammount)
 }
 
-},{"../Patch.js":26,"../components/Multiply.js":55,"../quick.js":174}],168:[function(require,module,exports){
+},{"../Patch.js":28,"../components/Multiply.js":57,"../quick.js":176}],170:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const Osc = require("../components/Osc")
 const Pan = require("../components/Pan.js")
@@ -68673,7 +68921,7 @@ StereoOsc.prototype.__defineSetter__("waveform", function(waveform) {
   this.osc.waveform = waveform
 })
 
-},{"../Patch.js":26,"../components/Gain.js":47,"../components/MidiToFrequency.js":52,"../components/Osc":59,"../components/Pan.js":61,"../components/Sum.js":78}],169:[function(require,module,exports){
+},{"../Patch.js":28,"../components/Gain.js":49,"../components/MidiToFrequency.js":54,"../components/Osc":61,"../components/Pan.js":63,"../components/Sum.js":80}],171:[function(require,module,exports){
 const Patch = require("../Patch.js")
 
 class Synth extends Patch {
@@ -68703,7 +68951,7 @@ class Synth extends Patch {
 }
 module.exports = Synth
 
-},{"../Patch.js":26}],170:[function(require,module,exports){
+},{"../Patch.js":28}],172:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const Mixer = require("./Mixer.js")
 
@@ -68740,7 +68988,7 @@ TriggerGroup.prototype.trigger = function(which) {
     console.log(this.label, "unknown trigger:", which)
 }
 
-},{"../Patch.js":26,"./Mixer.js":157}],171:[function(require,module,exports){
+},{"../Patch.js":28,"./Mixer.js":159}],173:[function(require,module,exports){
 const Patch = require("../Patch.js")
 const Noise = require("../components/Noise")
 const Filter = require("../components/Filter.js")
@@ -68769,7 +69017,7 @@ class Worm extends Patch {
 }
 module.exports = Worm
 
-},{"../Patch.js":26,"../components/Filter.js":44,"../components/Noise":56,"../components/Repeater.js":67,"../quick.js":174}],172:[function(require,module,exports){
+},{"../Patch.js":28,"../components/Filter.js":46,"../components/Noise":58,"../components/Repeater.js":69,"../quick.js":176}],174:[function(require,module,exports){
 module.exports = {
 	APStack: require("./APStack.js"),
 	APWeb: require("./APWeb.js"),
@@ -68802,7 +69050,7 @@ module.exports = {
 	TriggerGroup: require("./TriggerGroup.js"),
 	Worm: require("./Worm.js")
 }
-},{"./APStack.js":142,"./APWeb.js":143,"./AttenuationMatrix.js":144,"./BandFilter.js":145,"./Boop.js":146,"./ComplexOrbit.js":147,"./DelayMixer.js":148,"./FMOsc.js":149,"./FMSynth.js":150,"./FrequencyGroup.js":151,"./HardBandPass.js":152,"./Karplus.js":153,"./LFO.js":154,"./ManyOsc.js":155,"./MidiOsc.js":156,"./Mixer.js":157,"./MultiTapDelay.js":158,"./OrbittySine.js":159,"./ScaryPatch.js":160,"./SimpleDelay.js":161,"./SineBoop.js":162,"./SineCloud.js":163,"./Space.js":164,"./SpaceBoop.js":165,"./SpaceChannel.js":166,"./StereoDetune.js":167,"./StereoOsc.js":168,"./Synth.js":169,"./TriggerGroup.js":170,"./Worm.js":171}],173:[function(require,module,exports){
+},{"./APStack.js":144,"./APWeb.js":145,"./AttenuationMatrix.js":146,"./BandFilter.js":147,"./Boop.js":148,"./ComplexOrbit.js":149,"./DelayMixer.js":150,"./FMOsc.js":151,"./FMSynth.js":152,"./FrequencyGroup.js":153,"./HardBandPass.js":154,"./Karplus.js":155,"./LFO.js":156,"./ManyOsc.js":157,"./MidiOsc.js":158,"./Mixer.js":159,"./MultiTapDelay.js":160,"./OrbittySine.js":161,"./ScaryPatch.js":162,"./SimpleDelay.js":163,"./SineBoop.js":164,"./SineCloud.js":165,"./Space.js":166,"./SpaceBoop.js":167,"./SpaceChannel.js":168,"./StereoDetune.js":169,"./StereoOsc.js":170,"./Synth.js":171,"./TriggerGroup.js":172,"./Worm.js":173}],175:[function(require,module,exports){
 const patches = require("./patches")
 const components = require("./components")
 
@@ -68812,7 +69060,7 @@ for(var name in patches)
 
 Object.assign(exports, components, patches)
 
-},{"./components":81,"./patches":172}],174:[function(require,module,exports){
+},{"./components":83,"./patches":174}],176:[function(require,module,exports){
 /* quick.js provides a set of operators for combining numbers or signals making
   efficiency savings where possible */
 
@@ -68930,7 +69178,68 @@ exports.mix = function(...inputs) {
   return new Mixer(...inputs)
 }
 
-},{"./components/ConcatChannels.js":39,"./components/Divide.js":43,"./components/HardClipAbove.js":49,"./components/HardClipBelow.js":50,"./components/Multiply.js":55,"./components/PolarityInvert.js":63,"./components/Pow.js":64,"./components/SemitoneToRatio.js":72,"./components/Subtract.js":77,"./components/Sum.js":78,"./patches/Mixer":157}],175:[function(require,module,exports){
+},{"./components/ConcatChannels.js":41,"./components/Divide.js":45,"./components/HardClipAbove.js":51,"./components/HardClipBelow.js":52,"./components/Multiply.js":57,"./components/PolarityInvert.js":65,"./components/Pow.js":66,"./components/SemitoneToRatio.js":74,"./components/Subtract.js":79,"./components/Sum.js":80,"./patches/Mixer":159}],177:[function(require,module,exports){
+const AudioBuffer = require('audio-buffer')
+const Circuit = require('./Circuit')
+
+// render audio into an channelData (array of typed arrays)
+async function renderChannelData(outlet,
+                                 duration=1,
+                                 { TypedArray = Float32Array,
+                                   normalise = false, // (unimplemented)
+                                   audioctx = null,
+                                 } = {}) {
+  // check arguments
+  if(!outlet)
+    throw "renderAudioBuffer expects an outlet"
+  if(outlet.isUnit || outlet.isPatch)
+    outlet = outlet.defaultOutlet
+  if(!outlet.isOutlet)
+    throw "renderAudioBuffer expects an outlet"
+
+  // find or construct the circuit
+  const circuit = outlet.unit.circuit || new Circuit(outlet.unit)
+  circuit.centralUnits = [outlet.unit]
+
+  // get values
+  const sampleRate = outlet.sampleRate
+  const lengthInSamples = duration * sampleRate
+  const chunkSize = outlet.chunkSize
+
+  const channelData = [] // record data; channelData[channel][timeInSamples]
+
+  for(let t0=0; t0<lengthInSamples; t0+=chunkSize) {
+    // "tick" the circuit
+    let t1 = t0 + chunkSize
+    await circuit.tickUntil(t1)
+
+    // the output signal chunk
+    let chunk = outlet.signalChunk
+
+    // if necessary, increase numberOfChannels to accomodate signal
+    while(chunk.channelData.length > channelData.length)
+      channelData.push(new TypedArray(lengthInSamples))
+
+    // record signal chunk to channelData
+    for(let channel in chunk.channelData)
+      for(let t=0; t<chunkSize; t++) {
+        let val = chunk.channelData[channel][t]
+        if(isNaN(val)) {
+          let culprit = circuit.findNaNCulprit()
+          console.log('NaN culprit:', culprit.label)
+          throw 'cannot record NaN value'
+        }
+        channelData[channel][t+t0] = val || 0
+      }
+  }
+
+  channelData.sampleRate = sampleRate
+  return channelData
+}
+
+module.exports = renderChannelData
+
+},{"./Circuit":24,"audio-buffer":3}],178:[function(require,module,exports){
 const constructExpression = require("./construct/constructExpression.js")
 //const parseExpression = require("./parseDSP/getExpression.js")
 
@@ -68949,19 +69258,69 @@ function unDusp(o) {
 }
 module.exports = unDusp
 
-},{"./construct/constructExpression.js":98}],176:[function(require,module,exports){
+},{"./construct/constructExpression.js":100}],179:[function(require,module,exports){
+const AudioBuffer = require('audio-buffer')
+
+function channelDataToAudioBuffer(channelData) {
+  let audioBuffer = new AudioBuffer({
+    sampleRate: channelData.sampleRate,
+    numberOfChannels: channelData.length,
+    length: channelData[0].length,
+  })
+
+  for(let c=0; c<channelData.length; c++) {
+    audioBuffer.copyToChannel(channelData[c], c)
+  }
+
+  return audioBuffer
+}
+module.exports = channelDataToAudioBuffer
+
+},{"audio-buffer":3}],180:[function(require,module,exports){
+const renderChannelData = require('../renderChannelData')
+const channelDataToAudioBuffer = require('./channelDataToAudioBuffer')
+
+async function renderAudioBuffer(outlet, duration, options={}) {
+  let channelData = await renderChannelData(outlet, duration, options)
+  return channelDataToAudioBuffer(channelData)
+}
+module.exports = renderAudioBuffer
+
+},{"../renderChannelData":177,"./channelDataToAudioBuffer":179}],181:[function(require,module,exports){
 const dotgraph = require('../src/dotgraph')
 let unDusp = require('../src/unDusp')
+const renderAudioBuffer = require('../src/webaudioapi/renderAudioBuffer')
 
-let unit = unDusp('O200 + O300')
-
+let unit = unDusp('(Noise * D0.01) -> [Karplus]')
+console.log(unit)
 window.onload = function() {
-  console.log(
-    dotgraph.render(document.body, unit)
-  )
+  let source = null
+  const audioctx = new AudioContext
+  document.getElementById('input').onkeypress = async function(e) {
+    if(source)
+      source.stop()
+    // on enter press
+    if(e.keyCode == 13) {
+      // parse dusp
+      let outlet = unDusp(document.getElementById('input').value)
+
+      // render graph
+      dotgraph.render(document.getElementById('container'), outlet)
+
+      // render audio
+      let buffer = await renderAudioBuffer(outlet, 10)
+
+
+      source = audioctx.createBufferSource()
+      source.buffer = buffer
+      source.connect(audioctx.destination)
+      source.loop = true
+      source.start()
+    }
+  }
 }
 
-},{"../src/dotgraph":107,"../src/unDusp":175}],177:[function(require,module,exports){
+},{"../src/dotgraph":109,"../src/unDusp":178,"../src/webaudioapi/renderAudioBuffer":180}],182:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -69265,7 +69624,7 @@ function isUndefined(arg) {
   return arg === void 0;
 }
 
-},{}],178:[function(require,module,exports){
+},{}],183:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -69451,4 +69810,4 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}]},{},[176]);
+},{}]},{},[181]);

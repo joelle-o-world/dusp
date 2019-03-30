@@ -2,6 +2,10 @@ function* exploreConnections(...list) {
   // explore a circuit, yielding every new object found
   for(let i=0; i<list.length; i++) {
     let unit = list[i]
+    if(unit.isPatch) {
+      list.push(...unit.units)
+      continue
+    }
     yield unit
 
     list.push(...unit.neighbours.filter(u => !list.includes(u)))
