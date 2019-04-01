@@ -79,7 +79,7 @@ class DuspPlayer {
     if(this.saveTimer)
       clearInterval(this.saveTimer)
     window.localStorage.removeItem(this.creationStamp)
-    this.interface.main.parentNode.removeChild(this.interface.main)
+    this.interface.main.parentNode.parentNode.removeChild(this.interface.main.parentNode)
   }
 
   htmlInterface() {
@@ -103,11 +103,7 @@ class DuspPlayer {
     })
     mainDIV.className = 'DuspPlayer'
 
-    let closeBTN = document.createElement('button')
-    closeBTN.onclick = () => this.close()
-    closeBTN.innerText = 'close'
-    closeBTN.className = 'close'
-    mainDIV.appendChild(closeBTN)
+
 
     let inputWrapperDIV = document.createElement('div')
     inputWrapperDIV.className = 'inputwrapper'
@@ -116,6 +112,7 @@ class DuspPlayer {
     let duspINPUT = document.createElement('textarea')
     duspINPUT.addEventListener('keydown', function(e) {
       if(e.keyCode == 9) {
+        // TAB
         e.preventDefault()
         var s = this.selectionStart;
         this.value = this.value.substring(0,this.selectionStart) + "  " + this.value.substring(this.selectionEnd);
@@ -188,21 +185,6 @@ class DuspPlayer {
     controlDIV.className = 'controls'
     mainDIV.appendChild(controlDIV)
 
-    let durationLABEL = document.createElement('label')
-    durationLABEL.innerText = 'duration:'
-    controlDIV.appendChild(durationLABEL)
-
-    let durationINPUT = document.createElement('input')
-    durationINPUT.value = formatDuration(5)
-    durationINPUT.onclick = function() {
-      this.setSelectionRange(0, this.value.length)
-    }
-    durationINPUT.onblur = () => {
-      durationINPUT.value = formatDuration(parseDuration(durationINPUT.value))
-    }
-    controlDIV.appendChild(durationINPUT)
-
-
     let playBTN = document.createElement('button')
     playBTN.innerText = 'play'
     playBTN.onclick = () => this.play(false)
@@ -217,6 +199,27 @@ class DuspPlayer {
     loopBTN.innerText = 'play looped'
     loopBTN.onclick = () => this.play(true)
     controlDIV.appendChild(loopBTN)
+
+    let durationLABEL = document.createElement('label')
+    durationLABEL.innerText = 'duration:'
+    controlDIV.appendChild(durationLABEL)
+
+    let durationINPUT = document.createElement('input')
+    durationINPUT.className = 'duration'
+    durationINPUT.value = formatDuration(5)
+    durationINPUT.onclick = function() {
+      this.setSelectionRange(0, this.value.length)
+    }
+    durationINPUT.onblur = () => {
+      durationINPUT.value = formatDuration(parseDuration(durationINPUT.value))
+    }
+    controlDIV.appendChild(durationINPUT)
+
+    let closeBTN = document.createElement('button')
+    closeBTN.onclick = () => this.close()
+    closeBTN.innerText = 'discard'
+    closeBTN.className = 'close'
+    controlDIV.appendChild(closeBTN)
 
     this.interface = {
       main: mainDIV,

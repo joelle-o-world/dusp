@@ -1,0 +1,147 @@
+.DuspPlayer_wrapper, button.addplayer {
+  box-sizing: border-box;
+  display:inline-block;
+  width: 300px;
+  height: 300px;
+  margin:25px;
+}
+
+.DuspPlayer {
+  box-sizing: border-box;
+  position: relative;
+  background-color:white;
+  width:100%;
+  height:100%;
+  padding:0px;
+  border:1px solid #ccc;
+}
+
+/* Editor input */
+.DuspPlayer > .inputwrapper {
+  box-sizing: border-box;
+  width:100%;
+  height:100%;
+}
+.DuspPlayer > .inputwrapper > textarea {
+  box-sizing: border-box;
+  width:100%;
+  height:100%;
+  border:0px;
+  resize:none;
+
+  padding:5px;
+  padding-bottom:45px;
+
+  font-family: monaco;
+
+  outline:none;
+}
+
+/* Controls */
+.DuspPlayer > .controls {
+  position:absolute;
+  height:40px;
+  bottom: 0px;
+
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+.DuspPlayer:hover > .controls, .DuspPlayer:focus-within > .controls {
+  opacity:0.8;
+}
+.DuspPlayer > .controls > input.duration, button {
+  box-sizing: border-box;
+  width:20%;
+  height:100%;
+  vertical-align: bottom;
+
+  outline:none;
+  border:0px;
+}
+.DuspPlayer > .controls > label {
+  position: absolute;
+  font-size:10px;
+}
+.DuspPlayer > .controls > input.duration:hover,
+.DuspPlayer > .controls > input.duration:focus {
+  background-color:#ccccff;
+}
+.DuspPlayer > .controls > input.duration::selection {
+  background-color:#0000ff;
+}
+
+/* Control Buttons */
+.DuspPlayer > .controls > button:hover {
+  color:white;
+  background-color:green;
+}
+.DuspPlayer > .controls > button.active {
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+
+/* Discard Button */
+.DuspPlayer > .controls > button.close {
+  color:red;
+}
+.DuspPlayer > .controls > button.close:hover {
+  background-color:red;
+  color:white;
+}
+
+/* CURRENT EDITOR */
+
+.DuspPlayer[currentEditor=true] {
+  transition: position 1s;
+
+  position:fixed;
+  top:0px;
+  left:0px;
+  right:0px;
+  left:0px;
+
+  z-index:1;
+}
+
+.DuspPlayer[currentEditor=true] > .inputwrapper > textarea {
+  font-size:14px;
+}
+
+/* Escape Button */
+#escapebtn.hidden {
+  display:none;
+}
+#escapebtn.visible {
+  display:inline;
+  z-index: 2;
+
+  cursor: pointer;
+
+  position:fixed;
+  top:0px;
+  right:0px;
+
+  padding:20px;
+
+  color:#999;
+  font-size:20px;
+  text-decoration:underline;
+}
+#escapebtn:hover {
+  color:black;
+}
+
+/* New player button */
+button.addplayer {
+  border:1px solid #ccc;
+
+  opacity:0.2;
+  color:#ccc;
+  background-color:white;
+  font-size: 30px;
+  transition: opacity 1s;
+}
+button.addplayer:hover {
+  opacity: 1;
+}
