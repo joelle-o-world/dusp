@@ -21,9 +21,11 @@
   box-sizing: border-box;
   width:100%;
   height:100%;
+  z-index: 8;
 }
 .DuspPlayer > .inputwrapper > textarea {
   box-sizing: border-box;
+  position:relative;
   width:100%;
   height:100%;
   border:0px;
@@ -32,9 +34,11 @@
   padding:5px;
   padding-bottom:45px;
 
-  font-family: monaco;
+  font-family: menlo;
+  background: none;
 
   outline:none;
+  z-index: 8;
 }
 
 /* Controls */
@@ -45,6 +49,8 @@
 
   opacity: 0;
   transition: opacity 0.1s;
+  z-index: 9;
+
 }
 .DuspPlayer:hover > .controls, .DuspPlayer:focus-within > .controls {
   opacity:0.8;
@@ -54,6 +60,8 @@
   width:20%;
   height:100%;
   vertical-align: bottom;
+
+  cursor: default;
 
   outline:none;
   border:0px;
@@ -90,6 +98,24 @@
   color:white;
 }
 
+/* GRAPH */
+
+.DuspPlayer > .graph_wrapper {
+  position: absolute;
+  bottom:0px;
+  right:0px;
+  width:50%;
+  height:50%;
+
+  z-index: 2;
+}
+.DuspPlayer > .graph_wrapper > .vis-network {
+  z-index: 2;
+}
+.DuspPlayer > .graph_wrapper > .vis-network > canvas {
+  z-index: 2;
+}
+
 /* CURRENT EDITOR */
 
 .DuspPlayer[currentEditor=true] {
@@ -101,12 +127,28 @@
   right:0px;
   left:0px;
 
-  z-index:1;
+  opacity: 0.975;
+
+  z-index:10;
 }
 
+.DuspPlayer[currentEditor=true] > .inputwrapper {
+  width:60%;
+  border-right:1px dashed #ccc;
+  /*background-color: #1E2128;*/
+}
 .DuspPlayer[currentEditor=true] > .inputwrapper > textarea {
   font-size:14px;
+  background-color:rgba(30, 33, 40, 1);
+  padding-left:5px;
+  color:#ccc
 }
+.DuspPlayer[currentEditor=true] > .graph_wrapper {
+  height:100%;
+  width:40%;
+}
+
+
 
 /* Escape Button */
 #escapebtn.hidden {
@@ -114,7 +156,7 @@
 }
 #escapebtn.visible {
   display:inline;
-  z-index: 2;
+  z-index: 11;
 
   cursor: pointer;
 

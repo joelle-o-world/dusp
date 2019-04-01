@@ -128,7 +128,7 @@ function renderGraph(container, ...units) {
     color: {
       border:'black',
       background:'white',
-    }
+    },
   }
   options.layout = {improvedLayout: false}
 

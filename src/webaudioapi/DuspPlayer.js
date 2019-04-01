@@ -1,5 +1,6 @@
 const unDusp = require("../unDusp")
 const renderAudioBuffer = require('./renderAudioBuffer')
+const DOTGraph = require('../DOTGraph')
 
 const openBracketReg = /[\[\(\{]/
 
@@ -14,6 +15,7 @@ class DuspPlayer {
     if(str)
       this.saveStr = str
 
+    this.updateGraph()
     this.save()
   }
 
@@ -23,7 +25,7 @@ class DuspPlayer {
     let duspStr = this.interface.dusp.value
     let duration = parseDuration(this.interface.duration.value)
 
-    let outlet = unDusp(duspStr, duration)
+    let outlet = unDusp(duspStr)
     if(!outlet)
       throw "Error in the dusp"
 
@@ -45,6 +47,7 @@ class DuspPlayer {
     this.looping = loop
 
     this.updateButtons()
+    this.updateGraph()
   }
 
   stop() {
@@ -110,6 +113,7 @@ class DuspPlayer {
     mainDIV.appendChild(inputWrapperDIV)
 
     let duspINPUT = document.createElement('textarea')
+    duspINPUT.onchange = () => this.updateGraph()
     duspINPUT.addEventListener('keydown', function(e) {
       if(e.keyCode == 9) {
         // TAB
@@ -181,6 +185,10 @@ class DuspPlayer {
     duspINPUT.value = 'O200'
     inputWrapperDIV.appendChild(duspINPUT)
 
+    let canvasWrapper = document.createElement('div')
+    canvasWrapper.className = 'graph_wrapper'
+    mainDIV.appendChild(canvasWrapper)
+
     let controlDIV = document.createElement('div')
     controlDIV.className = 'controls'
     mainDIV.appendChild(controlDIV)
@@ -228,11 +236,21 @@ class DuspPlayer {
       play: playBTN,
       loop: loopBTN,
       stop: stopBTN,
+      canvasWrapper: canvasWrapper,
     }
 
     this.updateButtons()
 
     return this.interface.main
+  }
+
+  updateGraph() {
+    if(this.interface) {
+      this.interface.canvasWrapper.innerHTML = ''
+      let duspStr = this.interface.dusp.value
+      let outlet = unDusp(duspStr)
+      DOTGraph.render(this.interface.canvasWrapper, outlet)
+    }
   }
 
   updateButtons() {
