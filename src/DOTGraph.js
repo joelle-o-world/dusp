@@ -69,9 +69,28 @@ function generateDOTGraph(mainOutlet) {
         delete att.color
         break;
 
+      case 'SporadicRetriggerer':
       case 'Retriggerer':
         att.shape = 'square'
         att.color = 'red'
+        break
+
+      case 'Pan':
+        att.label = '\"@\"'
+        att.color = 'orange'
+        att.fontcolor = 'white'
+        break
+
+      case 'Filter':
+        att.label = unit.kind
+        att.color = '#333333'
+        att.fontcolor = 'white'
+        break
+
+      case 'Delay':
+        att.shape = 'box'
+        att.color = '#000066'
+        att.fontcolor = 'white'
         break
     }
     let attList = []

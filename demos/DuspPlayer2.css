@@ -134,18 +134,19 @@
 
 .DuspPlayer[currentEditor=true] > .inputwrapper {
   width:60%;
-  border-right:1px dashed #ccc;
+  /*border-right:1px dashed #ccc;*/
   /*background-color: #1E2128;*/
 }
 .DuspPlayer[currentEditor=true] > .inputwrapper > textarea {
   font-size:14px;
-  background-color:rgba(30, 33, 40, 1);
+  /*background-color:rgba(30, 33, 40, 1);*/
   padding-left:5px;
-  color:#ccc
+  /*color:#ccc*/
 }
 .DuspPlayer[currentEditor=true] > .graph_wrapper {
   height:100%;
   width:40%;
+  background-color: #eeeeee;
 }
 
 
