@@ -1,8 +1,10 @@
 // Class from which Outlet and Inlet inherit from so that they can share code
 const config = require("./config.js")
 const SignalChunk = require("./SignalChunk.js")
+const EventEmitter = require('events')
 
 function Piglet(model) {
+  EventEmitter.call(this)
   if(model)
     Object.assign(this, model)
 
@@ -21,6 +23,8 @@ function Piglet(model) {
 
   this.signalChunk = new SignalChunk(this.numberOfChannels, this.chunkSize)
 }
+Piglet.prototype = Object.create(EventEmitter.prototype)
+Piglet.prototype.constructor = Piglet
 module.exports = Piglet
 
 Piglet.prototype.isPiglet = true

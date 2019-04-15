@@ -25,7 +25,8 @@ Inlet.prototype.disconnect = function() {
     // emit unit events
     this.unit.emit('disconnection', outlet.unit)
     outlet.unit.emit('disconnection', this.unit)
-
+    this.emit('disconnect')
+    this.emit('change')
   }
 }
 
@@ -77,6 +78,9 @@ Inlet.prototype.connect = function(outlet) {
     outlet.unit.computeProcessIndex()
     modifiedCircuit.computeOrders()
   }
+
+  this.emit('change')
+  this.emit('connect', outlet)
 }
 
 Inlet.prototype.setConstant = function(value) {
@@ -96,6 +100,10 @@ Inlet.prototype.setConstant = function(value) {
     for(var t=0; t<chan.length; t++)
       chan[t] = chanVal
   }
+
+  this.emit('change')
+  this.emit('constant', value)
+
 }
 
 Inlet.prototype.__defineGetter__("printValue", function() {
