@@ -27,6 +27,8 @@ Inlet.prototype.disconnect = function() {
     outlet.unit.emit('disconnection', this.unit)
     this.emit('disconnect')
     this.emit('change')
+    outlet.emit('disconnect', this)
+    outlet.emit('change')
   }
 }
 
@@ -79,8 +81,11 @@ Inlet.prototype.connect = function(outlet) {
     modifiedCircuit.computeOrders()
   }
 
+
   this.emit('change')
+  outlet.emit('change')
   this.emit('connect', outlet)
+  outlet.emit('connect', this)
 }
 
 Inlet.prototype.setConstant = function(value) {
