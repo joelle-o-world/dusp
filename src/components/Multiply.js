@@ -12,6 +12,7 @@ function Multiply(a, b) {
 }
 Multiply.prototype = Object.create(Unit.prototype)
 Multiply.prototype.constructor = Multiply
+Multiply.prototype.isMultiply = true
 module.exports = Multiply
 
 Multiply.prototype.dusp = {

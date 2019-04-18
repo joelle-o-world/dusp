@@ -7,6 +7,7 @@ function Sum(a, b) {
 }
 Sum.prototype = Object.create(SignalCombiner.prototype)
 Sum.prototype.constructor = Sum
+Sum.prototype.isSum = true
 module.exports = Sum
 
 Sum.prototype.dusp = {
