@@ -28,7 +28,6 @@ function Unit() {
   this.giveUniqueLabel()
 
   this.on('disconnection', from => {
-    console.log(this.label, 'has been disconnected from', from.label)
     if(this.circuit)
       this.circuit.removeRecursivelyIfDisconnected(this)
   })
@@ -160,6 +159,17 @@ Unit.prototype.__defineGetter__("outputUnits", function() {
   return list
 })
 
+Unit.prototype.__defineGetter__("recursiveInputUnits", function() {
+  let list = this.inputUnits
+  for(let i=0; i<list.length; i++) {
+    for(let unit of list[i].inputUnits){
+      if(!list.includes(unit))
+        list.push(unit)
+    }
+  }
+  return list
+})
+
 Unit.prototype.__defineGetter__("numberOfOutgoingConnections", function() {
   // count the number of outgoing connections
 
@@ -241,6 +251,20 @@ Unit.prototype.__defineGetter__("topInlet", function() {
   if(inlet.connected)
     return inlet.outlet.unit.topInlet
   else return inlet
+})
+Unit.prototype.__defineGetter__('firstConnectedOutlet', function() {
+  for(let outlet of this.outletsOrdered)
+    if(outlet.connections.length)
+      return outlet
+
+  return null
+})
+Unit.prototype.__defineGetter__('firstFreeInlet', function() {
+  for(let inlet of this.inletsOrdered) {
+    if(!inlet.outlet)
+      return inlet
+  }
+  return null
 })
 
 

@@ -1,3 +1,7 @@
+
+/**
+ * Root class for DUSP
+ */
 module.exports = {
 
   // useful functions
@@ -17,4 +21,7 @@ module.exports = {
 
   components: require('./components'),
   patches: require('./patches'),
+
+  // htmlInterface
+  DuspPlayer: require('./webaudioapi/DuspPlayer')
 }

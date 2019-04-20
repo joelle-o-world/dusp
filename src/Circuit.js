@@ -7,6 +7,7 @@
 const gcd = require("compute-gcd")
 const Promise = require("promise")
 const explore = require('./explore')
+const Event = require('./Event')
 
 function Circuit(...units) {
   this.units = [] // NOTE: units will be executed in the order of this array
@@ -135,8 +136,8 @@ Circuit.prototype.add = function(unit) {
 
 Circuit.prototype.remove = function(...toRemove) {
   // remove a set of units from the circuit
-  for(let u of toRemove)
-    console.log('removing', u.label, 'from circuit')
+/*  for(let u of toRemove)
+    console.log('removing', u.label, 'from circuit')*/
 
   // Throw an error if any of the units are connected to any units which aren't
   // to be removed.
@@ -196,6 +197,22 @@ Circuit.prototype.addEvent = function(eventToAdd) {
 
   // if we get here the new event must be after all others
   this.events.push(eventToAdd)
+}
+
+Circuit.prototype.schedule = function(time /*seconds*/, func) {
+  if(time.constructor == Array) {
+    for(var i in time)
+      this.schedule(time[i], func)
+    return ;
+  }
+  var newEvent = new Event(
+    time,
+    func,
+    this,
+  )
+
+  this.addEvent(newEvent)
+  return this
 }
 Circuit.prototype.addPromise = function(promise) {
   // add a promise to the circuit

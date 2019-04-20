@@ -3,28 +3,37 @@ const config = require("./config.js")
 const SignalChunk = require("./SignalChunk.js")
 const EventEmitter = require('events')
 
-function Piglet(model) {
-  EventEmitter.call(this)
-  if(model)
-    Object.assign(this, model)
+class Piglet extends EventEmitter {
+  /**
+   * @param options
+   * @param {Number} options.numberOfChannels
+   * @param {Number} options.chunkSize
+   * @param {Number} options.sampleRate
+   */
+  constructor(options) {
+    super()
 
-  this.numberOfChannels = this.numberOfChannels || 1
-  this.chunkSize = model.chunkSize || config.standardChunkSize
-  this.sampleRate = config.sampleRate
+    if(options)
+      Object.assign(this, options)
 
-  if(this.numberOfChannels == "mono" || model.mono) {
-    this.numberOfChannels = 1
-    this.exposeAsMono = true
-  } else
-    this.exposeAsMono = false
+    /** The number of audio channels.
+        @type Number*/
+    this.numberOfChannels = this.numberOfChannels || 1
+    this.chunkSize = options.chunkSize || config.standardChunkSize
+    this.sampleRate = config.sampleRate
 
-  // simple rules
-  this.applyTypeRules()
+    if(this.numberOfChannels == "mono" || options.mono) {
+      this.numberOfChannels = 1
+      this.exposeAsMono = true
+    } else
+      this.exposeAsMono = false
 
-  this.signalChunk = new SignalChunk(this.numberOfChannels, this.chunkSize)
+    // simple rules
+    this.applyTypeRules()
+
+    this.signalChunk = new SignalChunk(this.numberOfChannels, this.chunkSize)
+  }
 }
-Piglet.prototype = Object.create(EventEmitter.prototype)
-Piglet.prototype.constructor = Piglet
 module.exports = Piglet
 
 Piglet.prototype.isPiglet = true

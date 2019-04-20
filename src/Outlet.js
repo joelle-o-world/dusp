@@ -1,18 +1,30 @@
 const Piglet = require("./Piglet.js")
-//const render = require("./render.js")
 
-function Outlet(model) {
-  Piglet.call(this, model)
+/**
+ * Used for feeding signals out of a Unit. May be connected to any number of inlets
+ * @extends Piglet
+ */
+class Outlet extends Piglet {
+  /**
+   * Outlet constructor
+   * @param {object} model
+   */
+  constructor(model) {
+    super(model)
 
-  this.connections = []
+    /**
+     * List of inlets connected to this outlet
+     */
+    this.connections = []
+  }
+
+  /**
+   * Remove all routings from this outlet.
+   */
+  disconnect() {
+    for(var connection of this.connections)
+      connection.disconnect()
+  }
 }
-Outlet.prototype = Object.create(Piglet.prototype)
-Outlet.prototype.constructor = Outlet
-module.exports = Outlet
-
 Outlet.prototype.isOutlet = true
-
-Outlet.prototype.disconnect = function() {
-  for(var i in this.connections)
-    this.connections[i].disconnect()
-}
+module.exports = Outlet
