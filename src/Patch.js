@@ -117,3 +117,13 @@ Patch.prototype.trigger = function() {
       this.units[i].trigger()
   return this
 }
+
+
+Patch.prototype.__defineGetter__('circuit', function() {
+  for(let u of this.units)
+    if(u.circuit)
+      return u.circuit
+
+  // Otherwise,
+  return null
+})

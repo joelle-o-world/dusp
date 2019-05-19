@@ -37,7 +37,7 @@ class RenderStream extends Readable {
       for(var c=0; c<this.numberOfChannels; c++)
         for(var t=0; t<this.outlet.chunkSize; t++) {
           // rescale samples to normalise (according to peak so far)
-          var val = this.outlet.signalChunk.channelData[c][t] * this.normaliseFactor
+          var val = this.outlet.signalChunk.channelData[c%this.outlet.signalChunk.channelData.length][t] * this.normaliseFactor
 
           // if signal is outside of ideal range adjust the normalisation scalar
           if(Math.abs(val) > 1) {

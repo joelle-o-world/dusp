@@ -1,5 +1,6 @@
 const Event = require("./Event.js")
 const EventEmitter = require('events')
+const config = require('./config')
 
 function UnitOrPatch() {
   EventEmitter.call(this)
@@ -16,6 +17,11 @@ UnitOrPatch.prototype.schedule = function(time /*seconds*/, func) {
       this.schedule(time[i], func)
     return ;
   }
+
+  if(this.circuit && this.circuit.clock) {
+    time = time + this.circuit.clock/config.sampleRate
+  }
+
   var newEvent = new Event(
     time,
     func,

@@ -36,6 +36,7 @@ module.exports = {
 	Repeater: require("./Repeater.js"),
 	Rescale: require("./Rescale.js"),
 	Retriggerer: require("./Retriggerer.js"),
+	Rounder: require("./Rounder.js"),
 	SampleRateRedux: require("./SampleRateRedux.js"),
 	SecondsToSamples: require("./SecondsToSamples.js"),
 	SemitoneToRatio: require("./SemitoneToRatio.js"),

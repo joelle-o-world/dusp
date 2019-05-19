@@ -4,6 +4,10 @@ const {Transform} = require('stream')
 const dusp = require('./dusp')
 const renderChannelData = require('./renderChannelData')
 
+const {FileWriter} = require('wav')
+
+
+
 function streamToNodeSpeaker(outlet, numberOfChannels=1, timeout) {
   // create a render stream on an outlet and send it to the speakers
 
@@ -28,6 +32,7 @@ function streamToNodeSpeaker(outlet, numberOfChannels=1, timeout) {
   stream.pipe(interface).pipe(speaker)
 }
 module.exports = streamToNodeSpeaker
+
 
 async function streamToNodeSpeakerBuffered(outlet, duration=1) {
   // render a buffer from an outlet and stream the buffer to the speakers

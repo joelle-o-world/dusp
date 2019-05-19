@@ -1,0 +1,2 @@
+node maintenance/compileComponentIndex.js
+node maintenance/compilePatchIndex.js

@@ -16,6 +16,9 @@ const Noise = require('../components/Noise')
 const Shape = require('../components/Shape')
 const quick = require('../quick')
 
+const Ramp = require('../components/Ramp')
+const Rounder = require('../components/Rounder')
+
 class Karplus extends Patch {
   constructor(frequency=500, resonance=1) {
     super()
@@ -42,7 +45,7 @@ class Karplus extends Patch {
     this.ENERGY = 0
   }
 
-  pluck(softness=0, amplitude=1, duration=0.01) {
+  pluck(softness=3/4, amplitude=0.25, duration=0.01) {
     if(softness.constructor != Number || softness<0 || softness>1)
       throw 'Karplus.pluck expects softness to be a number (0-1)'
 
@@ -52,15 +55,30 @@ class Karplus extends Patch {
 
     let shape = new Shape('decay', duration, 0, amplitude).trigger()
 
-    this.addEnergy(quick.multiply(noise, shape))
+  //  this.addEnergy(quick.multiply(noise, shape))
+
+    this.ENERGY = quick.multiply(noise, shape)
 
     return this
   }
   schedulePluck(secondDelay, softness, amplitude, duration) {
     this.schedule(secondDelay, () => {
       this.pluck(softness, amplitude, duration)
-      console.log("PLUCKING")
     })
+  }
+
+  setPitch(p) {
+    this.F = quick.pToF(p)
+  }
+
+  gliss(duration, from, to) {
+    this.setPitch(new Ramp(duration, from, to).trigger())
+  }
+  frettedGliss(duration, from, to) {
+    let ramp = new Ramp(duration, from, to)
+    let rounder = new Rounder()
+    rounder.IN = ramp
+    this.setPitch(rounder)
   }
 
   addEnergy(outlet, rescale=1) {

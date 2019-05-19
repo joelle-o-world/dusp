@@ -12,6 +12,7 @@ const Pow = require("./components/Pow.js")
 const HardClipAbove = require("./components/HardClipAbove.js")
 const HardClipBelow = require("./components/HardClipBelow.js")
 const Mixer = require('./patches/Mixer')
+const MidiToFrequency = require('./components/MidiToFrequency')
 
 exports.add = function quickSum(a,b) {
   if(a.constructor == Number && b.constructor == Number)
@@ -64,7 +65,8 @@ exports.pToF = function(p) {
   if(p.constructor == Number) {
     return Math.pow(2, (p-69)/12) * 440
   } else
-    throw "quick.pToF(non number) has not been implemented"
+    return new MidiToFrequency(p)
+  //  throw "quick.pToF(non number) has not been implemented"
 }
 
 exports.concat = function(a, b) {

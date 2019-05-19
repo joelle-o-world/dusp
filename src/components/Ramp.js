@@ -10,7 +10,9 @@ function Ramp(duration, y0, y1) {
   this.y1 = y1 || 0
 
   this.t = 0
-  this.playing = false
+  this.playing = true
+
+  this.sampleInterval = 1/this.sampleRate
 }
 Ramp.prototype = Object.create(Unit.prototype)
 Ramp.prototype.constructor = Ramp
@@ -25,7 +27,7 @@ Ramp.prototype.trigger = function() {
 Ramp.prototype._tick = function() {
   for(var tChunk=0; tChunk<this.out.length; tChunk++) {
     if(this.playing) {
-      this.t++
+      this.t += this.sampleInterval
       if(this.t > this.duration) {
         this.playing = false
         this.t = this.duration
