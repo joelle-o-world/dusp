@@ -16,6 +16,17 @@ module.exports = {
     return osc
   },
 
+  Tri: function(frequency) {
+    var osc = new components.Osc(frequency)
+    osc.waveform = "triangle"
+    return osc
+  },
+  Triangle: function(frequency) {
+    var osc = new components.Osc(frequency)
+    osc.waveform = "triangle"
+    return osc
+  },
+
   A: function(time) {
     return new components.Shape("attack", time).trigger()
   },
