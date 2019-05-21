@@ -13,6 +13,7 @@ module.exports = {
   connectToWAA: require("./webaudioapi/connectToWAA"),
 
   quick: require('./quick'),
+  explore: require('./explore'),
 
   // basic elements
   Unit: require("./Unit"),

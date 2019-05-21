@@ -32,3 +32,21 @@ function checkConnection(unit, ...set) {
   return false
 }
 module.exports.checkConnection = checkConnection
+
+function randomInlet(...list) {
+  let all = [...exploreConnections(...list)]
+    .filter(u => u.inletsOrdered.length)
+
+  let unit = all[Math.floor(Math.random() * all.length)]
+  return unit.randomInlet()
+}
+module.exports.randomInlet = randomInlet
+
+function randomOutlet(...list) {
+  let all = [...exploreConnections(...list)]
+    .filter(u => u.outletsOrdered.length)
+
+  let unit = all[Math.floor(Math.random() * all.length)]
+  return unit.randomOutlet()
+}
+module.exports.randomOutlet = randomOutlet
