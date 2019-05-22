@@ -20,12 +20,20 @@
         display:inline;
       }
 
+      p.notice {
+        color:white;
+        width:600px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
     </style>
   </head>
   <body>
     <div class='frame'>
+      <p class=notice>Note: This web app is for demonstration and prototyping purposes and will not support all circuits. For full access to the Dusp language and rendering library please install the javascript or command-line interface from <a href="https://www.npmjs.com/package/dusp">https://www.npmjs.com/package/dusp</a></p>
       <div id=players></div>
-      <button onclick='addPlayer()' id='addplayer' class='addplayer'>+</button>
+      <button onclick='addPlayer()' id='addplayer' class='addplayer'>+<br>new circuit</button>
     </div>
     <span id='escapebtn' class='hidden' onclick='blurEditor()'>go back ></span>
   </body>
