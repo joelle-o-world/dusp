@@ -18,7 +18,7 @@ class Lute extends Patch {
     for(let i=0; i<tuning.length; i++) {
       let p = tuning[i]
       let string = new Karplus
-      this.mixer.addInput(new Pan(string, 2 * i/tuning.length - 1))
+      this.mixer.addInput(new Pan(string,  i/tuning.length - 1/2))
       this.strings.push(string)
     }
 
@@ -50,8 +50,8 @@ class Lute extends Patch {
     if(!this.position)
       return setPosition(position)
 
-    let oldFingerFrets = this.position.fretsAndFingersByString()
-    let fingerFrets = position.fretsAndFingersByString()
+    let oldFingerFrets = this.position.fretsAndFingersByString(this.tuning.length)
+    let fingerFrets = position.fretsAndFingersByString(this.tuning.length)
 
     for(let i in fingerFrets) {
       if(fingerFrets[i] == null) {
@@ -62,14 +62,14 @@ class Lute extends Patch {
 
         if(!fingerNumber || !oldFingerFrets[i]  || fingerNumber != oldFingerFrets[i].fingerNumber) {
           this.strings[i].setPitch(this.tuning[i] + fret)
-          this.strings[i].RESONANCE = 1
+          this.strings[i].RESONANCE = 3/4
         } else if(oldFingerFrets[i].fret != fret) {
           this.strings[i].frettedGliss(
             duration,
             this.tuning[i] + oldFingerFrets[i].fret,
             this.tuning[i] + fret,
           )
-          this.strings[i].RESONANCE = 1
+          this.strings[i].RESONANCE = 3/4
         }
       }
 
@@ -91,6 +91,33 @@ class Lute extends Patch {
   }
   strumUp(duration=0.1) {
     for(let i=0; i<this.strings.length; i++) {
+      let t = duration - duration * i / this.strings.length
+      this.strings[i].schedulePluck(t)
+    }
+  }
+
+  pluckAllPlaying(spread=0) {
+    let strings = this.position.getEngagedStrings(this.tuning.length)
+    for(let j in strings) {
+      let i = strings[j]
+
+      this.strings[i].pluck()
+    }
+  }
+  strumPlaying(duration=0.1) {
+    let strings = this.position.getEngagedStrings(this.tuning.length)
+    for(let j in strings) {
+      let i = strings[j]
+
+      let t = duration * i / this.strings.length
+      this.strings[i].schedulePluck(t)
+    }
+  }
+  strumUpPlaying(duration=0.1) {
+    let strings = this.position.getEngagedStrings(this.tuning.length)
+    for(let j in strings) {
+      let i = strings[j]
+
       let t = duration - duration * i / this.strings.length
       this.strings[i].schedulePluck(t)
     }

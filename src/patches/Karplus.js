@@ -23,6 +23,8 @@ class Karplus extends Patch {
   constructor(frequency=500, resonance=1) {
     super()
 
+    this.detune = Math.random()*0.05
+
     // assemble circuit
     this.addUnits(
       this.delayTime = new Divide(config.sampleRate, frequency),
@@ -45,7 +47,7 @@ class Karplus extends Patch {
     this.ENERGY = 0
   }
 
-  pluck(softness=3/4, amplitude=0.25, duration=0.01) {
+  pluck(softness=0.25, amplitude=0.25, duration=0.02) {
     if(softness.constructor != Number || softness<0 || softness>1)
       throw 'Karplus.pluck expects softness to be a number (0-1)'
 
@@ -53,7 +55,7 @@ class Karplus extends Patch {
     if(softness)
       noise = new Filter(noise, (1-softness) * 11000 + 1, 'LP')
 
-    let shape = new Shape('decay', duration, 0, amplitude).trigger()
+    let shape = new Shape('decaySquared', duration, 0, amplitude).trigger()
 
   //  this.addEnergy(quick.multiply(noise, shape))
 
@@ -68,7 +70,7 @@ class Karplus extends Patch {
   }
 
   setPitch(p) {
-    this.F = quick.pToF(p)
+    this.F = quick.pToF(quick.add(p, this.detune))
   }
 
   gliss(duration, from, to) {
