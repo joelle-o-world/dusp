@@ -123,10 +123,13 @@ Circuit.prototype.addPromise = function(promise) {
 }
 
 Circuit.prototype.computeOrders = function() {
+  // Sort units by their process index
   this.units = this.units.sort((a, b) => {
   //  console.log(a.processIndex, b.processIndex)
     return a.processIndex - b.processIndex
   })
+
+  // Group the units depending on thier tick interval
   this.processOrders = {}
   for(var i in this.tickIntervals) {
     var tickInterval = this.tickIntervals[i]
@@ -141,8 +144,10 @@ Circuit.prototype.computeOrders = function() {
   if(this.gcdTickInterval <= 16)
     console.warn("circuit gcdTickInterval is low:", this.gcdTickInterval, ", processing may be slow")
 
+  // This whole multiple tick intervals idea looks like a bad idea to me now in 2021!
 }
 
+/** Good for debugging */
 Circuit.prototype.findNaNCulprit = function() {
   for(var i in this.units) {
     for(var j in this.units[i].inlets) {

@@ -169,25 +169,35 @@ Unit.prototype.__defineGetter__("printOutputUnits", function() {
 })
 
 Unit.prototype.computeProcessIndex = function(history) {
+
+  // NOTE: adding comments in 2021 to better understand this spaghetti.
+
+  // Create a new history with `this` appended
   history = (history || []).concat([this])
 
+  // Find input units that do not occur in history.
   var inputUnits = this.inputUnits.filter((unit) => {
     return (history.indexOf(unit) == -1)
   })
 
+  // Find the maximum processing index of this units dependencies
   var max = -1
   for(var i in inputUnits) {
+    // Is dependency has no assigned process index, recursively compute it
     if(inputUnits[i].processIndex == undefined)
       inputUnits[i].computeProcessIndex(history)
     if(inputUnits[i].processIndex > max)
       max = inputUnits[i].processIndex
   }
 
+  // Assign process index
   this.processIndex = max + 1
 
   var outputUnits = this.outputUnits.filter((unit) => {
     return (history.indexOf(unit) == -1)
-  })
+  }) // this filter is unnessecary (won't change now thought just in case)
+
+  // Compute process indexes of dependent units (where they are not already computed)
   for(var i in outputUnits) {
     if(outputUnits[i].processIndex == undefined ||
       outputUnits[i].processIndex <= this.processIndex) {
@@ -199,7 +209,7 @@ Unit.prototype.computeProcessIndex = function(history) {
 }
 
 Unit.prototype.computeStepsToNecessity = function(history) {
-  console.log("NO IDEA IF THIS WORKS!")
+  console.log("NO IDEA IF THIS WORKS!") // Lol! (2021)
   if(this.stepsToNecessity === 1)
     return 1
 
