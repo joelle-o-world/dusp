@@ -1,5 +1,5 @@
-const Patch = require("../Patch.js")
-const Filter = require("../components/Filter.js")
+import Patch from "../Patch.js"
+import Filter from "../components/Filter.js"
 
 class BandFilter extends Patch {
   constructor(input, fLow, fHigh) {
@@ -18,4 +18,4 @@ class BandFilter extends Patch {
     this.aliasOutlet(this.highPass.OUT)
   }
 }
-module.exports = BandFilter
+export default BandFilter

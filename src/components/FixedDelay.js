@@ -1,4 +1,4 @@
-const Unit = require("../Unit.js")
+import Unit from "../Unit.js"
 
 class FixedDelay extends Unit {
   constructor(delayTime) {
@@ -35,4 +35,4 @@ class FixedDelay extends Unit {
     this.setSeconds(1/f)
   }
 }
-module.exports = FixedDelay
+export default FixedDelay

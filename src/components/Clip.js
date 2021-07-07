@@ -1,4 +1,4 @@
-const Unit = require("../Unit.js")
+import Unit from "../Unit.js"
 
 class Clip extends Unit {
   constructor(threshold) {
@@ -20,4 +20,4 @@ class Clip extends Unit {
     }
   }
 }
-module.exports = Clip
+export default Clip

@@ -1,22 +1,24 @@
-const Piglet = require("./Piglet.js")
+import Piglet from "./Piglet.js"
 //const render = require("./render.js")
 
-function Outlet(model) {
-  Piglet.call(this, model)
+class Outlet extends Piglet {
+  constructor(model) {
+    Piglet.call(this, model)
 
-  this.connections = []
-}
-Outlet.prototype = Object.create(Piglet.prototype)
-Outlet.prototype.constructor = Outlet
-module.exports = Outlet
+    this.connections = []
+  }
 
-Outlet.prototype.isOutlet = true
+  get isOutlet() {
+    return true
+  }
 
 /*Outlet.prototype.render = async function(T) {
   return render(this, T)
 }*/
 
-Outlet.prototype.disconnect = function() {
-  for(var i in this.connections)
-    this.connections[i].disconnect()
+  disconnect() {
+    for(var i in this.connections)
+      this.connections[i].disconnect()
+  }
 }
+export default Outlet

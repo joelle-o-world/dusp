@@ -1,4 +1,4 @@
-const SpectralUnit = require("./SpectralUnit.js")
+import SpectralUnit from "./SpectralUnit.js"
 
 class SpectralSum extends SpectralUnit {
   constructor(a, b, windowSize, hopInterval) {
@@ -23,4 +23,4 @@ class SpectralSum extends SpectralUnit {
     }
   }
 }
-module.exports = SpectralSum
+export default SpectralSum

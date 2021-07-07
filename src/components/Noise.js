@@ -1,14 +1,15 @@
-const Unit = require("../Unit.js")
+import Unit from "../Unit.js"
 
-function Noise(f) {
-  Unit.call(this)
-  this.addInlet("f", {measuredIn:"Hz"})
-  this.addOutlet("out", {type:"audio"})
+class Noise extends Unit {
+  constructor(f) {
+    super()
+    this.addInlet("f", {measuredIn:"Hz"})
+    this.addOutlet("out", {type:"audio"})
 
-  this.F = f || Unit.sampleRate
-  this.phase = 0
-  this.y = Math.random()*2 - 1
-}
+    this.F = f || Unit.sampleRate
+    this.phase = 0
+    this.y = Math.random()*2 - 1
+  }
 Noise.prototype = Object.create(Unit.prototype)
 Noise.prototype.constructor = Noise
 module.exports = Noise

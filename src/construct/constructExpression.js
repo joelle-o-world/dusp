@@ -1,3 +1,12 @@
+import parseExpression from "../parseDSP/getExpression.js"
+import constructObject from "./constructObject"
+import constructNumber from "./constructNumber"
+import constructObjectReference from "./constructObjectReference"
+import constructOperation from "./constructOperation"
+import constructObjectProperty from "./constructObjectProperty"
+import constructShorthand from "./constructShorthand"
+import constructString from "./constructString"
+
 function constructExpression(o, index, destinations) {
   if(o.constructor == String)
     o = parseExpression(o, index)
@@ -36,12 +45,5 @@ function constructExpression(o, index, destinations) {
   }
 }
 
-module.exports = constructExpression
-const parseExpression = require("../parseDSP/getExpression.js")
-const constructObject = require("./constructObject")
-const constructNumber = require("./constructNumber")
-const constructObjectReference = require("./constructObjectReference")
-const constructOperation = require("./constructOperation")
-const constructObjectProperty = require("./constructObjectProperty")
-const constructShorthand = require("./constructShorthand")
-const constructString = require("./constructString")
+export default constructExpression
+

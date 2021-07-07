@@ -1,8 +1,8 @@
-const argv = require("minimist")(process.argv.slice(2))
+import minimist from 'minimist'
 
-var localConfig = {}
+const argv = minimist(process.argv.slice(2))
 
-Object.assign(localConfig, {
+const localConfig = {
   standardChunkSize: 256, // if < 256, Web Audio API will prang out
   sampleRate: 44100,
   channelFormat: "stereo",
@@ -14,9 +14,10 @@ Object.assign(localConfig, {
   },
 
   useDuspShorthands: true,
-}, argv)
 
+  ...argv,
+}
 
-localConfig.sampleInterval = 1/module.exports.sampleRate
+localConfig.sampleInterval = 1/localConfig.sampleRate
 
-module.exports = localConfig
+export default localConfig

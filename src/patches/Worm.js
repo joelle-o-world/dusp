@@ -1,8 +1,8 @@
-const Patch = require("../Patch.js")
-const Noise = require("../components/Noise")
-const Filter = require("../components/Filter.js")
-const Repeater = require("../components/Repeater.js")
-const quick = require("../quick.js")
+import Patch from "../Patch"
+import Noise from "../components/Noise")
+import Filter from "../components/Filter"
+import Repeater from "../components/Repeater"
+import quick from "../quick"
 
 class Worm extends Patch {
   constructor(f=1) {
@@ -24,4 +24,4 @@ class Worm extends Patch {
     return new Worm(f)
   }
 }
-module.exports = Worm
+export default Worm

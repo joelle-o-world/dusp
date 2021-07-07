@@ -1,15 +1,15 @@
-const Unit = require("../Unit.js")
+import Unit from "../Unit.js"
 
-function Monitor(input) {
-  Unit.call(this)
-  this.addInlet("in")
+class Monitor extends Unit {
+  constructor(input) {
+    super()
+    this.addInlet("in")
 
-  this.IN = input
+    this.IN = input
+  }
+
+  _tick() {
+    console.log(this.in)
+  }
 }
-Monitor.prototype = Object.create(Unit.prototype)
-Monitor.prototype.constructor = Monitor
-module.exports = Monitor
-
-Monitor.prototype._tick = function() {
-  console.log(this.in)
-}
+export default Monitor

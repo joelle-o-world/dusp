@@ -1,4 +1,4 @@
-const Unit = require("../Unit.js")
+import Unit from "../Unit.js"
 
 class HardClipAbove extends Unit {
   constructor(input, threshold) {
@@ -23,4 +23,4 @@ class HardClipAbove extends Unit {
     }
   }
 }
-module.exports = HardClipAbove
+export default HardClipAbove

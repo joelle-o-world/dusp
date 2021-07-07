@@ -1,8 +1,8 @@
-const Patch = require("../Patch")
-const CircleBuffer = require("../CircleBuffer.js")
-const CircleBufferReader = require("../components/CircleBufferReader.js")
-const CircleBufferWriter = require("../components/CircleBufferWriter.js")
-const quick = require("../quick.js")
+import Patch from "../Patch"
+import CircleBuffer from "../CircleBuffer.js"
+import CircleBufferReader from "../components/CircleBufferReader.js"
+import CircleBufferWriter from "../components/CircleBufferWriter.js"
+import quick from "../quick.js"
 
 class DelayMixer extends Patch {
   constructor(nChannels, maxDelay) {
@@ -33,4 +33,4 @@ class DelayMixer extends Patch {
       writer.IN = input
   }
 }
-module.exports = DelayMixer
+export default DelayMixer

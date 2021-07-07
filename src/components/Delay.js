@@ -1,5 +1,5 @@
-const Unit = require("../Unit.js")
-const config = require("../config.js")
+import Unit from "../Unit.js"
+import config from "../config.js"
 
 const zeroChunk = new Float32Array(config.standardChunkSize).fill(0)
 
@@ -40,4 +40,4 @@ class Delay extends Unit {
     }
   }
 }
-module.exports = Delay
+export default Delay

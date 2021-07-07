@@ -1,4 +1,4 @@
-const FixedDelay = require("./FixedDelay.js")
+import FixedDelay from "./FixedDelay.js"
 
 class CombFilter extends FixedDelay {
   constructor(delayTime, feedbackGain) {
@@ -23,4 +23,4 @@ class CombFilter extends FixedDelay {
     this.FEEDBACKGAIN = Math.pow(0.001, this.delayTimeInSeconds/RVT)
   }
 }
-module.exports = CombFilter
+export default CombFilter

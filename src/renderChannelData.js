@@ -1,5 +1,5 @@
-const AudioBuffer = require('audio-buffer')
-const Circuit = require('./Circuit')
+import AudioBuffer from 'audio-buffer'
+import Circuit from './Circuit'
 
 // render audio into an channelData (array of typed arrays)
 async function renderChannelData(outlet,
@@ -48,4 +48,4 @@ async function renderChannelData(outlet,
   return channelData
 }
 
-module.exports = renderChannelData
+export default renderChannelData

@@ -1,5 +1,5 @@
-const Unit = require("../Unit.js")
-const config = require("../config.js")
+import Unit from "../Unit.js"
+import config from "../config.js"
 
 const samplePeriod = 1/config.sampleRate
 
@@ -74,18 +74,19 @@ class AHD extends Unit {
       }
     }
   }
+
+  static random(duration) {
+    var a = Math.random()
+    var h = Math.random()
+    var d = Math.random()
+    var scale = duration/(a + h + d)
+
+    a *= scale
+    h *= scale
+    d *= scale
+
+    return new AHD(a, h, d)
+  }
 }
-module.exports = AHD
+export default AHD
 
-AHD.random = function(duration) {
-  var a = Math.random()
-  var h = Math.random()
-  var d = Math.random()
-  var scale = duration/(a + h + d)
-
-  a *= scale
-  h *= scale
-  d *= scale
-
-  return new AHD(a, h, d)
-}

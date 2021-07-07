@@ -1,4 +1,4 @@
-const Unit = require("../Unit.js")
+import Unit from "../Unit.js"
 
 class Pow extends Unit {
   constructor(a, b) {
@@ -29,4 +29,4 @@ class Pow extends Unit {
     }
   }
 }
-module.exports = Pow
+export default Pow

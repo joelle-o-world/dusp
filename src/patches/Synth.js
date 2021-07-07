@@ -1,4 +1,4 @@
-const Patch = require("../Patch.js")
+import Patch from "../Patch"
 
 class Synth extends Patch {
   constructor() {
@@ -25,4 +25,4 @@ class Synth extends Patch {
     return env
   }
 }
-module.exports = Synth
+export default Synth

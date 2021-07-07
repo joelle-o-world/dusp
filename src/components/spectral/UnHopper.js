@@ -1,4 +1,4 @@
-const Unit = require("../../Unit.js")
+import Unit from "../../Unit.js"
 
 class UnHopper extends Unit {
   constructor(hopSize, windowSize) {
@@ -43,4 +43,4 @@ class UnHopper extends Unit {
     }
   }
 }
-module.exports = UnHopper
+export default UnHopper

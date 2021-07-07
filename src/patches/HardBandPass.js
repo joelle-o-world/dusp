@@ -3,10 +3,10 @@
 */
 
 
-const Patch = require("../Patch.js")
+import Patch from "../Patch.js"
 
-const HardLP = require("../components/spectral/HardLowPass.js")
-const HardHP = require("../components/spectral/HardHighPass.js")
+import HardLP from "../components/spectral/HardLowPass.js"
+import HardHP from "../components/spectral/HardHighPass.js"
 
 
 class HardBandPass extends Patch {
@@ -31,4 +31,4 @@ class HardBandPass extends Patch {
     this.HIGH = high || 22000
   }
 }
-module.exports = HardBandPass
+export default HardBandPass

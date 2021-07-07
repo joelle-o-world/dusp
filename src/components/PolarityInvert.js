@@ -1,4 +1,4 @@
-const Unit = require("../Unit.js")
+import Unit from "../Unit.js"
 
 class PolarityInvert extends Unit {
   constructor(input) {
@@ -19,4 +19,4 @@ class PolarityInvert extends Unit {
     }
   }
 }
-module.exports = PolarityInvert
+export default PolarityInvert

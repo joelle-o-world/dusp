@@ -1,6 +1,6 @@
-const Unit = require("../../Unit.js")
-const gcd = require("compute-gcd")
-const lcm = require("compute-lcm")
+import Unit from "../../Unit.js"
+import gcd from "compute-gcd"
+import lcm from "compute-lcm"
 
 class ReChunk extends Unit {
   constructor(inputInterval, outputInterval) {
@@ -49,4 +49,4 @@ class ReChunk extends Unit {
 
   }
 }
-module.exports = ReChunk
+export default ReChunk

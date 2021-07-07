@@ -1,5 +1,5 @@
-const Patch = require("../Patch.js")
-const AllPass = require("../components/AllPass.js")
+import Patch from "../Patch.js"
+import AllPass from "../components/AllPass.js"
 
 class APStack extends Patch {
   constructor(n=4, maxDelay=0.1, maxFeedback=0.5) {
@@ -29,4 +29,4 @@ class APStack extends Patch {
     this.aliasOutlet(stack[stack.length-1].OUT, "out")
   }
 }
-module.exports = APStack
+export default APStack

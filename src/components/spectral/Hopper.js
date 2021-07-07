@@ -1,5 +1,5 @@
-const Unit = require("../../Unit.js")
-const gcd = require("compute-gcd")
+import Unit from "../../Unit.js"
+import gcd from "compute-gcd"
 
 class Hopper extends Unit {
   constructor(hopSize, frameSize) {
@@ -36,4 +36,4 @@ class Hopper extends Unit {
       }
   }
 }
-module.exports = Hopper
+export default Hopper

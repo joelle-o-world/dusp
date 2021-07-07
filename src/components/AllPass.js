@@ -1,4 +1,4 @@
-const CombFilter = require("./CombFilter.js")
+import CombFilter from "./CombFilter.js"
 
 class AllPass extends CombFilter {
   constructor(delayTime, feedbackGain) {
@@ -13,39 +13,40 @@ class AllPass extends CombFilter {
       this.out[t] = delayOut - this.in[t] * this.feedbackGain[t]
     }
   }
-}
-module.exports = AllPass
 
-AllPass.random = function(maxDelayTime, maxFeedbackGain) {
-  return new AllPass(
-    (maxDelayTime || 1) * Math.random(), // delay time
-    (maxFeedbackGain || 1) * Math.random(), // feedbackGain
-  )
-}
-
-AllPass.manyRandom = function(n, maxDelay, maxFeedback) {
-  var list = []
-  for(var i=0; i<n; i++) {
-    var delay = 2/this.sampleRate + Math.random()*(maxDelay-2/this.sampleRate)
-    while(delay == 0)
-      var delay = Math.random()*maxDelay
-
-    var ap = new AllPass(Math.random()*maxDelay, Math.random()*maxFeedback)
-    list.push(ap)
+  static random(maxDelayTime, maxFeedbackGain) {
+    return new AllPass(
+      (maxDelayTime || 1) * Math.random(), // delay time
+      (maxFeedbackGain || 1) * Math.random(), // feedbackGain
+    )
   }
-  return list
+
+  static manyRandom(n, maxDelay, maxFeedback) {
+    var list = []
+    for(var i=0; i<n; i++) {
+      var delay = 2/this.sampleRate + Math.random()*(maxDelay-2/this.sampleRate)
+      while(delay == 0)
+        var delay = Math.random()*maxDelay
+
+      var ap = new AllPass(Math.random()*maxDelay, Math.random()*maxFeedback)
+      list.push(ap)
+    }
+    return list
+  }
+
+  static manyRandomInSeries(n, maxDelayTime, maxFeedbackGain) {
+    var allpasses = []
+    for(var i=0; i<n; i++) {
+      allpasses[i] = AllPass.random(maxDelayTime, maxFeedbackGain)
+      if(i != 0)
+        allpasses[i].IN = allpasses[i-1].OUT
+    }
+    return {
+      list: allpasses,
+      IN: allpasses[0].IN,
+      OUT: allpasses[i-1].OUT,
+    }
+  }
 }
 
-AllPass.manyRandomInSeries = function(n, maxDelayTime, maxFeedbackGain) {
-  var allpasses = []
-  for(var i=0; i<n; i++) {
-    allpasses[i] = AllPass.random(maxDelayTime, maxFeedbackGain)
-    if(i != 0)
-      allpasses[i].IN = allpasses[i-1].OUT
-  }
-  return {
-    list: allpasses,
-    IN: allpasses[0].IN,
-    OUT: allpasses[i-1].OUT,
-  }
-}
+export default AllPass

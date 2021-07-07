@@ -1,5 +1,5 @@
 // reduce things to dusp
-const config = require("./config.js")
+import config from "./config"
 
 function dusp(o, index) {
   index = index || {}
@@ -92,7 +92,9 @@ function dusp(o, index) {
   return null
 }
 
-module.exports = dusp
+export default dusp
+
+// ???
 dusp.usingShorthands = config.useDuspShorthands
 
 function duspOutlet(o, index) {

@@ -1,15 +1,14 @@
+import Synth from "./Synth.js"
+import unDusp from "../unDusp"
+import dusp from "../dusp"
 
-const Synth = require("./Synth.js")
-const unDusp = require("../unDusp")
-const dusp = require("../dusp")
-
-const quick = require("../quick.js")
-const Osc = require("../patches/FMOsc")
-const FrequencyGroup = require("./FrequencyGroup.js")
-const StereoDetune = require("./StereoDetune.js")
-const Mixer = require("./Mixer.js")
-const Shape = require("../components/Shape")
-const Worm = require("./Worm.js")
+import quick from "../quick.js"
+import Osc from "../patches/FMOsc"
+import FrequencyGroup from "./FrequencyGroup.js"
+import StereoDetune from "./StereoDetune.js"
+import Mixer from "./Mixer.js"
+import Shape from "../components/Shape"
+import Worm from "./Worm.js"
 
 class FMSynth extends Synth {
   constructor(seed) {
@@ -187,4 +186,4 @@ class FMSynth extends Synth {
     }
   }
 }
-module.exports = FMSynth
+export default FMSynth

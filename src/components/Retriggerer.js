@@ -1,4 +1,4 @@
-const Unit = require("../Unit.js")
+import Unit from "../Unit.js"
 
 class Retriggerer extends Unit {
   constructor(target, rate) {
@@ -33,4 +33,4 @@ class Retriggerer extends Unit {
     }
   }
 }
-module.exports = Retriggerer
+export default Retriggerer

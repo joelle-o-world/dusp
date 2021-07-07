@@ -1,6 +1,6 @@
-const Patch = require("../Patch")
-const AttenuationMatrix = require("./AttenuationMatrix.js")
-const AllPass = require("../components/AllPass.js")
+import Patch from "../Patch"
+import AttenuationMatrix from "./AttenuationMatrix.js"
+import AllPass from "../components/AllPass.js"
 
 class APWeb extends Patch {
   constructor(n=4, maxDelay=0.01, maxFeedback=0.1) {
@@ -21,4 +21,4 @@ class APWeb extends Patch {
     this.aliasOutlet(matrix.OUT, "out")
   }
 }
-module.exports = APWeb
+export default APWeb

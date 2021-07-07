@@ -23,24 +23,24 @@ const Unit = require("../Unit.js")
 }
 module.exports = Timer*/
 
-function Timer() {
-  Unit.call(this)
-  this.addOutlet("out", {mono: true})
+class Timer extends Unit {
+  constructor() {
+    super()
+    this.addOutlet("out", {mono: true})
 
-  this.t = 0
-  this.samplePeriod = 1/this.sampleRate
-}
-Timer.prototype = Object.create(Unit.prototype)
-Timer.prototype.constructor = Timer
-module.exports = Timer
+    this.t = 0
+    this.samplePeriod = 1/this.sampleRate
+  }
 
-Timer.prototype._tick = function() {
-  for(var t=0; t<this.out.length; t++) {
-    this.t += this.samplePeriod
-    this.out[t] = this.t
+  _tick() {
+    for(var t=0; t<this.out.length; t++) {
+      this.t += this.samplePeriod
+      this.out[t] = this.t
+    }
+  }
+
+  trigger() {
+    this.t = 0
   }
 }
-
-Timer.prototype.trigger = function() {
-  this.t = 0
-}
+export default Timer

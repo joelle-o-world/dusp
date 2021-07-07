@@ -2,8 +2,8 @@
   A base class for unit which process spectral data.
 */
 
-const Unit = require("../../Unit.js")
-const config = require("../../config")
+import Unit from "../../Unit.js"
+import config from "../../config"
 
 class SpectralUnit extends Unit {
   constructor() {
@@ -29,6 +29,8 @@ class SpectralUnit extends Unit {
     })
     this.addOutlet(name, options)
   }
+  get isSpectralUnit() {
+    return true
+  }
 }
-SpectralUnit.prototype.isSpectralUnit = true
-module.exports = SpectralUnit
+export default SpectralUnit

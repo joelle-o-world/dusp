@@ -1,5 +1,5 @@
-const Patch = require("../Patch.js")
-const Mixer = require("./Mixer.js")
+import Patch from "../Patch.js"
+import Mixer from "./Mixer.js"
 
 class AttenuationMatrix extends Patch {
   constructor({
@@ -38,4 +38,4 @@ class AttenuationMatrix extends Patch {
     this.aliasOutlet(outMixer.OUT, "out")
   }
 }
-module.exports = AttenuationMatrix
+export default AttenuationMatrix

@@ -2,7 +2,7 @@
   Spectrally implemented low pass filter.
 */
 
-const SpectralUnit = require("./SpectralUnit.js")
+import SpectralUnit from "./SpectralUnit.js"
 
 class HardLowPass extends SpectralUnit {
   constructor(f) {
@@ -30,4 +30,4 @@ class HardLowPass extends SpectralUnit {
     }
   }
 }
-module.exports = HardLowPass
+export default HardLowPass

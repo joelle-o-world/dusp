@@ -1,4 +1,4 @@
-const constructExpression = require("./construct/constructExpression.js")
+import constructExpression from "./construct/constructExpression.js"
 //const parseExpression = require("./parseDSP/getExpression.js")
 
 function unDusp(o) {
@@ -14,4 +14,4 @@ function unDusp(o) {
   if(o.isUnit || o.isOutlet || o.isPatch)
     return o
 }
-module.exports = unDusp
+export default unDusp

@@ -1,4 +1,4 @@
-const CircleBufferNode = require("./CircleBufferNode.js")
+import CircleBufferNode from "./CircleBufferNode.js"
 
 class CircleBufferReader extends CircleBufferNode {
   constructor(buffer, offset) {
@@ -24,4 +24,4 @@ class CircleBufferReader extends CircleBufferNode {
     this.t += this.tickInterval
   }
 }
-module.exports = CircleBufferReader
+export default CircleBufferReader

@@ -1,31 +1,87 @@
-module.exports = {
-	APStack: require("./APStack.js"),
-	APWeb: require("./APWeb.js"),
-	AttenuationMatrix: require("./AttenuationMatrix.js"),
-	BandFilter: require("./BandFilter.js"),
-	Boop: require("./Boop.js"),
-	ComplexOrbit: require("./ComplexOrbit.js"),
-	DelayMixer: require("./DelayMixer.js"),
-	FMOsc: require("./FMOsc.js"),
-	FMSynth: require("./FMSynth.js"),
-	FrequencyGroup: require("./FrequencyGroup.js"),
-	HardBandPass: require("./HardBandPass.js"),
-	LFO: require("./LFO.js"),
-	ManyOsc: require("./ManyOsc.js"),
-	MidiOsc: require("./MidiOsc.js"),
-	Mixer: require("./Mixer.js"),
-	MultiTapDelay: require("./MultiTapDelay.js"),
-	OrbittySine: require("./OrbittySine.js"),
-	ScaryPatch: require("./ScaryPatch.js"),
-	SimpleDelay: require("./SimpleDelay.js"),
-	SineBoop: require("./SineBoop.js"),
-	SineCloud: require("./SineCloud.js"),
-	Space: require("./Space.js"),
-	SpaceBoop: require("./SpaceBoop.js"),
-	SpaceChannel: require("./SpaceChannel.js"),
-	StereoDetune: require("./StereoDetune.js"),
-	StereoOsc: require("./StereoOsc.js"),
-	Synth: require("./Synth.js"),
-	TriggerGroup: require("./TriggerGroup.js"),
-	Worm: require("./Worm.js")
-}
+import APStack from "./APStack.js"
+export const APStack 
+
+import APWeb from "./APWeb"
+export const APWeb 
+
+import AttenuationMatrix from "./AttenuationMatrix"
+export const AttenuationMatrix 
+
+import BandFilter from "./BandFilter"
+export const BandFilter 
+
+import Boop from "./Boop"
+export const Boop 
+
+import ComplexOrbit from "./ComplexOrbit"
+export const ComplexOrbit 
+
+import DelayMixer from "./DelayMixer"
+export const DelayMixer 
+
+import FMOsc from "./FMOsc"
+export const FMOsc 
+
+import FMSynth from "./FMSynth"
+export const FMSynth 
+
+import FrequencyGroup from "./FrequencyGroup"
+export const FrequencyGroup 
+
+import HardBandPass from "./HardBandPass"
+export const HardBandPass 
+
+import LFO from "./LFO"
+export const LFO 
+
+import ManyOsc from "./ManyOsc"
+export const ManyOsc 
+
+import MidiOsc from "./MidiOsc"
+export const MidiOsc 
+
+import Mixer from "./Mixer"
+export const Mixer 
+
+import MultiTapDelay from "./MultiTapDelay"
+export const MultiTapDelay 
+
+import OrbittySine from "./OrbittySine"
+export const OrbittySine 
+
+import ScaryPatch from "./ScaryPatch"
+export const ScaryPatch 
+
+import SimpleDelay from "./SimpleDelay"
+export const SimpleDelay 
+
+import SineBoop from "./SineBoop"
+export const SineBoop 
+
+import SineCloud from "./SineCloud"
+export const SineCloud 
+
+import Space from "./Space"
+export const Space 
+
+import SpaceBoop from "./SpaceBoop"
+export const SpaceBoop 
+
+import SpaceChannel from "./SpaceChannel"
+export const SpaceChannel 
+
+import StereoDetune from "./StereoDetune"
+export const StereoDetune 
+
+import StereoOsc from "./StereoOsc"
+export const StereoOsc 
+
+import Synth from "./Synth"
+export const Synth 
+
+import TriggerGroup from "./TriggerGroup"
+export const TriggerGroup 
+
+import Worm from "./Worm"
+export const Worm 
+

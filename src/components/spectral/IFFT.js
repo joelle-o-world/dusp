@@ -1,5 +1,5 @@
-const Unit = require("../../Unit.js")
-const FFTjs = require("fft.js")
+import Unit from "../../Unit.js"
+import FFTjs from "fft.js"
 
 class IFFT extends Unit {
   constructor(windowSize, hopSize) {
@@ -32,4 +32,4 @@ class IFFT extends Unit {
     }
   }
 }
-module.exports = IFFT
+export default IFFT

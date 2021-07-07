@@ -1,8 +1,8 @@
-const Patch = require("../Patch.js")
-const CircleBuffer = require("../CircleBuffer.js")
-const CircleBufferReader = require("../components/CircleBufferReader.js")
-const CircleBufferWriter = require("../components/CircleBufferWriter.js")
-const quick = require("../quick.js")
+import Patch from "../Patch.js"
+import CircleBuffer from "../CircleBuffer.js"
+import CircleBufferReader from "../components/CircleBufferReader.js"
+import CircleBufferWriter from "../components/CircleBufferWriter.js"
+import quick from "../quick.js"
 
 
 class MultiTapDelay extends Patch {
@@ -42,4 +42,4 @@ class MultiTapDelay extends Patch {
     return reader
   }
 }
-module.exports = MultiTapDelay
+export default MultiTapDelay

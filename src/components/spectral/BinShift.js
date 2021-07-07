@@ -1,4 +1,4 @@
-const SpectralUnit = require("./SpectralUnit.js")
+import SpectralUnit from "./SpectralUnit.js"
 
 class BinShift extends SpectralUnit {
   constructor(shift) {
@@ -25,4 +25,4 @@ class BinShift extends SpectralUnit {
     }
   }
 }
-module.exports = BinShift
+export default BinShift

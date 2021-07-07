@@ -1,22 +1,22 @@
-const Unit = require("../Unit.js")
+import Unit from "../Unit.js"
 
-function SemitoneToRatio(midi) {
-  Unit.call(this)
-  this.addInlet("in")
-  this.addOutlet("out")
+class SemitoneToRatio extends Unit {
+  constructor(midi) {
+    super()
+    this.addInlet("in")
+    this.addOutlet("out")
 
-  this.IN = midi || 69
-}
-SemitoneToRatio.prototype = Object.create(Unit.prototype)
-SemitoneToRatio.prototype.constructor = SemitoneToRatio
-module.exports = SemitoneToRatio
+    this.IN = midi || 69
+  }
 
-SemitoneToRatio.prototype._tick = function() {
-  for(var c=0; c<this.in.length; c++) {
-    var midiIn = this.in[c]
-    var fOut = this.out[c] = this.out[c] || new Float32Array(this.OUT.chunkSize)
+  _tick() {
+    for(var c=0; c<this.in.length; c++) {
+      var midiIn = this.in[c]
+      var fOut = this.out[c] = this.out[c] || new Float32Array(this.OUT.chunkSize)
 
-    for(var t=0; t<midiIn.length; t++)
-      fOut[t] = Math.pow(2, (midiIn[t]/12))
+      for(var t=0; t<midiIn.length; t++)
+        fOut[t] = Math.pow(2, (midiIn[t]/12))
+    }
   }
 }
+export default SemitoneToRatio

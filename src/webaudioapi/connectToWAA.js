@@ -1,5 +1,5 @@
-const RenderStream = require("../RenderStream")
-const WritableWAA = require('web-audio-stream/writable')
+import RenderStream from "../RenderStream"
+import WritableWAA from 'web-audio-stream/writable'
 
 function connectToWAA(outlet, destination) {
   // stream an outlet into a Web Audio API destination
@@ -23,4 +23,4 @@ function connectToWAA(outlet, destination) {
 
   return renderStream
 }
-module.exports = connectToWAA
+export default connectToWAA

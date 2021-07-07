@@ -1,4 +1,4 @@
-const SpectralUnit = require("./SpectralUnit.js")
+import SpectralUnit from "./SpectralUnit.js"
 
 class SpectralGate extends SpectralUnit {
   constructor(threshold) {
@@ -31,4 +31,4 @@ class SpectralGate extends SpectralUnit {
     }
   }
 }
-module.exports = SpectralGate
+export default SpectralGate

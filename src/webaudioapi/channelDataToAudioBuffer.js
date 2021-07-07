@@ -1,4 +1,4 @@
-const AudioBuffer = require('audio-buffer')
+import AudioBuffer from 'audio-buffer'
 
 function channelDataToAudioBuffer(channelData) {
   let audioBuffer = new AudioBuffer({
@@ -13,4 +13,4 @@ function channelDataToAudioBuffer(channelData) {
 
   return audioBuffer
 }
-module.exports = channelDataToAudioBuffer
+export default channelDataToAudioBuffer

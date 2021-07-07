@@ -1,4 +1,4 @@
-const SpectralUnit = require("./SpectralUnit.js")
+import SpectralUnit from "./SpectralUnit.js"
 
 class Augment extends SpectralUnit {
   constructor(incrementMapping={1:1}, windowSize, hopInterval) {
@@ -26,4 +26,4 @@ class Augment extends SpectralUnit {
     }
   }
 }
-module.exports = Augment
+export default Augment

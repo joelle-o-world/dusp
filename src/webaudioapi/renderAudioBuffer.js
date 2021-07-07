@@ -1,8 +1,8 @@
-const renderChannelData = require('../renderChannelData')
-const channelDataToAudioBuffer = require('./channelDataToAudioBuffer')
+import renderChannelData from '../renderChannelData'
+import channelDataToAudioBuffer from './channelDataToAudioBuffer'
 
 async function renderAudioBuffer(outlet, duration, options={}) {
   let channelData = await renderChannelData(outlet, duration, options)
   return channelDataToAudioBuffer(channelData)
 }
-module.exports = renderAudioBuffer
+export default renderAudioBuffer

@@ -2,7 +2,7 @@
   A base class for CircleBufferReader and CircleBufferWriter.
 */
 
-const Unit = require("../Unit.js")
+import Unit from "../Unit.js"
 
 class CircleBufferNode extends Unit {
   constructor(buffer, offset) {
@@ -29,4 +29,4 @@ class CircleBufferNode extends Unit {
     return this._buffer
   }
 }
-module.exports = CircleBufferNode
+export default CircleBufferNode

@@ -1,20 +1,30 @@
-module.exports = {
 
-  // useful functions
-  unDusp: require('./unDusp'),
-  dusp: require('./dusp'),
-  renderChannelData: require("./renderChannelData"),
-  renderAudioBuffer: require("./webaudioapi/renderAudioBuffer"),
-  channelDataToAudioBuffer: require('./webaudioapi/channelDataToAudioBuffer'),
-  connectToWAA: require("./webaudioapi/connectToWAA"),
+// useful functions
+import unDusp from './unDusp'
+export const unDusp
+import dusp from './dusp'
+export const dusp 
+import renderChannelData from "./renderChannelData"
+export const renderChannelData 
+import renderAudioBuffer from "./webaudioapi/renderAudioBuffer"
+export const renderAudioBuffer 
+import channelDataToAudioBuffer from './webaudioapi/channelDataToAudioBuffer'
+export const channelDataToAudioBuffer 
+import connectToWAA from "./webaudioapi/connectToWAA"
+export const connectToWAA 
 
-  quick: require('./quick'),
+import quick from './quick'
+export const quick
 
-  // basic elements
-  Unit: require("./Unit"),
-  Patch: require("./Patch"),
-  Circuit: require("./Circuit"),
+// basic elements
+import Unit from "./Unit"
+export const Unit 
+import Patch from "./Patch"
+export const Patch 
+import Circuit from "./Circuit"
+export const Circuit 
 
-  components: require('./components'),
-  patches: require('./patches'),
-}
+import components from './components'
+export const components 
+import patches from './patches'
+export const patches 

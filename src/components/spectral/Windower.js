@@ -1,4 +1,4 @@
-const Unit = require("../../Unit.js")
+import Unit from "../../Unit.js"
 
 class Windower extends Unit {
   constructor(windowSize /*in samples*/, kind="hamming", hopSize) {
@@ -46,4 +46,4 @@ function getEnvelope(size, type) {
   Windower.envelopes[name] = env
   return env
 }
-Windower.getEnvelope = getEnvelope
+export default getEnvelope
