@@ -1,30 +1,18 @@
 
 // useful functions
-import unDusp from './unDusp'
-export const unDusp
-import dusp from './dusp'
-export const dusp 
-import renderChannelData from "./renderChannelData"
-export const renderChannelData 
-import renderAudioBuffer from "./webaudioapi/renderAudioBuffer"
-export const renderAudioBuffer 
-import channelDataToAudioBuffer from './webaudioapi/channelDataToAudioBuffer'
-export const channelDataToAudioBuffer 
-import connectToWAA from "./webaudioapi/connectToWAA"
-export const connectToWAA 
+export {default as unDusp} from './unDusp'
+export {default as dusp} from './dusp'
+export {default as renderChannelData} from "./renderChannelData"
+export {default as renderAudioBuffer} from "./webaudioapi/renderAudioBuffer"
+export {default as channelDataToAudioBuffer} from './webaudioapi/channelDataToAudioBuffer'
+export {default as connectToWAA} from "./webaudioapi/connectToWAA"
 
-import quick from './quick'
-export const quick
+export {default as quick} from './quick'
 
 // basic elements
-import Unit from "./Unit"
-export const Unit 
-import Patch from "./Patch"
-export const Patch 
-import Circuit from "./Circuit"
-export const Circuit 
+export {default as Unit} from './Unit';
+export {default as Patch} from "./Patch"
+export {default as Circuit} from "./Circuit"
 
-import components from './components'
-export const components 
-import patches from './patches'
-export const patches 
+export * as patches from './components';
+export * as components from './patches'

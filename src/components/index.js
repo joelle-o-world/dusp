@@ -1,185 +1,62 @@
-import AHD from "./AHD"
-export const AHD 
-
-import Abs from "./Abs"
-export const Abs 
-
-import AllPass from "./AllPass"
-export const AllPass 
-
-import CircleBufferNode from "./CircleBufferNode"
-export const CircleBufferNode 
-
-import CircleBufferReader from "./CircleBufferReader"
-export const CircleBufferReader 
-
-import CircleBufferWriter from "./CircleBufferWriter"
-export const CircleBufferWriter 
-
-import Clip from "./Clip"
-export const Clip 
-
-import CombFilter from "./CombFilter"
-export const CombFilter 
-
-import ConcatChannels from "./ConcatChannels"
-export const ConcatChannels 
-
-import CrossFader from "./CrossFader"
-export const CrossFader 
-
-import DecibelToScaler from "./DecibelToScaler"
-export const DecibelToScaler 
-
-import Delay from "./Delay"
-export const Delay 
-
-import Divide from "./Divide"
-export const Divide 
-
-import Filter from "./Filter"
-export const Filter 
-
-import FixedDelay from "./FixedDelay"
-export const FixedDelay 
-
-import FixedMultiply from "./FixedMultiply"
-export const FixedMultiply 
-
-import Gain from "./Gain"
-export const Gain 
-
-import GreaterThan from "./GreaterThan"
-export const GreaterThan 
-
-import HardClipAbove from "./HardClipAbove"
-export const HardClipAbove 
-
-import HardClipBelow from "./HardClipBelow"
-export const HardClipBelow 
-
-import LessThan from "./LessThan"
-export const LessThan 
-
-import MidiToFrequency from "./MidiToFrequency"
-export const MidiToFrequency 
-
-import Monitor from "./Monitor"
-export const Monitor 
-
-import MonoDelay from "./MonoDelay"
-export const MonoDelay 
-
-import Multiply from "./Multiply"
-export const Multiply 
-
-import Noise from "./Noise"
-export const Noise 
-
-import MultiChannelOsc from "./Osc/MultiChannelOsc"
-export const MultiChannelOsc 
-
-import Osc from "./Osc/Osc"
-export const Osc 
-
-import Pan from "./Pan"
-export const Pan 
-
-import PickChannel from "./PickChannel"
-export const PickChannel 
-
-import PolarityInvert from "./PolarityInvert"
-export const PolarityInvert 
-
-import Pow from "./Pow"
-export const Pow 
-
-import Ramp from "./Ramp"
-export const Ramp 
-
-import ReadBackDelay from "./ReadBackDelay"
-export const ReadBackDelay 
-
-import Repeater from "./Repeater"
-export const Repeater 
-
-import Rescale from "./Rescale"
-export const Rescale 
-
-import Retriggerer from "./Retriggerer"
-export const Retriggerer 
-
-import SampleRateRedux from "./SampleRateRedux"
-export const SampleRateRedux 
-
-import SecondsToSamples from "./SecondsToSamples"
-export const SecondsToSamples 
-
-import SemitoneToRatio from "./SemitoneToRatio"
-export const SemitoneToRatio 
-
-import Shape from "./Shape/index"
-export const Shape 
-
-import SignalCombiner from "./SignalCombiner"
-export const SignalCombiner 
-
-import SporadicRetriggerer from "./SporadicRetrigger"
-export const SporadicRetriggerer 
-
-import Subtract from "./Subtract"
-export const Subtract 
-
-import Sum from "./Sum"
-export const Sum 
-
-import Timer from "./Timer"
-export const Timer 
-
-import VectorMagnitude from "./VectorMagnitude"
-export const VectorMagnitude 
-
-import Augment from "./spectral/Augment"
-export const Augment 
-
-import BinShift from "./spectral/BinShift"
-export const BinShift 
-
-import FFT from "./spectral/FFT"
-export const FFT 
-
-import HardHighPass from "./spectral/HardHighPass"
-export const HardHighPass 
-
-import HardLowPass from "./spectral/HardLowPass"
-export const HardLowPass 
-
-import Hopper from "./spectral/Hopper"
-export const Hopper 
-
-import IFFT from "./spectral/IFFT"
-export const IFFT 
-
-import ReChunk from "./spectral/ReChunk"
-export const ReChunk 
-
-import SpectralGate from "./spectral/SpectralGate"
-export const SpectralGate 
-
-import SpectralSum from "./spectral/SpectralSum"
-export const SpectralSum 
-
-import SpectralUnit from "./spectral/SpectralUnit"
-export const SpectralUnit 
-
-import UnHopper from "./spectral/UnHopper"
-export const UnHopper 
-
-import Windower from "./spectral/Windower"
-export const Windower 
-
-import CircularMotion from "./vector/CircularMotion"
-export const CircularMotion 
-
-import LinearMotion from "./vector/LinearMotion"
-export const LinearMotion 
+export {default as AHD} from "./AHD"
+export {default as Abs} from "./Abs"
+export {default as AllPass} from "./AllPass"
+export {default as CircleBufferNode} from "./CircleBufferNode"
+export {default as CircleBufferReader} from "./CircleBufferReader"
+export {default as CircleBufferWriter} from "./CircleBufferWriter"
+export {default as Clip} from "./Clip"
+export {default as CombFilter} from "./CombFilter"
+export {default as ConcatChannels} from "./ConcatChannels"
+export {default as CrossFader} from "./CrossFader"
+export {default as DecibelToScaler} from "./DecibelToScaler"
+export {default as Delay} from "./Delay"
+export {default as Divide} from "./Divide"
+export {default as Filter} from "./Filter"
+export {default as FixedDelay} from "./FixedDelay"
+export {default as FixedMultiply} from "./FixedMultiply"
+export {default as Gain} from "./Gain"
+export {default as GreaterThan} from "./GreaterThan"
+export {default as HardClipAbove} from "./HardClipAbove"
+export {default as HardClipBelow} from "./HardClipBelow"
+export {default as LessThan} from "./LessThan"
+export {default as MidiToFrequency} from "./MidiToFrequency"
+export {default as Monitor} from "./Monitor"
+export {default as MonoDelay} from "./MonoDelay"
+export {default as Multiply} from "./Multiply"
+export {default as Noise} from "./Noise"
+export {default as MultiChannelOsc} from "./Osc/MultiChannelOsc"
+export {default as Osc} from "./Osc/Osc"
+export {default as Pan} from "./Pan"
+export {default as PickChannel} from "./PickChannel"
+export {default as PolarityInvert} from "./PolarityInvert"
+export {default as Pow} from "./Pow"
+export {default as Ramp} from "./Ramp"
+export {default as ReadBackDelay} from "./ReadBackDelay"
+export {default as Repeater} from "./Repeater"
+export {default as Rescale} from "./Rescale"
+export {default as Retriggerer} from "./Retriggerer"
+export {default as SampleRateRedux} from "./SampleRateRedux"
+export {default as SecondsToSamples} from "./SecondsToSamples"
+export {default as SemitoneToRatio} from "./SemitoneToRatio"
+export {default as Shape} from "./Shape/index"
+export {default as SignalCombiner} from "./SignalCombiner"
+export {default as SporadicRetriggerer} from "./SporadicRetrigger"
+export {default as Subtract} from "./Subtract"
+export {default as Sum} from "./Sum"
+export {default as Timer} from "./Timer"
+export {default as VectorMagnitude} from "./VectorMagnitude"
+export {default as Augment} from "./spectral/Augment"
+export {default as BinShift} from "./spectral/BinShift"
+export {default as FFT} from "./spectral/FFT"
+export {default as HardHighPass} from "./spectral/HardHighPass"
+export {default as HardLowPass} from "./spectral/HardLowPass"
+export {default as Hopper} from "./spectral/Hopper"
+export {default as IFFT} from "./spectral/IFFT"
+export {default as ReChunk} from "./spectral/ReChunk"
+export {default as SpectralGate} from "./spectral/SpectralGate"
+export {default as SpectralSum} from "./spectral/SpectralSum"
+export {default as SpectralUnit} from "./spectral/SpectralUnit"
+export {default as UnHopper} from "./spectral/UnHopper"
+export {default as Windower} from "./spectral/Windower"
+export {default as CircularMotion} from "./vector/CircularMotion"
+export {default as LinearMotion} from "./vector/LinearMotion"

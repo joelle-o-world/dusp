@@ -1,87 +1,29 @@
-import APStack from "./APStack.js"
-export const APStack 
-
-import APWeb from "./APWeb"
-export const APWeb 
-
-import AttenuationMatrix from "./AttenuationMatrix"
-export const AttenuationMatrix 
-
-import BandFilter from "./BandFilter"
-export const BandFilter 
-
-import Boop from "./Boop"
-export const Boop 
-
-import ComplexOrbit from "./ComplexOrbit"
-export const ComplexOrbit 
-
-import DelayMixer from "./DelayMixer"
-export const DelayMixer 
-
-import FMOsc from "./FMOsc"
-export const FMOsc 
-
-import FMSynth from "./FMSynth"
-export const FMSynth 
-
-import FrequencyGroup from "./FrequencyGroup"
-export const FrequencyGroup 
-
-import HardBandPass from "./HardBandPass"
-export const HardBandPass 
-
-import LFO from "./LFO"
-export const LFO 
-
-import ManyOsc from "./ManyOsc"
-export const ManyOsc 
-
-import MidiOsc from "./MidiOsc"
-export const MidiOsc 
-
-import Mixer from "./Mixer"
-export const Mixer 
-
-import MultiTapDelay from "./MultiTapDelay"
-export const MultiTapDelay 
-
-import OrbittySine from "./OrbittySine"
-export const OrbittySine 
-
-import ScaryPatch from "./ScaryPatch"
-export const ScaryPatch 
-
-import SimpleDelay from "./SimpleDelay"
-export const SimpleDelay 
-
-import SineBoop from "./SineBoop"
-export const SineBoop 
-
-import SineCloud from "./SineCloud"
-export const SineCloud 
-
-import Space from "./Space"
-export const Space 
-
-import SpaceBoop from "./SpaceBoop"
-export const SpaceBoop 
-
-import SpaceChannel from "./SpaceChannel"
-export const SpaceChannel 
-
-import StereoDetune from "./StereoDetune"
-export const StereoDetune 
-
-import StereoOsc from "./StereoOsc"
-export const StereoOsc 
-
-import Synth from "./Synth"
-export const Synth 
-
-import TriggerGroup from "./TriggerGroup"
-export const TriggerGroup 
-
-import Worm from "./Worm"
-export const Worm 
-
+export {default as APStack} from "./APStack.js"
+export {default as APWeb} from "./APWeb"
+export {default as AttenuationMatrix} from "./AttenuationMatrix"
+export {default as BandFilter} from "./BandFilter"
+export {default as Boop} from "./Boop"
+export {default as ComplexOrbit} from "./ComplexOrbit"
+export {default as DelayMixer} from "./DelayMixer"
+export {default as FMOsc} from "./FMOsc"
+export {default as FMSynth} from "./FMSynth"
+export {default as FrequencyGroup} from "./FrequencyGroup"
+export {default as HardBandPass} from "./HardBandPass"
+export {default as LFO} from "./LFO"
+export {default as ManyOsc} from "./ManyOsc"
+export {default as MidiOsc} from "./MidiOsc"
+export {default as Mixer} from "./Mixer"
+export {default as MultiTapDelay} from "./MultiTapDelay"
+export {default as OrbittySine} from "./OrbittySine"
+export {default as ScaryPatch} from "./ScaryPatch"
+export {default as SimpleDelay} from "./SimpleDelay"
+export {default as SineBoop} from "./SineBoop"
+export {default as SineCloud} from "./SineCloud"
+export {default as Space} from "./Space"
+export {default as SpaceBoop} from "./SpaceBoop"
+export {default as SpaceChannel} from "./SpaceChannel"
+export {default as StereoDetune} from "./StereoDetune"
+export {default as StereoOsc} from "./StereoOsc"
+export {default as Synth} from "./Synth"
+export {default as TriggerGroup} from "./TriggerGroup"
+export {default as Worm} from "./Worm"
