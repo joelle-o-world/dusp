@@ -2,7 +2,7 @@ import Patch from "../Patch.js"
 import Osc from "../components/Osc"
 import MidiToFrequency from "../components/MidiToFrequency.js"
 
-class MidiOsc extends Unit {
+class MidiOsc extends Patch {
   constructor(p) {
     super()
 

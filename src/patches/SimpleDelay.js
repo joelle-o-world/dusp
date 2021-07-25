@@ -6,7 +6,7 @@ import Multiply from "../components/Multiply"
 import Repeater from "../components/Repeater"
 import SecondsToSamples from "../components/SecondsToSamples"
 
-class SimpleDelay extends Unit {
+class SimpleDelay extends Patch {
   constructor(input, delay, feedback, dryWet) {
     super()
 

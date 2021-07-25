@@ -2,7 +2,7 @@ import Patch from "../Patch.js"
 import Repeater from "../components/Repeater.js"
 import quick from "../quick.js"
 
-class FrequencyGroup extends Unit {
+class FrequencyGroup extends Patch {
   constructor(f) {
     super()
 

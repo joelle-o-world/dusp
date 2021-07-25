@@ -5,7 +5,7 @@ import Osc from "../components/Osc"
 import Sum from "../components/Sum.js"
 import Multiply from "../components/Multiply.js"
 
-class ManyOsc extends Unit {
+class ManyOsc extends Patch {
   constructor(oscs) {
     super()
 

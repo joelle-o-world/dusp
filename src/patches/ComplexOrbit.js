@@ -3,7 +3,7 @@ import CircularMotion from "../components/vector/CircularMotion.js"
 import Multiply from "../components/Multiply.js"
 import Repeater from "../components/Repeater.js"
 
-class ComplexOrbit extends Unit {
+class ComplexOrbit extends Patch {
   constructor( frequencyRatios, radiusRatios, centre) {
     super()
 

@@ -6,7 +6,7 @@ import MidiToFrequency from "../components/MidiToFrequency"
 import Sum from "../components/Sum"
 
 
-class StereoOsc extends Unit {
+class StereoOsc extends Patch {
   constructor(p, gain, pan) {
     super()
 

@@ -3,7 +3,7 @@ import Osc from "../components/Osc"
 import Multiply from "../components/Multiply.js"
 import Sum from "../components/Sum.js"
 
-class LFO extends Unit {
+class LFO extends Patch {
   constructor(frequency, amplitude, origin, waveform) {
     super()
 

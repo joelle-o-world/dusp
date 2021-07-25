@@ -5,7 +5,7 @@ import Osc from "../components/Osc/MultiChannelOsc"
 import SemitoneToRatio from "../components/SemitoneToRatio.js"
 import Multiply from "../components/Multiply.js"
 
-class FMOsc extends Unit {
+class FMOsc extends Patch {
   constructor(f) {
     super()
 
