@@ -4,8 +4,8 @@
   "description": "A modular synthesiser for node and the browser",
   "main": "src/index.js",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/joelyjoel/dusp"
+    "type": "git",
+    "url": "https://github.com/joelyjoel/dusp"
   },
   "directories": {
     "test": "test"
@@ -30,5 +30,9 @@
     "minimist": "^1.2.0",
     "promise": "^8.0.2",
     "web-audio-stream": "^3.0.1"
+  },
+  "devDependencies": {
+    "tsc": "^2.0.3",
+    "typescript": "^4.3.5"
   }
 }
