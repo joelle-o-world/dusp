@@ -1,35 +1,29 @@
-const Patimport from "../Patch"
-import Mixer from "./Mixer"
+import Patch from "../Patch";
+import Mixer from "./Mixer";
 
 class TriggerGroup extends Patch {
   constructor() {
-    super()
+    super();
 
-    this.addUnits(
-      this.mixer = new Mixer()
-    )
-    this.triggers = {}
+    this.addUnits((this.mixer = new Mixer()));
+    this.triggers = {};
 
-    this.aliasOutlet(this.mixer.OUT)
+    this.aliasOutlet(this.mixer.OUT);
   }
 
   addTrigger(trigger, name) {
-    if(name == undefined) {
-      name = 0
-      while(this.triggers[name] != undefined)
-        name++
+    if (name == undefined) {
+      name = 0;
+      while (this.triggers[name] != undefined) name++;
     }
-    this.triggers[name] = trigger
-    this.mixer.addInput(trigger)
+    this.triggers[name] = trigger;
+    this.mixer.addInput(trigger);
   }
 
   trigger(which) {
-    if(this.triggers[which])
-      this.triggers[which].trigger()
-    else if(this.handleUnknownTrigger)
-      this.handleUnknownTrigger(which)
-    else
-      console.log(this.label, "unknown trigger:", which)
+    if (this.triggers[which]) this.triggers[which].trigger();
+    else if (this.handleUnknownTrigger) this.handleUnknownTrigger(which);
+    else console.log(this.label, "unknown trigger:", which);
   }
 }
-export default TriggerGroup
+export default TriggerGroup;

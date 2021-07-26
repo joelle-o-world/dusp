@@ -59,6 +59,7 @@ class Filter extends Unit {
     this._kind = kind
     this.calculateCoefficients()
   }
+}
 
 Filter.coefficientFunctions = {
   LP: function(f) {
