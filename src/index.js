@@ -14,5 +14,5 @@ export {default as Unit} from './Unit';
 export {default as Patch} from "./Patch"
 export {default as Circuit} from "./Circuit"
 
-export * as patches from './components';
-export * as components from './patches'
+export * as components from './components';
+export * as patches from './patches'
